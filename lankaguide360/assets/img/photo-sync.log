@@ -1,0 +1,322 @@
+Missing dependency. Run: pip install -r requirements.txt
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    wikimedia error: 429 Client Error: Too Many Requests for url: https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=Yala+National+Park+Sri+Lanka+landmark+Sri+Lanka&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=1024
+    no image found; skipping
+- Ella
+    wikimedia error: 429 Client Error: Too Many Requests for url: https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=Ella+Sri+Lanka+landmark+Sri+Lanka&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=1024
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    wikimedia error: 429 Client Error: Too Many Requests for url: https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=Sigiriya+Rock+Fortress+Sri+Lanka+landmark+Sri+Lanka&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=1024
+    no image found; skipping
+- Yala National Park
+    wikimedia error: 429 Client Error: Too Many Requests for url: https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=Yala+National+Park+Sri+Lanka+landmark+Sri+Lanka&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=1024
+    no image found; skipping
+- Ella
+    wikimedia error: 429 Client Error: Too Many Requests for url: https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=Ella+Sri+Lanka+landmark+Sri+Lanka&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=1024
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    wikimedia error: 429 Client Error: Too Many Requests for url: https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=Sigiriya+Rock+Fortress+Sri+Lanka+landmark+Sri+Lanka&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=1024
+    no image found; skipping
+- Yala National Park
+    wikimedia error: 429 Client Error: Too Many Requests for url: https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=Yala+National+Park+Sri+Lanka+landmark+Sri+Lanka&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=1024
+    no image found; skipping
+- Ella
+    wikimedia error: 429 Client Error: Too Many Requests for url: https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=Ella+Sri+Lanka+landmark+Sri+Lanka&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=1024
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    wikimedia error: 429 Client Error: Too Many Requests for url: https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=Sigiriya+Rock+Fortress+Sri+Lanka+landmark+Sri+Lanka&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=1024
+    no image found; skipping
+- Yala National Park
+    wikimedia error: 429 Client Error: Too Many Requests for url: https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=Yala+National+Park+Sri+Lanka+landmark+Sri+Lanka&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=1024
+    no image found; skipping
+- Ella
+    wikimedia error: 429 Client Error: Too Many Requests for url: https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=Ella+Sri+Lanka+landmark+Sri+Lanka&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=1024
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    wikimedia error: 429 Client Error: Too Many Requests for url: https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=Yala+National+Park+Sri+Lanka+landmark+Sri+Lanka&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=1024
+    no image found; skipping
+- Ella
+    wikimedia error: 429 Client Error: Too Many Requests for url: https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=Ella+Sri+Lanka+landmark+Sri+Lanka&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=1024
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.
+LankaGuide 360 photo fetcher · table=destinations · primary source=Wikimedia Commons (keyless)
+3 row(s) need a photo.
+
+- Sigiriya Rock Fortress
+    no image found; skipping
+- Yala National Park
+    no image found; skipping
+- Ella
+    no image found; skipping
+
+Done. 0 row(s) updated.

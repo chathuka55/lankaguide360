@@ -1,0 +1,59 @@
+# =====================================================================
+# LankaGuide 360 — local stack: PHP app + MySQL + phpMyAdmin
+# Run from the project root:  docker compose -f docker/docker-compose.yml up -d
+# =====================================================================
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: lankaguide360-app
+    ports:
+      - "${PORT:-8080}:80"
+    environment:
+      DB_HOST: db
+      DB_NAME: lankaguide360
+      DB_USER: lanka
+      DB_PASS: lanka_secret
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ../assets/uploads:/var/www/html/assets/uploads
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    container_name: lankaguide360-db
+    environment:
+      MYSQL_DATABASE: lankaguide360
+      MYSQL_USER: lanka
+      MYSQL_PASSWORD: lanka_secret
+      MYSQL_ROOT_PASSWORD: root_secret
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      # Auto-imports schema + seed data on first boot
+      - ../database/lankaguide360.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_secret"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin:5
+    container_name: lankaguide360-pma
+    environment:
+      PMA_HOST: db
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+volumes:
+  db_data:

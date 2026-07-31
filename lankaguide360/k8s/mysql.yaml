@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lankaguide360-mysql
+  namespace: lankaguide360
+spec:
+  clusterIP: None
+  selector:
+    app: lankaguide360-mysql
+  ports:
+    - port: 3306
+      targetPort: 3306
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: lankaguide360-mysql
+  namespace: lankaguide360
+spec:
+  serviceName: lankaguide360-mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lankaguide360-mysql
+  template:
+    metadata:
+      labels:
+        app: lankaguide360-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: lankaguide360-config
+                  key: DB_NAME
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: lankaguide360-secret
+                  key: DB_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: lankaguide360-secret
+                  key: DB_PASS
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: lankaguide360-secret
+                  key: MYSQL_ROOT_PASSWORD
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost"]
+            initialDelaySeconds: 15
+            periodSeconds: 10
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi
