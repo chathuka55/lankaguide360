@@ -1,0 +1,30 @@
+<?php
+
+/*
+ * Starter FAQs (Contact page + chatbot). General guidance only: travellers are told to check
+ * official sources for visas and entry rules, and prices are confirmed by an agent.
+ *
+ * Columns: question, answer, keywords.
+ */
+return [
+    ['Do I need a visa to visit Sri Lanka?', 'Most visitors need an Electronic Travel Authorization (ETA) or visa before arrival. Rules change, so please check the official Sri Lanka immigration website (eta.gov.lk) for your nationality before you travel.', 'visa eta entry permit immigration passport'],
+    ['When is the best time to visit Sri Lanka?', 'Sri Lanka has two monsoons. The west and south coasts and the hill country are usually best from December to April. The east coast (Trincomalee, Pasikudah, Arugam Bay) is best from May to September. The Cultural Triangle can be visited all year.', 'best time season weather monsoon rain when month'],
+    ['What currency is used and can I pay by card?', 'The currency is the Sri Lankan rupee (LKR). Cards are accepted in most hotels and larger shops; carry cash for small shops, tuk-tuks and entry tickets in rural areas. ATMs are common in towns. Our prices are shown in USD with an LKR equivalent.', 'currency money rupee lkr card atm cash pay'],
+    ['What should I wear when visiting temples?', 'Cover your shoulders and knees, and remove shoes and hats before entering temple grounds. Do not pose with your back to a Buddha statue for photos. A light scarf or sarong is handy.', 'dress code temple clothes shoulders knees shoes etiquette'],
+    ['Is Sri Lanka safe for travellers?', 'Sri Lanka is generally welcoming to visitors. Use normal precautions: keep valuables secure, use registered drivers and guides, and follow local advice about sea conditions. Your driver-guide can help with any questions during the trip.', 'safe safety security danger crime'],
+    ['How does the Trip Builder work?', 'Pick a travel style (Budget, Premium or Luxury), your interests, districts and places, then your dates and travellers. We arrange your places into days by route and drive time, suggest hotels, meals, a vehicle and a guide, and show the full price. Submit the plan and a local agent confirms it.', 'trip builder plan itinerary how works steps plan a trip'],
+    ['Is the price in the Trip Builder final?', 'No. The price is an estimate. After you submit, a travel agent checks availability and confirms the final price before anything is booked.', 'price final estimate quote cost confirm'],
+    ['Do I need an account to plan a trip?', 'No. You can build and submit a trip as a guest with your name and contact details. Creating an account lets you see all your trips, messages and status updates in one place.', 'account register login guest sign up'],
+    ['How long does it take to get a reply?', 'Our agents review new trip requests every day. You receive an email with your reference number straight away and usually hear from an agent within one working day.', 'reply response time how long wait agent contact'],
+    ['Can I change my trip after submitting it?', 'Yes. Reply to your agent through the trip page or by email and they will adjust the plan and send an updated price before you confirm.', 'change edit modify trip after submit'],
+    ['What is your cancellation policy?', 'Nothing is charged when you submit a plan. Once you confirm and pay a deposit, the cancellation terms in your confirmation apply; your agent will explain them before you pay.', 'cancel cancellation refund policy deposit'],
+    ['What is the difference between Budget, Premium and Luxury?', 'Budget uses guesthouses and 2-star hotels with bed and breakfast and a standard car or van. Premium uses 3–4 star hotels with half board and a comfortable air-conditioned vehicle. Luxury uses 5-star resorts and villas, full board, a premium vehicle and an SLTDA national guide.', 'budget premium luxury tier travel style difference'],
+    ['What is a chauffeur-guide?', 'A chauffeur-guide is a licensed driver who also shows you around and speaks English (other languages on request). For longer or Luxury trips you can add an SLTDA-licensed national guide.', 'chauffeur guide driver national guide sltda language'],
+    ['Can you arrange the train from Kandy to Ella?', 'Yes. Premium and Luxury plans can include reserved seats on the scenic Kandy–Ella train when seats are available; your driver meets you at the station with your luggage.', 'train kandy ella rail scenic ticket'],
+    ['Are safaris included?', 'Wildlife parks such as Yala, Udawalawe, Minneriya and Wilpattu can be added as places. Park tickets are included in the price estimate; jeep safaris are arranged by your agent.', 'safari yala udawalawe minneriya wilpattu jeep elephant leopard wildlife'],
+    ['Is Sri Lanka good for families with children?', 'Yes. Choose the Kid-friendly hotel filter, and we add child seats for children under 4. Children below a set age enter many sites free.', 'family children kids child seat baby'],
+    ['What vaccinations or health precautions do I need?', 'Ask your doctor or travel clinic before you travel. Drink bottled or filtered water and use mosquito repellent, especially at dawn and dusk.', 'health vaccination vaccine medicine mosquito water doctor'],
+    ['How do I get from the airport?', 'Most trips start at Bandaranaike International Airport (Katunayake). Your driver meets you in the arrivals hall with a name board. Colombo and Mattala can also be chosen as arrival points.', 'airport arrival pickup transfer katunayake bia colombo'],
+    ['Can I travel on a tight budget?', 'Yes. The Budget style uses guesthouses, shared or public safari jeeps and longer driving days to fit more in. You can also reduce the number of days or places to lower the total.', 'cheap budget backpacker low cost save money'],
+    ['How do I contact you?', 'Use the Contact page form, email us, or message us on WhatsApp. Our details are in the footer of every page.', 'contact phone whatsapp email office'],
+];

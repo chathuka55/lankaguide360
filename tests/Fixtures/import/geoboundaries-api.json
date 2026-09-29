@@ -1,0 +1,11 @@
+{
+    "boundaryID": "LKA-ADM2-46371173",
+    "boundaryName": "Sri Lanka",
+    "boundaryISO": "LKA",
+    "boundaryType": "ADM2",
+    "boundaryLicense": "Open Data Commons Open Database License 1.0",
+    "admUnitCount": "25",
+    "staticDownloadLink": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/LKA/ADM2/geoBoundaries-LKA-ADM2-all.zip",
+    "gjDownloadURL": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/LKA/ADM2/geoBoundaries-LKA-ADM2.geojson",
+    "simplifiedGeometryGeoJSON": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/LKA/ADM2/geoBoundaries-LKA-ADM2_simplified.geojson"
+}

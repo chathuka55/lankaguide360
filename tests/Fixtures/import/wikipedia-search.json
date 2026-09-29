@@ -1,0 +1,10 @@
+{
+    "batchcomplete": true,
+    "query": {
+        "searchinfo": { "totalhits": 2 },
+        "search": [
+            { "ns": 0, "title": "Ella, Sri Lanka", "pageid": 1 },
+            { "ns": 0, "title": "Ella Gap", "pageid": 2 }
+        ]
+    }
+}

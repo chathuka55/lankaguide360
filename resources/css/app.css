@@ -1,0 +1,120 @@
+@import "tailwindcss";
+@import "flowbite/src/themes/default";
+
+@plugin "flowbite/plugin";
+@plugin "@tailwindcss/forms";
+
+@source "../../node_modules/flowbite";
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
+@source "../../storage/framework/views/*.php";
+@source "../views";
+
+/*
+ * LankaGuide360 brand (CLAUDE.md → UI rules)
+ *   primary: teal  #0F766E  → bg-primary-700 / text-primary-700
+ *   accent:  amber #F59E0B  → bg-accent-500 / text-accent-500
+ *   text:    slate
+ * Flowbite's brand tokens are re-pointed at the teal scale so its components match.
+ */
+@theme {
+    --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-body: var(--font-sans);
+
+    --color-primary-50: #f0fdfa;
+    --color-primary-100: #ccfbf1;
+    --color-primary-200: #99f6e4;
+    --color-primary-300: #5eead4;
+    --color-primary-400: #2dd4bf;
+    --color-primary-500: #14b8a6;
+    --color-primary-600: #0d9488;
+    --color-primary-700: #0f766e;
+    --color-primary-800: #115e59;
+    --color-primary-900: #134e4a;
+    --color-primary-950: #042f2e;
+
+    --color-accent-50: #fffbeb;
+    --color-accent-100: #fef3c7;
+    --color-accent-200: #fde68a;
+    --color-accent-300: #fcd34d;
+    --color-accent-400: #fbbf24;
+    --color-accent-500: #f59e0b;
+    --color-accent-600: #d97706;
+    --color-accent-700: #b45309;
+
+    --color-brand-softer: var(--color-primary-50);
+    --color-brand-soft: var(--color-primary-100);
+    --color-brand: var(--color-primary-700);
+    --color-brand-medium: var(--color-primary-200);
+    --color-brand-strong: var(--color-primary-800);
+    --color-brand-subtle: var(--color-primary-200);
+    --color-brand-light: var(--color-primary-600);
+    --color-fg-brand-subtle: var(--color-primary-200);
+    --color-fg-brand: var(--color-primary-700);
+    --color-fg-brand-strong: var(--color-primary-900);
+}
+
+/* Shared building blocks, mostly for the admin panel. */
+@layer components {
+    .btn {
+        @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold whitespace-nowrap transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+    .btn-sm {
+        @apply px-2.5 py-1.5 text-xs;
+    }
+    .btn-primary {
+        @apply bg-primary-700 text-white hover:bg-primary-800 focus-visible:ring-primary-500;
+    }
+    .btn-secondary {
+        @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus-visible:ring-primary-500;
+    }
+    .btn-danger {
+        @apply bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500;
+    }
+    .btn-link-danger {
+        @apply text-red-600 hover:text-red-800 hover:underline;
+    }
+    .form-label {
+        @apply mb-1 block text-sm font-medium text-slate-700;
+    }
+    .form-control {
+        @apply block w-full rounded-lg border-slate-300 text-sm shadow-sm focus:border-primary-500 focus:ring-primary-500 disabled:bg-slate-100 disabled:text-slate-500;
+    }
+    .form-check {
+        @apply size-4 rounded border-slate-300 text-primary-700 focus:ring-primary-500 disabled:opacity-60;
+    }
+    .admin-card {
+        @apply rounded-xl bg-white shadow-sm ring-1 ring-slate-200;
+    }
+    .admin-table {
+        @apply min-w-full divide-y divide-slate-200 text-sm;
+    }
+    .admin-table th {
+        @apply bg-slate-50 px-4 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500;
+    }
+    .admin-table td {
+        @apply px-4 py-3 align-top text-slate-700;
+    }
+    .admin-table tbody tr {
+        @apply hover:bg-slate-50;
+    }
+}
+
+@layer base {
+    body {
+        @apply bg-white text-slate-700 antialiased;
+    }
+
+    h1, h2, h3, h4 {
+        @apply text-slate-900;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+}
+
+/* Leaflet panes use z-index 400–1000; keep them inside the map so sticky headers, the
+   builder's mobile summary sheet and dialogs stay on top. */
+.leaflet-container {
+    isolation: isolate;
+}

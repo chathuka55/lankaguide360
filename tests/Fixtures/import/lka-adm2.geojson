@@ -1,0 +1,29 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": { "shapeName": "Kandy District", "shapeISO": "LK-21", "shapeType": "ADM2" },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [[[80.5, 7.1], [80.9, 7.1], [80.9, 7.5], [80.5, 7.5], [80.5, 7.1]]]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": { "shapeName": "Moneragala District", "shapeISO": "LK-82", "shapeType": "ADM2" },
+            "geometry": {
+                "type": "MultiPolygon",
+                "coordinates": [[[[81.1, 6.5], [81.5, 6.5], [81.5, 7.0], [81.1, 7.0], [81.1, 6.5]]]]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": { "shapeName": "Atlantis District", "shapeISO": "LK-99", "shapeType": "ADM2" },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [[[70.0, 1.0], [70.1, 1.0], [70.1, 1.1], [70.0, 1.1], [70.0, 1.0]]]
+            }
+        }
+    ]
+}

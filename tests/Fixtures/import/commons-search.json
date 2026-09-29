@@ -1,0 +1,77 @@
+{
+    "batchcomplete": true,
+    "query": {
+        "pages": [
+            {
+                "pageid": 2, "ns": 6, "title": "File:Sigiriya non-commercial.jpg", "index": 2,
+                "imageinfo": [{
+                    "width": 3000, "height": 2000, "mime": "image/jpeg",
+                    "thumburl": "https://upload.wikimedia.test/thumb/nc.jpg",
+                    "url": "https://upload.wikimedia.test/nc.jpg",
+                    "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sigiriya_non-commercial.jpg",
+                    "extmetadata": {
+                        "Artist": { "value": "Someone" },
+                        "LicenseShortName": { "value": "CC BY-NC-SA 2.0" },
+                        "LicenseUrl": { "value": "https://creativecommons.org/licenses/by-nc-sa/2.0" }
+                    }
+                }]
+            },
+            {
+                "pageid": 1, "ns": 6, "title": "File:Sigiriya 02.jpg", "index": 1,
+                "imageinfo": [{
+                    "width": 2592, "height": 1944, "mime": "image/jpeg",
+                    "thumburl": "https://upload.wikimedia.test/thumb/sigiriya-02.jpg",
+                    "url": "https://upload.wikimedia.test/sigiriya-02.jpg",
+                    "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sigiriya_02.jpg",
+                    "extmetadata": {
+                        "ImageDescription": { "value": "Lion paw on the <b>Sigiriya</b> rock, Sri Lanka" },
+                        "Artist": { "value": "<a href=\"//commons.wikimedia.org/wiki/User:Bgag\" title=\"User:Bgag\">Bernard Gagnon</a>" },
+                        "LicenseShortName": { "value": "CC BY-SA 3.0" },
+                        "LicenseUrl": { "value": "https://creativecommons.org/licenses/by-sa/3.0" }
+                    }
+                }]
+            },
+            {
+                "pageid": 3, "ns": 6, "title": "File:Sigiriya small.jpg", "index": 3,
+                "imageinfo": [{
+                    "width": 800, "height": 600, "mime": "image/jpeg",
+                    "thumburl": "https://upload.wikimedia.test/thumb/small.jpg",
+                    "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sigiriya_small.jpg",
+                    "extmetadata": { "LicenseShortName": { "value": "CC BY 2.0" } }
+                }]
+            },
+            {
+                "pageid": 4, "ns": 6, "title": "File:Sigiriya location map.png", "index": 4,
+                "imageinfo": [{
+                    "width": 2000, "height": 2000, "mime": "image/png",
+                    "thumburl": "https://upload.wikimedia.test/thumb/map.png",
+                    "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sigiriya_location_map.png",
+                    "extmetadata": { "LicenseShortName": { "value": "CC BY-SA 4.0" } }
+                }]
+            },
+            {
+                "pageid": 5, "ns": 6, "title": "File:Sigiriya from Pidurangala.jpg", "index": 5,
+                "imageinfo": [{
+                    "width": 2400, "height": 1600, "mime": "image/jpeg",
+                    "thumburl": "https://upload.wikimedia.test/thumb/from-pidurangala.jpg",
+                    "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sigiriya_from_Pidurangala.jpg",
+                    "extmetadata": {
+                        "ImageDescription": { "value": "Sigiriya seen from Pidurangala" },
+                        "Artist": { "value": "" },
+                        "Credit": { "value": "<span class=\"int-own-work\">Own work</span> by Jane Doe" },
+                        "LicenseShortName": { "value": "Public domain" }
+                    }
+                }]
+            },
+            {
+                "pageid": 6, "ns": 6, "title": "File:Sigiriya vector.svg", "index": 6,
+                "imageinfo": [{
+                    "width": 4000, "height": 3000, "mime": "image/svg+xml",
+                    "thumburl": "https://upload.wikimedia.test/thumb/vector.png",
+                    "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sigiriya_vector.svg",
+                    "extmetadata": { "LicenseShortName": { "value": "CC0" } }
+                }]
+            }
+        ]
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "type": "standard",
+    "title": "Sigiriya",
+    "description": "Ancient rock fortress near Dambulla, Sri Lanka",
+    "coordinates": { "lat": 7.95694444, "lon": 80.75972222 },
+    "content_urls": {
+        "desktop": { "page": "https://en.wikipedia.org/wiki/Sigiriya" },
+        "mobile": { "page": "https://en.m.wikipedia.org/wiki/Sigiriya" }
+    },
+    "extract": "Sigiriya or Sinhagiri is an ancient rock fortress located in the northern Matale District near the town of Dambulla in the Central Province, Sri Lanka. It is a site of historical and archaeological significance that is dominated by a massive column of granite approximately 180 m (590 ft) high. According to the ancient Sri Lankan chronicle the Cūlavaṃsa, the area was a large forest."
+}

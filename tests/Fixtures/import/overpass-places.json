@@ -1,0 +1,12 @@
+{
+    "version": 0.6,
+    "generator": "Overpass API",
+    "elements": [
+        { "type": "node", "id": 100, "lat": 7.3100, "lon": 80.8200, "tags": { "name": "Hunnasgiriya Falls", "natural": "waterfall" } },
+        { "type": "node", "id": 101, "lat": 7.2937, "lon": 80.6413, "tags": { "name": "Temple of the Tooth", "tourism": "attraction", "wikipedia": "en:Temple of the Tooth" } },
+        { "type": "way", "id": 102, "center": { "lat": 7.2200, "lon": 80.5500 }, "tags": { "name": "Old Palace Ruins", "historic": "ruins", "wikidata": "Q123" } },
+        { "type": "node", "id": 103, "lat": 7.4000, "lon": 80.7000, "tags": { "natural": "peak" } },
+        { "type": "way", "id": 104, "center": { "lat": 7.3110, "lon": 80.8210 }, "tags": { "name": "Hunnasgiriya Falls", "waterway": "waterfall" } },
+        { "type": "node", "id": 105, "lat": 7.3500, "lon": 80.7500, "tags": { "name": "Knuckles View Point", "tourism": "viewpoint" } }
+    ]
+}
