@@ -18,8 +18,8 @@
                                 <td class="text-xs">{{ $vehicle->example_model }}</td>
                                 <td>{{ $vehicle->min_pax }}–{{ $vehicle->max_pax }}</td>
                                 <td>{{ $vehicle->luggage_capacity ?? '—' }}</td>
-                                <td class="text-end">${{ $vehicle->day_rate }}</td>
-                                <td class="text-end">${{ $vehicle->km_rate }}</td>
+                                <td class="text-end">@moneyBoth($vehicle->day_rate)</td>
+                                <td class="text-end">@moneyBoth($vehicle->km_rate)</td>
                                 <td class="space-x-3 text-end">
                                     <a href="{{ route('admin.vehicles.edit', $vehicle) }}" class="text-sm font-medium text-primary-700 hover:underline">@can('update', $vehicle) Edit @else View @endcan</a>
                                     @can('delete', $vehicle)<x-admin.delete-form :action="route('admin.vehicles.destroy', $vehicle)" />@endcan

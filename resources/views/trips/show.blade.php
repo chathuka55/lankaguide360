@@ -62,6 +62,48 @@
             </div>
         </div>
 
+        {{-- Accept the approved booking --}}
+        @if ($canAccept)
+            <section class="mt-8 rounded-2xl border-2 border-primary-600 bg-primary-50 p-6" aria-labelledby="accept-heading">
+                <h2 id="accept-heading" class="text-xl font-bold text-primary-900">Your trip is approved: accept to confirm the booking</h2>
+                <p class="mt-1 text-primary-900">
+                    Final price <strong>@money($trip->displayTotal())</strong>@if ($trip->price_note) ({{ $trip->price_note }})@endif.
+                    Check the plan below; once you accept, your agent books the hotels, finalizes the time at every place and sends your e-receipt.
+                </p>
+                <form method="POST" action="{{ route('trips.accept', $trip) }}" class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+                    @csrf
+                    <label class="flex items-start gap-2 text-sm text-primary-900">
+                        <input type="checkbox" name="accept" value="1" required class="mt-0.5 rounded text-primary-700 focus:ring-primary-500">
+                        <span>I accept the final plan and price for {{ $trip->travellerCount() }} {{ Str::plural('traveller', $trip->travellerCount()) }}.</span>
+                    </label>
+                    <button type="submit" class="btn btn-primary sm:ms-auto">Accept and confirm booking</button>
+                </form>
+                @error('accept')<p class="mt-2 text-sm text-red-700">{{ $message }}</p>@enderror
+                <p class="mt-3 text-xs text-primary-800">Want changes instead? Send your agent a message below.</p>
+            </section>
+        @endif
+
+        {{-- E-receipt --}}
+        @if ($trip->receipt)
+            <section class="mt-8 flex flex-col gap-4 rounded-2xl border-2 border-dashed border-primary-600 bg-white p-6 sm:flex-row sm:items-center" aria-labelledby="receipt-heading">
+                <img src="{{ $trip->receipt->qrCodeDataUri() }}" alt="" width="96" height="96" class="size-24 shrink-0">
+                <div class="min-w-0 flex-1">
+                    <h2 id="receipt-heading" class="text-lg font-bold">Your e-receipt {{ $trip->receipt->number }}</h2>
+                    <p class="text-sm text-slate-600">
+                        Issued {{ $trip->receipt->issued_at->format('j M Y') }} · total {{ $trip->receipt->money($trip->receipt->total_usd) }}
+                        · {{ $trip->receipt->isPaidInFull() ? 'paid in full' : 'balance due '.$trip->receipt->money($trip->receipt->balanceUsd()) }}.
+                        Show it to your driver and at the hotels.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <a href="{{ route('trips.receipt', $trip) }}" class="btn btn-primary" target="_blank">View &amp; print</a>
+                    @if (app(App\Services\TripPdf::class)->available())
+                        <a href="{{ route('trips.receipt.pdf', $trip) }}" class="btn btn-secondary"><x-icon name="download" class="size-4" /> PDF</a>
+                    @endif
+                </div>
+            </section>
+        @endif
+
         <div class="mt-8 grid gap-8 lg:grid-cols-3">
             <div class="space-y-8 lg:col-span-2">
                 {{-- Map --}}
@@ -87,7 +129,7 @@
                                                 <p class="text-sm">
                                                     @if ($stop->arrive_at)<span class="font-mono text-xs text-slate-500">{{ substr($stop->arrive_at, 0, 5) }}</span>@endif
                                                     @if ($stop->place)
-                                                        <a href="{{ $stop->place->url() }}" class="font-medium text-slate-900 hover:text-primary-700">{{ $stop->place->name }}</a>
+                                                        <a href="{{ $stop->place->url() }}" class="font-medium text-slate-900 hover:text-primary-700">{{ $stop->place->name }}</a>@if ($stop->place->googleMapsUrl()) <a href="{{ $stop->place->googleMapsUrl() }}" target="_blank" rel="noopener" class="text-xs font-normal text-primary-700 hover:underline">Map</a>@endif
                                                         <span class="text-slate-500">· {{ $stop->place->district?->name }}</span>
                                                     @endif
                                                 </p>
@@ -168,9 +210,9 @@
             <aside class="space-y-6">
                 <section class="rounded-2xl border border-slate-200 bg-white p-5" aria-labelledby="price-heading">
                     <h2 id="price-heading" class="font-semibold">{{ $isFinal ? 'Final price' : 'Estimated price' }}</h2>
-                    <p class="mt-2 text-3xl font-extrabold">${{ number_format((float) $total, 2) }}</p>
+                    <p class="mt-2 text-3xl font-extrabold">@money($total)</p>
                     <p class="text-sm text-slate-500">
-                        {{ $trip->currency }} for {{ $trip->travellerCount() }} {{ Str::plural('traveller', $trip->travellerCount()) }}
+                        @approxUsd($total) · for {{ $trip->travellerCount() }} {{ Str::plural('traveller', $trip->travellerCount()) }}
                         @if ($isFinal && $trip->price_note)<br>{{ $trip->price_note }}@endif
                         @unless ($isFinal)<br>Your agent confirms the final price after checking availability.@endunless
                     </p>
@@ -183,7 +225,7 @@
                                     <div>
                                         <dt class="font-semibold text-slate-700">{{ $category }}</dt>
                                         @foreach ($items as $item)
-                                            <dd class="flex justify-between gap-3 text-slate-600"><span>{{ $item->description }}</span><span class="whitespace-nowrap">${{ number_format((float) $item->amount, 2) }}</span></dd>
+                                            <dd class="flex justify-between gap-3 text-slate-600"><span>{{ $item->description }}</span><span class="whitespace-nowrap">@money($item->amount)</span></dd>
                                         @endforeach
                                     </div>
                                 @endforeach

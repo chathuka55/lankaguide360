@@ -293,7 +293,7 @@ class TripWorkflowTest extends TestCase
         $this->assertSame('approved', $trip->statusHistory->last()->to_status);
 
         Mail::assertQueued(TripStatusChanged::class, function (TripStatusChanged $mail) use ($trip) {
-            $mail->assertSeeInHtml('1,150.50');
+            $mail->assertSeeInHtml('LKR 345,150'); // USD 1,150.50 at 300 LKR per USD
             $pdf = collect($mail->attachments())->first(fn (Attachment $a) => $a->as === "LankaGuide360-{$trip->reference}.pdf");
             $this->assertNotNull($pdf, 'The approval email attaches the plan as PDF.');
             $this->assertStringStartsWith('%PDF', $pdf->attachWith(fn () => '', fn ($data) => $data()));

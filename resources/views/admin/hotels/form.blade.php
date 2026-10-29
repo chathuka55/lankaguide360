@@ -5,7 +5,7 @@
 @endphp
 
 <x-admin-layout :title="$editing ? $hotel->name : 'Add hotel'">
-    <x-admin.header :title="$editing ? $hotel->name : 'Add hotel'" :back="route('admin.hotels.index')" :subtitle="$editing ? $hotel->town.', '.$hotel->district?->name : null">
+    <x-admin.header :title="$editing ? $hotel->name : 'Add hotel'" :back="route('admin.hotels.index')" :subtitle="$editing ? $hotel->town.', '.$hotel->district?->name.($hotel->is_demo ? ' · Demo listing: a fictional hotel created by php artisan lg:demo-hotels' : '') : null">
         @if ($editing)
             <x-admin.status-badge :status="$hotel->is_active ? $hotel->status : 'rejected'" class="text-sm" />
         @endif
@@ -58,6 +58,9 @@
                 <section class="admin-card space-y-4 p-5">
                     <h3 class="text-lg font-semibold">Location</h3>
                     <x-admin.map-picker :lat="$hotel->lat" :lng="$hotel->lng" :readonly="! $can" />
+                    @if ($hotel->googleMapsUrl())
+                        <a href="{{ $hotel->googleMapsUrl() }}" target="_blank" rel="noopener" class="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary-700 hover:underline">Check this location in Google Maps <x-icon name="external" class="size-4" /></a>
+                    @endif
                 </section>
             </fieldset>
 
@@ -130,9 +133,9 @@
                                 <tr>
                                     <td>{{ $rate->room_type }}</td>
                                     <td>{{ $rate->meal_plan->label() }}</td>
-                                    <td>${{ $rate->price_per_night }}</td>
+                                    <td>@moneyBoth($rate->price_per_night)</td>
                                     <td>{{ $rate->max_occupancy }}</td>
-                                    <td>${{ $rate->extra_bed_price }}</td>
+                                    <td>@moneyBoth($rate->extra_bed_price)</td>
                                     <td class="text-xs">{{ $rate->season_from?->format('d M Y') ?? 'All year' }}@if ($rate->season_to) – {{ $rate->season_to->format('d M Y') }}@endif</td>
                                     <td>{{ $rate->is_estimate ? 'Yes' : 'No' }}</td>
                                     <td></td>

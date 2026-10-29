@@ -33,7 +33,9 @@ Phase-by-phase build prompts and the data-sourcing plan: docs/BUILD-PROMPTS.md.
   User-Agent (config('lankaguide.user_agent') = "LankaGuide360/1.0 (contact@lankaguide360.lk)"),
   timeouts, retries and caching. Never call external services from browser JavaScript.
 - Table and column names exactly as in docs/SRS.md Section 7.
-- Prices: DECIMAL, currency USD by default; never floats.
+- Prices: DECIMAL, stored in USD; never floats. Travellers see them in `display_currency` (LKR by
+  default) via `Money::show()` / `@money($usd)`; the back office uses `@moneyBoth` (USD + LKR).
+  Admin forms are entered in USD. Exchange rates: Settings → `usd_lkr`, `usd_eur`.
 - Every model with a public page has a unique slug.
 
 ## Database notes (phase 2 decisions)
@@ -152,6 +154,43 @@ Phase-by-phase build prompts and the data-sourcing plan: docs/BUILD-PROMPTS.md.
   external host to the CSP there. Local env logs lazy loading (N+1) to storage/logs.
 - Deployment checklist: docs/DEPLOY.md.
 
+## Reports, demo data and locations (after phase 12)
+- Admin → Reports (`Admin\ReportController`, `App\Services\ReportService`, admin only): KPIs,
+  requests and booked revenue per month, status, tier, top places/districts/hotels, agents,
+  countries, data readiness per district; CSV per report (UTF-8 BOM, formula-safe) and a PDF.
+  Trips count by `submitted_at`; drafts and package templates never count. Charts are plain
+  Blade components `x-admin.column-chart` / `x-admin.bar-list` (one series, table view).
+- Demo hotels: `php artisan lg:demo-hotels` (`App\Services\DemoHotelService`) creates fictional,
+  published hotels with estimate room rates in every district and within 20 km of every place
+  with a location (towns in database/seeders/data/demo_towns.php + auto towns). `hotels.is_demo`
+  = true, shown as "Demo listing" (`<x-demo-badge>`), filter Admin → Hotels → Source.
+  Remove them all with `lg:demo-hotels --remove` before going live.
+- Locations: hand-checked coordinates live in database/seeders/data/place_coordinates.php
+  (`PlaceCoordinateSeeder`); `places.coordinates_checked_at` stops the Wikipedia importer from
+  overwriting them and is set when an admin moves the pin. "Open in Google Maps" links are plain
+  links (`Geo::googleMapsUrl()`, `googleMapsUrl()` on Place/Hotel) — never fetch Google data.
+- Booking end + e-receipt: `App\Services\TripReceiptService`. Traveller accepts an Approved trip
+  (`trips.accept`, owner or private link) → Confirmed (+ `TripAccepted` mail to the agent). Agent
+  finalizes stop times + payment on the admin trip page (`admin.trips.finalize`,
+  `FinalizeTripRequest`) → `trip_receipts` row (number `LG360-R-{year}-{00001}`, frozen JSON
+  snapshot, exchange rate at issue, revision on re-issue) + `TripReceiptIssued` mail with PDF.
+  One template `trips/receipt.blade.php` serves the printable page (`trips.receipt`) and the PDF
+  (`TripPdf::receipt()`, `trips.receipt.pdf`). QR code (chillerlan/php-qrcode, PNG data URI) links
+  to the public `receipts.verify` page (number + secret code; shows initials only).
+- Report exports: `App\Services\Reports\ReportExporter` writes CSV or Excel (openspout/openspout);
+  `?format=xlsx` per report, `admin.reports.workbook` = every report in one workbook. Traveller
+  text is always written as text cells (never formulas); amounts as numbers.
+- Email: `php artisan lg:mail-test you@x` / Admin → Settings → Send test email (`MailTester`);
+  SMTP setup in docs/EMAIL.md. The scheduler runs `queue:work --stop-when-empty` every minute, so a
+  cron `schedule:run` sends queued mail on hosts without a permanent worker.
+- `php artisan lg:publish-ready [--places|--hotels] [--dry-run]` publishes finished drafts
+  (places need location + category + description or photo; their photos are published too).
+- Hosting: docs/HOSTING.md (alwaysdata Free recommended; Vercel unsuitable). `TRUSTED_PROXIES=*`
+  behind a proxy. scripts/export-for-hosting.sh packs the DB + photos; scripts/deploy.sh updates.
+- The Commons importer reuses photo files already in storage/app/public/media (no re-download
+  after a database rebuild); the import cache in storage/app/import-cache lets `lg:import-all`
+  rebuild places and hotels offline.
+
 ## UI rules
 - Mobile-first, responsive at sm/md/lg/xl. Brand colours: teal #0F766E primary
   (`primary-*` scale, 700 = #0F766E), amber #F59E0B accent (`accent-*`, 500 = #F59E0B),
@@ -177,6 +216,10 @@ Phase-by-phase build prompts and the data-sourcing plan: docs/BUILD-PROMPTS.md.
 - Import data: `php artisan lg:import-districts`, `lg:import-places`,
   `lg:import-hotels`, `lg:import-images`, `lg:import-all`
 - Seeded logins: admin@lankaguide360.test / agent@lankaguide360.test, password `password`
+- Demo hotels: `php artisan lg:demo-hotels` (remove with `--remove`)
+- If XAMPP is reinstalled, PHP goes back to 8.2 and the MySQL databases are lost: install PHP 8.4
+  (windows.php.net, VS17 x64 Thread Safe) into C:\xampp\php (keep 8.2 in C:\xampp\php82-backup),
+  recreate both databases, run `migrate:fresh --seed`, then `lg:import-all` (uses the local caches).
 
 ## Build progress
 - [x] Phase 1 — Project skeleton, auth, roles, layouts
@@ -191,6 +234,7 @@ Phase-by-phase build prompts and the data-sourcing plan: docs/BUILD-PROMPTS.md.
 - [x] Phase 10 — Agent approval workflow + My Trips
 - [x] Phase 11 — AI chatbot
 - [x] Phase 12 — Packages, SEO, speed, security, tests
+- [x] Extras — reports (CSV/Excel/PDF), LKR display, demo hotels, e-receipts, email test, hosting guide
 
 
 

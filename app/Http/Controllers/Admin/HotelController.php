@@ -36,6 +36,7 @@ class HotelController extends Controller
                 default => $q,
             })
             ->when($request->boolean('no_rates'), fn ($q) => $q->doesntHave('roomRates'))
+            ->when($request->query('source'), fn ($q, $source) => $q->where('is_demo', $source === 'demo'))
             ->orderBy('name')
             ->paginate(25)
             ->withQueryString();

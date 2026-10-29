@@ -31,14 +31,18 @@ class MediaLibrary
      */
     public function storeCommons(Model $owner, array $candidate, MediaStatus $status): Media
     {
-        $binary = $this->client->download($candidate['thumb_url'], [
-            'group' => 'download',
-            'delay_ms' => (int) config('lankaguide.import.delay_ms.download'),
-        ]);
+        $suffix = substr(sha1($candidate['title']), 0, 8);
+
+        // Files from an earlier import are reused (no second download after a database rebuild).
+        $binary = $this->images->existingVariants($this->directoryFor($owner), $this->basenameFor($owner, $suffix))
+            ?? $this->client->download($candidate['thumb_url'], [
+                'group' => 'download',
+                'delay_ms' => (int) config('lankaguide.import.delay_ms.download'),
+            ]);
 
         $description = (string) ($candidate['description'] ?? '');
 
-        return $this->create($owner, $binary, substr(sha1($candidate['title']), 0, 8), [
+        return $this->create($owner, $binary, $suffix, [
             'alt' => Str::limit($description !== '' ? $description : $this->ownerName($owner), 250),
             // Str::limit appends "...", so leave room for it inside the 500-character column.
             'caption' => $description !== '' ? Str::limit($description, 497) : null,
@@ -181,13 +185,15 @@ class MediaLibrary
     /**
      * @param  array<string, mixed>  $attributes
      */
-    private function create(Model $owner, string $binary, string $suffix, array $attributes): Media
+    /**
+     * @param  string|array{path: string, variants: array<int, string>, width: int, height: int}  $binary  image bytes, or variants already on disk
+     */
+    private function create(Model $owner, string|array $binary, string $suffix, array $attributes): Media
     {
-        $directory = 'media/'.$owner->getMorphClass().'/'.$owner->getKey();
-        $basename = Str::limit(Str::slug($owner->slug ?? $this->ownerName($owner)), 80, '').'-'.$suffix;
-
         try {
-            $stored = $this->images->storeVariants($binary, $directory, $basename);
+            $stored = is_array($binary)
+                ? $binary
+                : $this->images->storeVariants($binary, $this->directoryFor($owner), $this->basenameFor($owner, $suffix));
         } catch (\Throwable $e) {
             throw new ImportException('The file could not be read as an image.', previous: $e);
         }
@@ -240,5 +246,15 @@ class MediaLibrary
     private function ownerName(Model $owner): string
     {
         return (string) ($owner->name ?? 'Photo');
+    }
+
+    private function directoryFor(Model $owner): string
+    {
+        return 'media/'.$owner->getMorphClass().'/'.$owner->getKey();
+    }
+
+    private function basenameFor(Model $owner, string $suffix): string
+    {
+        return Str::limit(Str::slug($owner->slug ?? $this->ownerName($owner)), 80, '').'-'.$suffix;
     }
 }

@@ -8,7 +8,7 @@ An agent has started reviewing your trip **{{ $trip->reference }}**. We'll be in
 @case(\App\Enums\TripStatus::Approved)
 Good news: your trip **{{ $trip->reference }}** has been approved.
 
-**Final price: ${{ number_format((float) $trip->displayTotal(), 2) }}**@if ($trip->price_note) ({{ $trip->price_note }})@endif
+**Final price: @money($trip->displayTotal())**@if ($trip->price_note) ({{ $trip->price_note }})@endif
 
 Your day-by-day plan is attached as a PDF. Reply to your agent from the trip page to confirm, or if you'd like any changes.
 @break

@@ -21,7 +21,7 @@
         @endif
         <p class="mt-auto pt-2 text-sm text-slate-500">
             @if ($package->days){{ $package->days }} days · @endif
-            @if ($package->from_price) from <span class="text-lg font-bold text-slate-900">${{ number_format((float) $package->from_price) }}</span> per person @endif
+            @if ($package->from_price) from <span class="text-lg font-bold text-slate-900">@money($package->from_price)</span> per person @endif
         </p>
         <div class="mt-3 flex gap-2">
             <a href="{{ route('packages.show', $package) }}" class="btn btn-primary flex-1">Book Now</a>

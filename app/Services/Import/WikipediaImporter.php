@@ -90,7 +90,9 @@ class WikipediaImporter extends Importer
         $lat = $data['coordinates']['lat'] ?? null;
         $lng = $data['coordinates']['lon'] ?? null;
 
-        if ($lat !== null && $lng !== null) {
+        if ($place->coordinates_checked_at !== null) {
+            $notes[] = 'coordinates were checked by hand and kept';
+        } elseif ($lat !== null && $lng !== null) {
             if ($this->insideSriLanka((float) $lat, (float) $lng)) {
                 $values['lat'] = round((float) $lat, 6);
                 $values['lng'] = round((float) $lng, 6);

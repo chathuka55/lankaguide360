@@ -13,7 +13,7 @@ We have received your trip request. Your reference number is **{{ $trip->referen
 @endforeach
 </x-mail::table>
 
-**Estimated total: ${{ number_format((float) $trip->estimated_total, 2) }}** — this is an estimate. A local travel agent will check availability and confirm the final price, usually within one working day.
+**Estimated total: @money($trip->estimated_total)** — this is an estimate. A local travel agent will check availability and confirm the final price, usually within one working day.
 
 <x-mail::button :url="$trip->privateUrl()">
 View your trip

@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\ImportToolController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\PlaceController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\ReviewQueueController;
 use App\Http\Controllers\Admin\RoomRateController;
@@ -28,6 +29,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PackageController as PublicPackageController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReceiptVerificationController;
 use App\Http\Controllers\SeoController;
 use App\Http\Controllers\TripBuilderController;
 use App\Http\Controllers\TripController;
@@ -60,6 +62,10 @@ Route::post('/trips', [TripController::class, 'store'])->middleware('throttle:5,
 Route::get('/trips/{trip}', [TripController::class, 'show'])->name('trips.show');
 Route::get('/trips/{trip}/pdf', [TripController::class, 'pdf'])->middleware('throttle:20,1')->name('trips.pdf');
 Route::post('/trips/{trip}/messages', [TripController::class, 'message'])->middleware('throttle:10,1')->name('trips.message');
+Route::post('/trips/{trip}/accept', [TripController::class, 'accept'])->middleware('throttle:10,1')->name('trips.accept');
+Route::get('/trips/{trip}/receipt', [TripController::class, 'receipt'])->name('trips.receipt');
+Route::get('/trips/{trip}/receipt/pdf', [TripController::class, 'receiptPdf'])->middleware('throttle:20,1')->name('trips.receipt.pdf');
+Route::get('/receipts/verify/{number}', ReceiptVerificationController::class)->middleware('throttle:30,1')->name('receipts.verify');
 
 // Signed-in users
 Route::middleware('auth')->group(function () {
@@ -94,6 +100,7 @@ Route::middleware(['auth', 'role:admin,agent'])->prefix('admin')->name('admin.')
         Route::post('{trip}/items', [TripRequestController::class, 'storeItem'])->name('items.store');
         Route::post('{trip}/recalculate', [TripRequestController::class, 'recalculate'])->name('recalculate');
         Route::post('{trip}/package', [TripRequestController::class, 'saveAsPackage'])->name('package');
+        Route::post('{trip}/finalize', [TripRequestController::class, 'finalize'])->name('finalize');
         Route::post('days/{day}/stops', [TripRequestController::class, 'addStop'])->name('stops.store');
     });
     Route::put('trip-items/{item}', [TripRequestController::class, 'updateItem'])->name('trips.items.update');
@@ -136,10 +143,17 @@ Route::middleware(['auth', 'role:admin,agent'])->prefix('admin')->name('admin.')
     Route::resource('faqs', FaqController::class)->except('show');
     Route::get('chat-logs', [ChatLogController::class, 'index'])->name('chat-logs.index');
 
+    // Reports (admin)
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/pdf', [ReportController::class, 'pdf'])->name('reports.pdf');
+    Route::get('reports/workbook', [ReportController::class, 'workbook'])->name('reports.workbook');
+    Route::get('reports/export/{report}', [ReportController::class, 'export'])->whereAlpha('report')->name('reports.export');
+
     // System (admin)
     Route::resource('users', UserController::class)->except('show');
     Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
     Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
+    Route::post('settings/test-email', [SettingController::class, 'testEmail'])->middleware('throttle:5,1')->name('settings.test-email');
     Route::get('imports', [ImportToolController::class, 'index'])->name('imports.index');
     Route::post('imports/run', [ImportToolController::class, 'run'])->name('imports.run');
     Route::post('imports/run-all', [ImportToolController::class, 'runAll'])->name('imports.run-all');

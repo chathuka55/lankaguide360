@@ -5,7 +5,9 @@
  * by the business before launch. Percentages are stored as plain numbers (10 = 10%).
  */
 return [
+    // Prices are stored in USD and shown to travellers in display_currency (LKR) at usd_lkr.
     'currency' => 'USD',
+    'display_currency' => 'LKR',
 
     // Service fee % per tier, and tax % applied to the subtotal (SRS 5.4).
     'service_fee_budget' => '8',

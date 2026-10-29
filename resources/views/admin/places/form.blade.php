@@ -55,6 +55,9 @@
                 <section class="admin-card space-y-4 p-5">
                     <h3 class="text-lg font-semibold">Location</h3>
                     <x-admin.map-picker :lat="$place->lat" :lng="$place->lng" :readonly="! $can" />
+                    @if ($place->googleMapsUrl())
+                        <a href="{{ $place->googleMapsUrl() }}" target="_blank" rel="noopener" class="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary-700 hover:underline">Check this location in Google Maps <x-icon name="external" class="size-4" /></a>
+                    @endif
                 </section>
 
                 <section class="admin-card space-y-4 p-5">

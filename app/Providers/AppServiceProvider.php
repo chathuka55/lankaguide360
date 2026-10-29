@@ -16,6 +16,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
@@ -46,6 +47,13 @@ class AppServiceProvider extends ServiceProvider
                 ['url' => request()?->fullUrl()],
             ));
         }
+
+        // Prices are stored in USD; these print them for people (App\Support\Money):
+        // @money($usd) → display currency (LKR by default), @usd($usd), @moneyBoth($usd) for the back office.
+        Blade::directive('money', fn (string $expression) => "<?php echo e(\App\Support\Money::show({$expression})); ?>");
+        Blade::directive('usd', fn (string $expression) => "<?php echo e(\App\Support\Money::usd({$expression})); ?>");
+        Blade::directive('moneyBoth', fn (string $expression) => "<?php echo e(\App\Support\Money::both({$expression})); ?>");
+        Blade::directive('approxUsd', fn (string $expression) => "<?php echo e(\App\Support\Money::approxUsd({$expression})); ?>");
 
         // Short, stable type names in polymorphic columns (media.mediable_type, import_logs.target_type).
         Relation::enforceMorphMap([

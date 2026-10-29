@@ -13,7 +13,7 @@
         ],
     ];
     if ($package->from_price) {
-        $jsonLd['offers'] = ['@type' => 'Offer', 'price' => (string) $package->from_price, 'priceCurrency' => 'USD'];
+        $jsonLd['offers'] = ['@type' => 'Offer', 'price' => \App\Support\Money::decimal(\App\Support\Money::convert(\App\Support\Money::cents($package->from_price), \App\Support\Money::displayCurrency())), 'priceCurrency' => \App\Support\Money::displayCurrency()];
     }
 @endphp
 
@@ -84,7 +84,7 @@
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                     <p class="text-sm text-slate-500">{{ $package->days }} days @if ($package->from_price) · from @endif</p>
                     @if ($package->from_price)
-                        <p class="text-3xl font-extrabold">${{ number_format((float) $package->from_price) }} <span class="text-base font-normal text-slate-500">per person</span></p>
+                        <p class="text-3xl font-extrabold">@money($package->from_price) <span class="text-base font-normal text-slate-500">per person</span></p>
                     @endif
                     <p class="mt-2 text-xs text-slate-500">Final price depends on dates, group size and hotels. An agent confirms it before you pay anything.</p>
 

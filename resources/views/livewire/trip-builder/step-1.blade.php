@@ -15,7 +15,7 @@
             <span class="text-xl font-bold">{{ $option['tier']->label() }}</span>
             <span class="text-sm text-slate-600">{{ $option['text'] }}</span>
             @if ($option['from'])
-                <span class="mt-auto pt-2 text-sm text-slate-500">from <span class="text-lg font-bold text-slate-900">${{ number_format((float) $option['from']) }}</span> per person per day</span>
+                <span class="mt-auto pt-2 text-sm text-slate-500">from <span class="text-lg font-bold text-slate-900">@money($option['from'])</span> per person per day</span>
             @endif
         </button>
     @endforeach

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Trip;
+use App\Models\TripReceipt;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Barryvdh\DomPDF\PDF as DomPdf;
 
@@ -27,6 +28,14 @@ class TripPdf
         ]);
 
         return Pdf::loadView('trips.pdf', ['trip' => $trip])->setPaper('a4');
+    }
+
+    /**
+     * The e-receipt as PDF (same template as the printable page).
+     */
+    public function receipt(TripReceipt $receipt): DomPdf
+    {
+        return Pdf::loadView('trips.receipt', ['receipt' => $receipt, 'trip' => $receipt->trip, 'forPdf' => true])->setPaper('a4');
     }
 
     public function output(Trip $trip): string

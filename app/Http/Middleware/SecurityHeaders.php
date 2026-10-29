@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Vite;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -34,21 +35,44 @@ class SecurityHeaders
 
     private function csp(): string
     {
-        // Vite's dev server (npm run dev) serves scripts from another port and uses a websocket.
-        $dev = app()->isLocal() && is_file(public_path('hot')) ? trim((string) file_get_contents(public_path('hot'))) : '';
-        $devWs = $dev ? preg_replace('#^http#', 'ws', $dev) : '';
+        [$dev, $devWs] = $this->viteDevSources();
 
         return implode('; ', array_filter([
             "default-src 'self'",
             trim("script-src 'self' 'unsafe-inline' 'unsafe-eval' {$dev}"),
             trim("style-src 'self' 'unsafe-inline' https://fonts.googleapis.com {$dev}"),
-            "font-src 'self' https://fonts.gstatic.com data:",
-            "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://upload.wikimedia.org",
+            trim("font-src 'self' https://fonts.gstatic.com data: {$dev}"),
+            trim("img-src 'self' data: blob: https://*.tile.openstreetmap.org https://upload.wikimedia.org {$dev}"),
             trim("connect-src 'self' {$dev} {$devWs}"),
             "frame-ancestors 'self'",
             "form-action 'self'",
             "base-uri 'self'",
             "object-src 'none'",
         ]));
+    }
+
+    /**
+     * Sources for Vite's dev server (npm run dev), which serves assets from another port and
+     * pushes updates over a websocket. Local only, and only while public/hot exists.
+     *
+     * CSP cannot name IPv6 hosts: when Vite announces http://[::1]:5173 we allow the http/ws
+     * schemes instead, otherwise the browser drops the source and blocks every asset.
+     *
+     * @return array{0: string, 1: string}
+     */
+    private function viteDevSources(): array
+    {
+        if (! app()->isLocal() || ! is_file(Vite::hotFile())) {
+            return ['', ''];
+        }
+
+        $url = rtrim(trim((string) file_get_contents(Vite::hotFile())), '/');
+        $host = (string) parse_url($url, PHP_URL_HOST);
+
+        if ($host === '' || str_starts_with($host, '[') || filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            return ['http:', 'ws:'];
+        }
+
+        return [$url, (string) preg_replace('#^http#', 'ws', $url)];
     }
 }

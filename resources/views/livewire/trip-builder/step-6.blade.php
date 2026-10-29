@@ -33,13 +33,13 @@
                                 @endif
                             </span>
                             <span class="block p-3">
-                                <span class="block font-semibold">{{ $hotel->name }}</span>
+                                <span class="block font-semibold">{{ $hotel->name }} <x-demo-badge :hotel="$hotel" /></span>
                                 <span class="block text-xs text-slate-500">
                                     @if ($hotel->star_rating){{ str_repeat('★', $hotel->star_rating) }} · @endif{{ $hotel->town }}@if ($hotel->kid_friendly) · kid-friendly @endif
                                 </span>
                                 <span class="mt-1 block text-sm">
                                     @if ($option['rate'])
-                                        <strong>${{ number_format((float) $option['rate']->price_per_night) }}</strong> <span class="text-slate-500">/ room / night · {{ $option['rate']->meal_plan->value }}</span>
+                                        <strong>@money($option['rate']->price_per_night)</strong> <span class="text-slate-500">/ room / night · {{ $option['rate']->meal_plan->value }}</span>
                                         @if ($option['rate']->is_estimate)<span class="text-xs text-slate-400">(estimate)</span>@endif
                                     @else
                                         <span class="text-slate-500">Price on request</span>
@@ -55,7 +55,7 @@
                         <label for="rate-{{ $night['day'] }}" class="form-label">Room type</label>
                         <select id="rate-{{ $night['day'] }}" class="form-control" wire:change="chooseRate({{ $night['day'] }}, $event.target.value)">
                             @foreach ($night['rates'] as $rate)
-                                <option value="{{ $rate->id }}" @selected($night['rate_id'] === $rate->id)>{{ $rate->room_type }} · {{ $rate->meal_plan->label() }} · ${{ number_format((float) $rate->price_per_night, 2) }}</option>
+                                <option value="{{ $rate->id }}" @selected($night['rate_id'] === $rate->id)>{{ $rate->room_type }} · {{ $rate->meal_plan->label() }} · @money($rate->price_per_night)</option>
                             @endforeach
                         </select>
                     </div>

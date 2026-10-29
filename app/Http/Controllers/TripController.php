@@ -12,6 +12,7 @@ use App\Models\Review;
 use App\Models\Trip;
 use App\Models\User;
 use App\Services\TripPdf;
+use App\Services\TripReceiptService;
 use App\Services\TripSubmissionService;
 use App\Services\TripWorkflow;
 use App\Support\TripDraft;
@@ -37,6 +38,7 @@ class TripController extends Controller
         return view('trips.my-trips', [
             'trips' => $request->user()->trips()
                 ->whereNot('status', TripStatus::Draft)
+                ->with('receipt:id,trip_id,number')
                 ->withCount(['messages as unread_count' => fn ($q) => $q->whereNull('read_at')->where('sender_role', SenderRole::Agent->value)])
                 ->latest('id')
                 ->get(),
@@ -83,8 +85,9 @@ class TripController extends Controller
         return view('trips.show', [
             'trip' => $trip->load([
                 'tripDays.stops.place.district', 'tripDays.hotel', 'tripDays.roomRate',
-                'priceItems', 'statusHistory', 'messages.sender', 'vehicle', 'guide', 'leadTraveller', 'cuisines',
+                'priceItems', 'statusHistory', 'messages.sender', 'vehicle', 'guide', 'leadTraveller', 'cuisines', 'receipt',
             ]),
+            'canAccept' => $trip->status === TripStatus::Approved,
             'canCancel' => $request->user()?->can('cancel', $trip) ?? false,
             'canReview' => ($request->user()?->can('review', $trip) ?? false) && ! Review::where('trip_id', $trip->id)->exists(),
             'canDownload' => app(TripPdf::class)->available() && in_array($trip->status, [TripStatus::Approved, TripStatus::Confirmed, TripStatus::InProgress, TripStatus::Completed], true),
@@ -105,6 +108,43 @@ class TripController extends Controller
         abort_unless($pdf->available(), 503, 'PDF download is not available yet. Please try again later.');
 
         return $pdf->make($trip)->download($pdf->filename($trip));
+    }
+
+    /**
+     * The traveller accepts the approved plan and final price (owner, or the private link).
+     */
+    public function accept(Request $request, Trip $trip, TripReceiptService $receipts): RedirectResponse
+    {
+        $this->authorizeAccess($request, $trip);
+        $request->validate(['accept' => ['accepted']], ['accept.accepted' => 'Tick the box to accept the final plan and price.']);
+
+        try {
+            $receipts->accept($trip, $request->user());
+        } catch (\InvalidArgumentException $e) {
+            return redirect()->to($trip->privateUrl())->with('error', $e->getMessage());
+        }
+
+        return redirect()->to($trip->privateUrl())->with('status', 'Thank you! Your booking is confirmed. Your agent will finalize the timings and send your e-receipt.');
+    }
+
+    /**
+     * Printable e-receipt (booking voucher).
+     */
+    public function receipt(Request $request, Trip $trip): View
+    {
+        $this->authorizeAccess($request, $trip);
+        $receipt = $trip->receipt()->firstOrFail();
+
+        return view('trips.receipt', ['receipt' => $receipt, 'trip' => $trip, 'forPdf' => false]);
+    }
+
+    public function receiptPdf(Request $request, Trip $trip, TripPdf $pdf): Response
+    {
+        $this->authorizeAccess($request, $trip);
+        $receipt = $trip->receipt()->firstOrFail();
+        abort_unless($pdf->available(), 503, 'PDF download is not available yet. Please print the e-receipt instead.');
+
+        return $pdf->receipt($receipt)->download("LankaGuide360-e-receipt-{$receipt->number}.pdf");
     }
 
     public function message(TripMessageRequest $request, Trip $trip, TripWorkflow $workflow): RedirectResponse

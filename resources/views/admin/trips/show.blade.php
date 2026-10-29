@@ -19,7 +19,7 @@
         return $hotels->map(fn ($h) => [
             'id' => $h->id,
             'name' => $h->name.' ('.$h->tier->label().')',
-            'rates' => $h->roomRates->map(fn ($r) => ['id' => $r->id, 'label' => $r->room_type.' · '.$r->meal_plan->value.' · $'.number_format((float) $r->price_per_night, 2).($r->is_estimate ? ' (estimate)' : '')])->values(),
+            'rates' => $h->roomRates->map(fn ($r) => ['id' => $r->id, 'label' => $r->room_type.' · '.$r->meal_plan->value.' · '.\App\Support\Money::usd($r->price_per_night).($r->is_estimate ? ' (estimate)' : '')])->values(),
         ])->values();
     };
 @endphp
@@ -51,7 +51,7 @@
                         <div x-show="status === 'approved'" x-cloak class="grid gap-3 sm:col-span-2 sm:grid-cols-2">
                             <x-admin.input name="final_total" type="number" step="0.01" min="0" label="Final price (USD)"
                                            :value="$trip->final_total ?? $trip->estimated_total"
-                                           help="Price lines total: ${{ number_format($itemsTotal / 100, 2) }}" />
+                                           help="Price lines total: {{ \App\Support\Money::both(\App\Support\Money::decimal($itemsTotal)) }}" />
                             <x-admin.input name="price_note" label="Price note for the traveller" :value="$trip->price_note" help="Why it differs from the estimate, e.g. “peak-season hotel rates”." />
                         </div>
                         <div class="sm:col-span-2">
@@ -81,7 +81,7 @@
                                     <li class="flex items-center justify-between gap-2 py-1.5">
                                         <span>
                                             <span class="font-mono text-xs text-slate-500">{{ $stop->arrive_at ? substr($stop->arrive_at, 0, 5) : '--:--' }}</span>
-                                            {{ $stop->place?->name }} <span class="text-xs text-slate-500">{{ $stop->place?->district?->name }}</span>
+                                            {{ $stop->place?->name }} <span class="text-xs text-slate-500">{{ $stop->place?->district?->name }}</span>@if ($stop->place?->googleMapsUrl()) <a href="{{ $stop->place->googleMapsUrl() }}" target="_blank" rel="noopener" class="text-xs font-normal text-primary-700 hover:underline">Map</a>@endif
                                         </span>
                                         <span class="flex shrink-0 items-center gap-1">
                                             @foreach (['up' => '↑', 'down' => '↓'] as $direction => $arrow)
@@ -113,6 +113,65 @@
                         </li>
                     @endforeach
                 </ol>
+            </section>
+
+            {{-- Finalize timings and issue the e-receipt --}}
+            <section id="finalize" class="admin-card scroll-mt-20 p-5" aria-labelledby="finalize-heading">
+                <div class="flex flex-wrap items-baseline justify-between gap-2">
+                    <h3 id="finalize-heading" class="font-semibold">Final timings and e-receipt</h3>
+                    @if ($trip->receipt)
+                        <span class="text-sm">
+                            <span class="font-mono font-semibold">{{ $trip->receipt->number }}</span>
+                            <span class="text-slate-500">· version {{ $trip->receipt->revision }}, {{ $trip->receipt->issued_at->format('j M Y H:i') }}</span>
+                            · <a href="{{ route('trips.receipt', $trip) }}" target="_blank" class="font-medium text-primary-700 hover:underline">View</a>
+                        </span>
+                    @endif
+                </div>
+
+                @if ($trip->status === App\Enums\TripStatus::Approved)
+                    <p class="mt-2 text-sm text-slate-600">Waiting for the traveller to accept the final price on their trip page ({{ $trip->approved_at?->diffForHumans() }}). If they confirmed by phone or email, change the status to Confirmed above.</p>
+                @elseif (! in_array($trip->status, App\Services\TripReceiptService::ISSUABLE, true))
+                    <p class="mt-2 text-sm text-slate-600">Available once the trip is approved and the traveller has accepted it.</p>
+                @else
+                    <p class="mt-1 text-sm text-slate-600">
+                        @if ($trip->accepted_at) The traveller accepted on {{ $trip->accepted_at->format('j M Y, H:i') }}. @endif
+                        Set the final time at each place, record any payment, then issue the e-receipt. It is emailed to the traveller (PDF attached) and appears on their trip page.
+                        Re-issuing keeps the number and sends an updated version.
+                    </p>
+                    <form method="POST" action="{{ route('admin.trips.finalize', $trip) }}" class="mt-4 space-y-4">
+                        @csrf
+                        <div class="overflow-x-auto">
+                            <table class="admin-table">
+                                <thead><tr><th>Day</th><th>Place</th><th class="w-32">Arrive</th><th class="w-32">Leave</th></tr></thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    @foreach ($trip->tripDays as $day)
+                                        @foreach ($day->stops as $stop)
+                                            <tr>
+                                                <td class="whitespace-nowrap text-xs">@if ($loop->first)Day {{ $day->day_number }}<br>{{ $day->date?->format('D j M') }}@endif</td>
+                                                <td>{{ $stop->place?->name }}</td>
+                                                <td>
+                                                    <input type="time" name="times[{{ $stop->id }}][arrive_at]" value="{{ old("times.{$stop->id}.arrive_at", $stop->arrive_at ? substr($stop->arrive_at, 0, 5) : '') }}" class="form-control py-1 text-sm" aria-label="Arrive at {{ $stop->place?->name }}, day {{ $day->day_number }}">
+                                                    @error("times.{$stop->id}.arrive_at")<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                                                </td>
+                                                <td>
+                                                    <input type="time" name="times[{{ $stop->id }}][depart_at]" value="{{ old("times.{$stop->id}.depart_at", $stop->depart_at ? substr($stop->depart_at, 0, 5) : '') }}" class="form-control py-1 text-sm" aria-label="Leave {{ $stop->place?->name }}, day {{ $day->day_number }}">
+                                                    @error("times.{$stop->id}.depart_at")<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="grid gap-4 sm:grid-cols-3">
+                            <x-admin.input name="paid_usd" type="number" step="0.01" min="0" label="Payment received (USD)" :value="$trip->receipt?->paid_usd ?? '0'"
+                                           help="Total {{ \App\Support\Money::both($trip->displayTotal()) }}" />
+                            <x-admin.select name="payment_method" label="Payment method" placeholder="—" :options="App\Models\TripReceipt::PAYMENT_METHODS" :value="$trip->receipt?->payment_method" />
+                            <x-admin.input name="payment_note" label="Payment note" :value="$trip->receipt?->payment_note" maxlength="255" help="e.g. 30% deposit, bank ref 12345" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">{{ $trip->receipt ? 'Update and re-issue the e-receipt' : 'Finalize timings and issue the e-receipt' }}</button>
+                    </form>
+                @endif
             </section>
 
             {{-- Plan details: hotels, vehicle, guide, meals --}}
@@ -189,7 +248,7 @@
                                     <td><input name="description" form="item-{{ $item->id }}" value="{{ $item->description }}" class="form-control py-1 text-sm" aria-label="Description" required maxlength="200"></td>
                                     <td><input name="qty" type="number" step="0.01" min="0" form="item-{{ $item->id }}" value="{{ (float) $item->qty }}" class="form-control py-1 text-sm" aria-label="Quantity" required></td>
                                     <td><input name="unit_price" type="number" step="0.01" form="item-{{ $item->id }}" value="{{ $item->unit_price }}" class="form-control py-1 text-sm" aria-label="Unit price" required></td>
-                                    <td class="text-end whitespace-nowrap">${{ number_format((float) $item->amount, 2) }}</td>
+                                    <td class="text-end whitespace-nowrap">@moneyBoth($item->amount)</td>
                                     <td class="whitespace-nowrap text-end">
                                         <form id="item-{{ $item->id }}" method="POST" action="{{ route('admin.trips.items.update', $item) }}" class="inline">@csrf @method('PUT')<button type="submit" class="btn btn-secondary btn-sm">Save</button></form>
                                         <form method="POST" action="{{ route('admin.trips.items.destroy', $item) }}" class="inline" onsubmit="return confirm('Delete this line?')">@csrf @method('DELETE')<button type="submit" class="btn-link-danger text-xs">Delete</button></form>
@@ -212,9 +271,9 @@
                             </tr>
                         </tbody>
                         <tfoot class="text-sm">
-                            <tr><td colspan="4" class="text-end">Lines total</td><td class="text-end font-semibold">${{ number_format($itemsTotal / 100, 2) }}</td><td></td></tr>
-                            <tr><td colspan="4" class="text-end text-slate-500">Estimate at submission</td><td class="text-end text-slate-500">${{ number_format((float) $trip->estimated_total, 2) }}</td><td></td></tr>
-                            <tr><td colspan="4" class="text-end">Final price</td><td class="text-end font-bold">{{ $trip->final_total !== null ? '$'.number_format((float) $trip->final_total, 2) : 'not set' }}</td><td></td></tr>
+                            <tr><td colspan="4" class="text-end">Lines total</td><td class="text-end font-semibold">@moneyBoth($itemsTotal / 100)</td><td></td></tr>
+                            <tr><td colspan="4" class="text-end text-slate-500">Estimate at submission</td><td class="text-end text-slate-500">@moneyBoth($trip->estimated_total)</td><td></td></tr>
+                            <tr><td colspan="4" class="text-end">Final price</td><td class="text-end font-bold">{{ $trip->final_total !== null ? \App\Support\Money::both($trip->final_total) : 'not set' }}</td><td></td></tr>
                         </tfoot>
                     </table>
                     <p class="mt-1 text-xs text-slate-500">Use a negative unit price for discounts. Service fee and tax lines are not recalculated automatically after edits.</p>

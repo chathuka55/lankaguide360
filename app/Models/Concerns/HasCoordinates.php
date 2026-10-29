@@ -2,6 +2,7 @@
 
 namespace App\Models\Concerns;
 
+use App\Support\Geo;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,15 @@ use Illuminate\Database\Eloquent\Model;
  */
 trait HasCoordinates
 {
+    /**
+     * Link that opens this location in Google Maps (a plain link: nothing is fetched from
+     * Google). Null when the coordinates are not known yet.
+     */
+    public function googleMapsUrl(): ?string
+    {
+        return Geo::googleMapsUrl($this->lat, $this->lng);
+    }
+
     /**
      * Rows within $km of a point, nearest first, with a `distance_km` column.
      */

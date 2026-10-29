@@ -7,6 +7,7 @@ use App\Enums\Tier;
 use App\Enums\TripStatus;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\FinalizeTripRequest;
 use App\Http\Requests\Admin\TripPriceItemRequest;
 use App\Http\Requests\Admin\TripTransitionRequest;
 use App\Http\Requests\Admin\TripUpdateRequest;
@@ -22,6 +23,7 @@ use App\Models\TripStop;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Services\PackageService;
+use App\Services\TripReceiptService;
 use App\Services\TripWorkflow;
 use App\Support\Money;
 use Illuminate\Http\RedirectResponse;
@@ -86,7 +88,7 @@ class TripRequestController extends Controller
 
         $trip->load([
             'tripDays.stops.place.district', 'tripDays.hotel.roomRates', 'tripDays.roomRate',
-            'travellers', 'priceItems', 'statusHistory.changedBy', 'messages.sender', 'agent', 'user', 'vehicle', 'guide', 'cuisines', 'categories',
+            'travellers', 'priceItems', 'receipt', 'statusHistory.changedBy', 'messages.sender', 'agent', 'user', 'vehicle', 'guide', 'cuisines', 'categories',
         ]);
 
         $towns = $trip->tripDays->pluck('overnight_town')->filter()->unique();
@@ -164,6 +166,21 @@ class TripRequestController extends Controller
         }
 
         return back()->with('status', "Status changed to {$to->label()}. The traveller has been emailed.");
+    }
+
+    /**
+     * Final time at every place + payment received, then issue (or re-issue) the e-receipt.
+     */
+    public function finalize(FinalizeTripRequest $request, Trip $trip, TripReceiptService $receipts): RedirectResponse
+    {
+        try {
+            $receipt = $receipts->finalize($trip, $request->validated('times', []), $request->safe()->only(['paid_usd', 'payment_method', 'payment_note']), $request->user());
+        } catch (InvalidArgumentException $e) {
+            return redirect()->to(route('admin.trips.show', $trip).'#finalize')->with('error', $e->getMessage());
+        }
+
+        return redirect()->to(route('admin.trips.show', $trip).'#finalize')
+            ->with('status', "E-receipt {$receipt->number} issued".($receipt->revision > 1 ? " (version {$receipt->revision})" : '').' and emailed to the traveller.');
     }
 
     public function message(TripMessageRequest $request, Trip $trip): RedirectResponse

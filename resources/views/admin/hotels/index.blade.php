@@ -10,6 +10,7 @@
         <x-admin.filter-select name="tier" label="Tier" :options="['budget' => 'Budget', 'premium' => 'Premium', 'luxury' => 'Luxury']" />
         <x-admin.filter-select name="type" label="Type" :options="array_combine(App\Http\Requests\Admin\HotelRequest::TYPES, array_map(fn ($t) => str($t)->replace('_', ' ')->ucfirst(), App\Http\Requests\Admin\HotelRequest::TYPES))" />
         <x-admin.filter-select name="status" label="Status" :options="['published' => 'Published', 'draft' => 'Draft', 'rejected' => 'Rejected']" />
+        <x-admin.filter-select name="source" label="Source" :options="['real' => 'Real hotels', 'demo' => 'Demo listings']" />
         <label class="inline-flex items-center gap-2 text-sm lg:pb-2"><input type="checkbox" name="no_rates" value="1" @checked(request()->boolean('no_rates')) class="form-check"> No room rates</label>
     </x-admin.filters>
 
@@ -39,7 +40,7 @@
                                 <td><input type="checkbox" name="ids[]" value="{{ $hotel->id }}" form="bulk-hotels" data-bulk-item class="form-check" aria-label="Select {{ $hotel->name }}"></td>
                             @endcan
                             <td>
-                                <a href="{{ route('admin.hotels.edit', $hotel) }}" class="font-semibold text-slate-900 hover:underline">{{ $hotel->name }}</a>
+                                <a href="{{ route('admin.hotels.edit', $hotel) }}" class="font-semibold text-slate-900 hover:underline">{{ $hotel->name }}</a> <x-demo-badge :hotel="$hotel" />
                                 <div class="text-xs text-slate-500">
                                     {{ str($hotel->type ?? 'hotel')->replace('_', ' ')->ucfirst() }}
                                     @if ($hotel->star_rating) · {{ $hotel->star_rating }}★ @endif

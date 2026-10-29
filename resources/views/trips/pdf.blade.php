@@ -68,19 +68,19 @@
 
     <h2>Price</h2>
     <table>
-        <thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Unit (USD)</th><th class="num">Amount (USD)</th></tr></thead>
+        <thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Unit</th><th class="num">Amount</th></tr></thead>
         <tbody>
             @foreach ($trip->priceItems as $item)
                 <tr class="line">
                     <td>{{ $item->category->label() }}: {{ $item->description }}</td>
                     <td class="num">{{ rtrim(rtrim($item->qty, '0'), '.') }}</td>
-                    <td class="num">{{ number_format((float) $item->unit_price, 2) }}</td>
-                    <td class="num">{{ number_format((float) $item->amount, 2) }}</td>
+                    <td class="num">@money($item->unit_price)</td>
+                    <td class="num">@money($item->amount)</td>
                 </tr>
             @endforeach
             <tr class="total">
                 <td colspan="3">{{ $trip->final_total !== null ? 'Final price' : 'Estimated total' }}{{ $trip->price_note ? ' ('.$trip->price_note.')' : '' }}</td>
-                <td class="num">${{ number_format((float) $trip->displayTotal(), 2) }}</td>
+                <td class="num">@money($trip->displayTotal())</td>
             </tr>
         </tbody>
     </table>
@@ -91,7 +91,7 @@
     @endif
 
     <div class="footer">
-        Times are indicative and depend on traffic and weather. Prices in US dollars.
+        Times are indicative and depend on traffic and weather. Prices are shown in {{ \App\Support\Money::displayCurrency() }}.
         {{ config('app.name') }} · {{ config('lankaguide.contact.email') }} · {{ config('lankaguide.contact.phone') }}
         · Generated {{ now()->format('j M Y H:i') }}
     </div>

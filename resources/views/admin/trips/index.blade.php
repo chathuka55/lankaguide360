@@ -45,7 +45,7 @@
                             {{ $trip->days }} days · {{ $trip->tier->label() }}<br>
                             {{ $trip->start_date?->format('d M Y') }} · {{ $trip->travellerCount() }} pax
                         </td>
-                        <td class="whitespace-nowrap">${{ number_format((float) $trip->displayTotal(), 2) }}<div class="text-xs text-slate-500">{{ $trip->final_total !== null ? 'final' : 'estimate' }}</div></td>
+                        <td class="whitespace-nowrap">@moneyBoth($trip->displayTotal())<div class="text-xs text-slate-500">{{ $trip->final_total !== null ? 'final' : 'estimate' }}</div></td>
                         <td class="text-xs">{{ $trip->agent?->name ?? '—' }}</td>
                         <td class="text-xs">{{ $trip->submitted_at?->diffForHumans() }}
                             @if ($trip->unread_count)

@@ -10,4 +10,12 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    // Serve on IPv4: on Windows "localhost" can resolve to [::1], which a Content-Security-Policy
+    // cannot name (see App\Http\Middleware\SecurityHeaders).
+    server: {
+        host: '127.0.0.1',
+        port: 5173,
+        strictPort: true,
+        hmr: { host: '127.0.0.1' },
+    },
 });

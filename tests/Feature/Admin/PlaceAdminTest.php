@@ -118,12 +118,12 @@ class PlaceAdminTest extends TestCase
         $ready = Place::where('slug', 'sigiriya-rock-fortress')->sole();
         $ready->update(['lat' => 7.95, 'lng' => 80.75]);
         $photo = Media::factory()->for($ready, 'mediable')->create(['status' => 'draft']);
-        $notReady = Place::where('slug', 'ella-rock')->sole(); // no coordinates
+        $notReady = Place::where('slug', 'ravana-falls')->sole(); // no coordinates until the Wikipedia import
 
         $this->actingAs($this->admin)
             ->post(route('admin.places.bulk'), ['action' => 'publish_with_photos', 'ids' => [$ready->id, $notReady->id]])
             ->assertSessionHas('status', '1 place(s) updated.')
-            ->assertSessionHas('warning', fn ($warning) => str_contains($warning, 'Ella Rock: no map coordinates'));
+            ->assertSessionHas('warning', fn ($warning) => str_contains($warning, 'Ravana Falls: no map coordinates'));
 
         $this->assertSame(PublishStatus::Published, $ready->fresh()->status);
         $this->assertSame(MediaStatus::Published, $photo->fresh()->status);

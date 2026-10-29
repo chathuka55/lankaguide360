@@ -58,6 +58,27 @@ class CommonsImageImporterTest extends ImportTestCase
         $this->assertSame(1067, $first->height);
     }
 
+    public function test_photos_already_on_disk_are_reused_after_a_database_rebuild(): void
+    {
+        $this->fakeCommons();
+        app(CommonsImageImporter::class)->run(['place' => 'sigiriya-rock-fortress']);
+        $place = Place::where('slug', 'sigiriya-rock-fortress')->sole();
+        $before = $place->media()->orderBy('id')->get(['path', 'variants', 'width', 'height'])->toArray();
+
+        // The database loses the rows but the files stay in storage/app/public/media.
+        Media::query()->delete();
+        Http::fake([
+            'commons.wikimedia.org/*' => Http::response($this->fixture('commons-search.json')),
+            'upload.wikimedia.test/*' => Http::response('', 500),
+        ]);
+
+        $report = app(CommonsImageImporter::class)->run(['place' => 'sigiriya-rock-fortress']);
+
+        $this->assertSame(2, $report->created);
+        $this->assertSame($before, $place->media()->orderBy('id')->get(['path', 'variants', 'width', 'height'])->toArray());
+        Http::assertNotSent(fn ($request) => str_contains($request->url(), 'upload.wikimedia.test'));
+    }
+
     public function test_very_long_commons_descriptions_fit_the_caption_column(): void
     {
         $data = $this->fixtureJson('commons-search.json');

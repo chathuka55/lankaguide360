@@ -51,4 +51,34 @@ class ImageProcessor
             'height' => $largest->height(),
         ];
     }
+
+    /**
+     * Variants already stored under this name (e.g. after the database was rebuilt), so an
+     * importer can reuse them instead of downloading the image again. Null when none exist.
+     *
+     * @return array{path: string, variants: array<int, string>, width: int, height: int}|null
+     */
+    public function existingVariants(string $directory, string $basename): ?array
+    {
+        $disk = Storage::disk('public');
+        $variants = [];
+
+        foreach (Media::WIDTHS as $width) {
+            $path = trim($directory, '/').'/'.$basename.'-'.$width.'.webp';
+            if ($disk->exists($path)) {
+                $variants[$width] = $path;
+            }
+        }
+
+        if ($variants === [] || ! isset($variants[Media::WIDTHS[0]])) {
+            return null;
+        }
+
+        $size = @getimagesizefromstring((string) $disk->get(end($variants)));
+        if (! $size) {
+            return null;
+        }
+
+        return ['path' => end($variants), 'variants' => $variants, 'width' => $size[0], 'height' => $size[1]];
+    }
 }

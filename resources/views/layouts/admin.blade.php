@@ -8,6 +8,7 @@ $menu = [
         ['label' => 'Dashboard', 'icon' => 'squares', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard', 'can' => 'staff'],
         ['label' => 'Trip requests', 'icon' => 'inbox', 'route' => 'admin.trips.index', 'active' => 'admin.trips.*', 'can' => 'staff'],
         ['label' => 'Review queue', 'icon' => 'photo', 'route' => 'admin.review.index', 'active' => 'admin.review.*', 'can' => 'admin'],
+        ['label' => 'Reports', 'icon' => 'chart', 'route' => 'admin.reports.index', 'active' => 'admin.reports.*', 'can' => 'admin'],
     ],
     'Master data' => [
         ['label' => 'Places', 'icon' => 'map-pin', 'route' => 'admin.places.index', 'active' => 'admin.places.*', 'can' => 'staff'],

@@ -72,11 +72,14 @@ class SeedDataTest extends TestCase
         $this->assertTrue($kandy->categories->pluck('slug')->contains('hill-country'));
     }
 
-    public function test_at_least_100_draft_places_are_seeded_without_coordinates(): void
+    public function test_at_least_100_draft_places_are_seeded_and_only_checked_ones_have_coordinates(): void
     {
         $this->assertGreaterThanOrEqual(100, Place::count());
         $this->assertSame(Place::count(), Place::where('status', PublishStatus::Draft)->count());
-        $this->assertSame(0, Place::whereNotNull('lat')->count(), 'Coordinates come from the Wikipedia importer');
+        // Coordinates come from the Wikipedia importer, except the hand-checked list (data/place_coordinates.php).
+        $checked = count(require database_path('seeders/data/place_coordinates.php'));
+        $this->assertSame($checked, Place::whereNotNull('lat')->count());
+        $this->assertSame($checked, Place::whereNotNull('coordinates_checked_at')->count());
         $this->assertSame(0, Place::whereNull('wikipedia_title')->count());
         $this->assertSame(0, Place::published()->count());
     }

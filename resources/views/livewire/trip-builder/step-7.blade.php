@@ -17,7 +17,7 @@
                 </span>
                 @if ($vehicle->example_model)<span class="block text-xs text-slate-500">e.g. {{ $vehicle->example_model }}</span>@endif
                 <span class="mt-2 block text-sm text-slate-600">{{ $vehicle->min_pax }}–{{ $vehicle->max_pax }} seats @if ($vehicle->luggage_capacity) · {{ $vehicle->luggage_capacity }} bags @endif</span>
-                <span class="mt-1 block text-sm"><strong>${{ number_format((float) $vehicle->day_rate) }}</strong> <span class="text-slate-500">/ day @if ((float) $vehicle->km_rate > 0) + ${{ number_format((float) $vehicle->km_rate, 2) }}/km @endif</span></span>
+                <span class="mt-1 block text-sm"><strong>@money($vehicle->day_rate)</strong> <span class="text-slate-500">/ day @if ((float) $vehicle->km_rate > 0) + @money($vehicle->km_rate)/km @endif</span></span>
                 @if ($suggestedVehicle?->is($vehicle))<span class="mt-2 inline-block rounded-full bg-primary-50 px-2 text-xs font-semibold text-primary-800">suggested</span>@endif
             </button>
         @endforeach

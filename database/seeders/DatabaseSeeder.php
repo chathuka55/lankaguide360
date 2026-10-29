@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             LocationSeeder::class,
             CategorySeeder::class,
             PlaceSeeder::class,
+            PlaceCoordinateSeeder::class,
             TravelOptionSeeder::class,
             FaqSeeder::class,
             PackageSeeder::class,

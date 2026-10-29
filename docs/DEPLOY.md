@@ -104,6 +104,8 @@ set `OVERPASS_URL` to a mirror and re-run for the failed districts only (`--dist
 - [ ] `APP_DEBUG=false`, `APP_ENV=production`
 - [ ] HTTPS enforced; `SESSION_SECURE_COOKIE=true`
 - [ ] Seeded passwords changed
+- [ ] Demo hotels removed: `php artisan lg:demo-hotels --remove` (they are fictional, marked "Demo listing")
+- [ ] Settings → Currency: `usd_lkr` exchange rate set (prices are stored in USD and shown in LKR)
 - [ ] `.env` not readable from the web (document root is `public/`)
 - [ ] Database user has no rights on other databases (the old `lankaguide360` database stays untouched)
 - [ ] Backups: nightly database dump plus `storage/app/public/media`

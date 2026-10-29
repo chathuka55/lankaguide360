@@ -53,7 +53,7 @@
                 </div>
                 <dl class="grid grid-cols-3 gap-2 text-xs text-slate-600">
                     <div><dt class="text-slate-400">Time</dt><dd>{{ $place->visitDuration() }}</dd></div>
-                    <div><dt class="text-slate-400">Fee</dt><dd>{{ (float) $place->fee_foreign_adult > 0 ? '$'.number_format((float) $place->fee_foreign_adult) : 'Free' }}</dd></div>
+                    <div><dt class="text-slate-400">Fee</dt><dd>{{ (float) $place->fee_foreign_adult > 0 ? \App\Support\Money::show($place->fee_foreign_adult) : 'Free' }}</dd></div>
                     <div><dt class="text-slate-400">Crowds</dt><dd>{{ $place->crowd_level ? ucfirst($place->crowd_level->value) : '—' }}</dd></div>
                 </dl>
                 @unless ($place->hasCoordinates())

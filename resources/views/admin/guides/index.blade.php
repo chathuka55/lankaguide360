@@ -14,7 +14,7 @@
                         <td class="font-semibold text-slate-900">{{ $guide->name }}</td>
                         <td>{{ $guide->type->label() }}</td>
                         <td class="text-xs">{{ implode(', ', $guide->languages ?? []) }}</td>
-                        <td class="text-end">${{ $guide->day_rate }}</td>
+                        <td class="text-end">@moneyBoth($guide->day_rate)</td>
                         <td>{{ $guide->is_available ? 'Yes' : 'No' }}</td>
                         <td class="space-x-3 text-end">
                             <a href="{{ route('admin.guides.edit', $guide) }}" class="text-sm font-medium text-primary-700 hover:underline">@can('update', $guide) Edit @else View @endcan</a>

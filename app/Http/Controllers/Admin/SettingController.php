@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SettingsRequest;
 use App\Models\Setting;
+use App\Services\Mail\MailTester;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
@@ -28,14 +30,15 @@ class SettingController extends Controller
             'meal_dinner' => ['Dinner per adult (USD)', null, ['required', 'numeric', 'min:0']],
         ],
         'Currency' => [
-            'currency' => ['Base currency', 'ISO code; prices are stored in this currency.', ['required', 'string', 'size:3']],
-            'usd_lkr' => ['1 USD in LKR', 'For the rupee equivalent shown to travellers.', ['required', 'numeric', 'min:0.0001']],
+            'currency' => ['Base currency', 'Prices are entered and stored in US dollars.', ['required', 'string', 'in:USD,usd']],
+            'display_currency' => ['Currency shown to travellers', 'LKR, USD or EUR. Amounts are converted with the rates below.', ['required', 'string', 'in:LKR,USD,EUR,lkr,usd,eur']],
+            'usd_lkr' => ['1 USD in LKR', 'Exchange rate used to show prices in rupees.', ['required', 'numeric', 'min:0.0001']],
             'usd_eur' => ['1 USD in EUR', null, ['required', 'numeric', 'min:0.0001']],
         ],
         'Trip Builder' => [
-            'tier_from_price_budget' => ['Budget: from $ per person per day', 'Shown on builder step 1.', ['required', 'numeric', 'min:0']],
-            'tier_from_price_premium' => ['Premium: from $ per person per day', null, ['required', 'numeric', 'min:0']],
-            'tier_from_price_luxury' => ['Luxury: from $ per person per day', null, ['required', 'numeric', 'min:0']],
+            'tier_from_price_budget' => ['Budget: from (USD) per person per day', 'Shown on builder step 1.', ['required', 'numeric', 'min:0']],
+            'tier_from_price_premium' => ['Premium: from (USD) per person per day', null, ['required', 'numeric', 'min:0']],
+            'tier_from_price_luxury' => ['Luxury: from (USD) per person per day', null, ['required', 'numeric', 'min:0']],
             'day_limit_hours_budget' => ['Budget: max hours per day', 'Driving + visits (SRS 5.3).', ['required', 'numeric', 'between:4,14']],
             'day_limit_hours_premium' => ['Premium: max hours per day', null, ['required', 'numeric', 'between:4,14']],
             'day_limit_hours_luxury' => ['Luxury: max hours per day', null, ['required', 'numeric', 'between:4,14']],
@@ -52,10 +55,23 @@ class SettingController extends Controller
         ]);
     }
 
+    /**
+     * Send a test email now to check the SMTP settings.
+     */
+    public function testEmail(Request $request, MailTester $tester): RedirectResponse
+    {
+        $this->authorize('viewAny', Setting::class);
+        $email = $request->validate(['email' => ['required', 'email', 'max:190']])['email'];
+
+        $result = $tester->send($email);
+
+        return redirect()->route('admin.settings.edit')->with($result['ok'] ? 'status' : 'error', $result['message']);
+    }
+
     public function update(SettingsRequest $request): RedirectResponse
     {
         foreach ($request->validated('settings') as $key => $value) {
-            Setting::put($key, $key === 'currency' ? strtoupper($value) : (string) $value);
+            Setting::put($key, in_array($key, ['currency', 'display_currency'], true) ? strtoupper($value) : (string) $value);
         }
 
         return redirect()->route('admin.settings.edit')->with('status', 'Settings saved.');

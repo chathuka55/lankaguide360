@@ -100,7 +100,7 @@ class PublicPagesTest extends TestCase
         $this->get($this->sigiriya->url())
             ->assertOk()
             ->assertSee('Sigiriya Rock Fortress')
-            ->assertSee('$36.00')
+            ->assertSee('LKR 10,800') // USD 36.00 at the default 300 LKR per USD
             ->assertSee('Bernard Gagnon')
             ->assertDontSee('Draft Author')
             ->assertSee('CC BY-SA 4.0') // Wikipedia text attribution

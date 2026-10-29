@@ -56,7 +56,7 @@
                             <div class="min-w-0 flex-1">
                                 <p class="text-sm">
                                     <span class="font-mono text-xs text-slate-500">{{ $stop['arrive'] }}–{{ $stop['depart'] }}</span>
-                                    <span class="font-semibold">{{ $stop['name'] }}</span>
+                                    <span class="font-semibold">{{ $stop['name'] }}</span> <a href="{{ \App\Support\Geo::googleMapsUrl($stop['lat'], $stop['lng']) }}" target="_blank" rel="noopener" class="text-xs font-normal text-primary-700 hover:underline">Map</a>
                                     <span class="text-xs text-slate-500">{{ $stop['district'] }}</span>
                                 </p>
                                 @if ($stop['km_from_prev'] > 0)
@@ -91,22 +91,22 @@
             <table class="w-full text-sm">
                 @foreach ($lines as $category => $categoryLines)
                     <tbody class="border-b border-slate-100">
-                        <tr><th colspan="2" class="pt-3 text-start font-semibold text-slate-700">{{ $categoryLabels[$category] ?? $category }}</th><td class="pt-3 text-end font-semibold">${{ number_format((float) $priceData['categories'][$category], 2) }}</td></tr>
+                        <tr><th colspan="2" class="pt-3 text-start font-semibold text-slate-700">{{ $categoryLabels[$category] ?? $category }}</th><td class="pt-3 text-end font-semibold">@money($priceData['categories'][$category])</td></tr>
                         @foreach ($categoryLines as $line)
                             <tr class="text-slate-600">
                                 <td class="py-1 pe-3">{{ $line['description'] }}</td>
-                                <td class="whitespace-nowrap py-1 pe-3 text-end text-xs">{{ rtrim(rtrim(number_format((float) $line['qty'], 1), '0'), '.') }} × ${{ number_format((float) $line['unit_price'], 2) }}</td>
-                                <td class="whitespace-nowrap py-1 text-end">${{ number_format((float) $line['amount'], 2) }}</td>
+                                <td class="whitespace-nowrap py-1 pe-3 text-end text-xs">{{ rtrim(rtrim(number_format((float) $line['qty'], 1), '0'), '.') }} × @money($line['unit_price'])</td>
+                                <td class="whitespace-nowrap py-1 text-end">@money($line['amount'])</td>
                             </tr>
                         @endforeach
                     </tbody>
                 @endforeach
                 <tfoot>
-                    <tr><td colspan="2" class="pt-3 text-end">Subtotal</td><td class="pt-3 text-end">${{ number_format((float) $priceData['subtotal'], 2) }}</td></tr>
-                    <tr><td colspan="2" class="text-end">Service fee</td><td class="text-end">${{ number_format((float) $priceData['service_fee'], 2) }}</td></tr>
-                    @if ((float) $priceData['tax'] > 0)<tr><td colspan="2" class="text-end">Tax</td><td class="text-end">${{ number_format((float) $priceData['tax'], 2) }}</td></tr>@endif
-                    <tr class="text-lg font-extrabold"><td colspan="2" class="pt-2 text-end">Total</td><td class="pt-2 text-end">${{ number_format((float) $priceData['total'], 2) }}</td></tr>
-                    <tr class="text-slate-500"><td colspan="2" class="text-end">Per person ({{ $priceData['paying_travellers'] }} paying)</td><td class="text-end">${{ number_format((float) $priceData['per_person'], 2) }}</td></tr>
+                    <tr><td colspan="2" class="pt-3 text-end">Subtotal</td><td class="pt-3 text-end">@money($priceData['subtotal'])</td></tr>
+                    <tr><td colspan="2" class="text-end">Service fee</td><td class="text-end">@money($priceData['service_fee'])</td></tr>
+                    @if ((float) $priceData['tax'] > 0)<tr><td colspan="2" class="text-end">Tax</td><td class="text-end">@money($priceData['tax'])</td></tr>@endif
+                    <tr class="text-lg font-extrabold"><td colspan="2" class="pt-2 text-end">Total</td><td class="pt-2 text-end">@money($priceData['total'])</td></tr>
+                    <tr class="text-slate-500"><td colspan="2" class="text-end">Per person ({{ $priceData['paying_travellers'] }} paying)</td><td class="text-end">@money($priceData['per_person'])</td></tr>
                     @if ((float) $priceData['total_lkr'] > 0)<tr class="text-xs text-slate-500"><td colspan="2" class="text-end">About</td><td class="text-end">LKR {{ number_format((float) $priceData['total_lkr']) }}</td></tr>@endif
                 </tfoot>
             </table>

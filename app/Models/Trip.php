@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
     'guide_id', 'guide_language', 'special_requests', 'status', 'estimated_total', 'final_total',
     'currency', 'access_token', 'tracking_consent', 'submitted_at', 'approved_at',
     'internal_notes', 'price_note', 'dietary_notes', 'luggage', 'data_consent_at', 'completed_at',
+    'accepted_at', 'itinerary_finalized_at',
 ])]
 #[Hidden(['access_token', 'internal_notes'])]
 class Trip extends Model
@@ -63,6 +64,8 @@ class Trip extends Model
             'tracking_consent' => 'boolean',
             'submitted_at' => 'datetime',
             'approved_at' => 'datetime',
+            'accepted_at' => 'datetime',
+            'itinerary_finalized_at' => 'datetime',
             'completed_at' => 'datetime',
             'data_consent_at' => 'datetime',
             'luggage' => 'integer',
@@ -122,6 +125,16 @@ class Trip extends Model
     public function travellers(): HasMany
     {
         return $this->hasMany(TripTraveller::class);
+    }
+
+    /**
+     * The e-receipt, once an agent has issued it.
+     *
+     * @return HasOne<TripReceipt, $this>
+     */
+    public function receipt(): HasOne
+    {
+        return $this->hasOne(TripReceipt::class);
     }
 
     /**

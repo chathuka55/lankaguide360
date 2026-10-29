@@ -5,7 +5,7 @@
         'alt' => $m->alt,
         'credit' => $m->credit() ?? '',
     ])->values();
-    $fee = fn ($amount) => (float) $amount > 0 ? '$'.number_format((float) $amount, 2) : 'Free';
+    $fee = fn ($amount) => (float) $amount > 0 ? \App\Support\Money::show($amount) : 'Free';
     $slotLabels = ['any' => 'Any time', 'sunrise' => 'Sunrise', 'morning' => 'Morning', 'afternoon' => 'Afternoon', 'sunset' => 'Sunset'];
 @endphp
 
@@ -140,6 +140,8 @@
                     <section aria-label="Location map">
                         <div x-data="pinMap({ lat: {{ (float) $place->lat }}, lng: {{ (float) $place->lng }}, label: @js($place->name) })" class="h-64 overflow-hidden rounded-2xl ring-1 ring-slate-200"></div>
                         <a href="https://www.openstreetmap.org/?mlat={{ $place->lat }}&mlon={{ $place->lng }}#map=14/{{ $place->lat }}/{{ $place->lng }}" target="_blank" rel="noopener" class="mt-2 inline-block text-xs text-primary-700 hover:underline">Open in OpenStreetMap</a>
+                        <span class="text-xs text-slate-300" aria-hidden="true">·</span>
+                        <a href="{{ $place->googleMapsUrl() }}" target="_blank" rel="noopener" class="mt-2 inline-block text-xs text-primary-700 hover:underline">Open in Google Maps</a>
                     </section>
                 @endif
 
@@ -171,7 +173,7 @@
                             <ul class="mt-3 space-y-3 text-sm">
                                 @foreach ($hotels as $hotel)
                                     <li>
-                                        <p class="font-medium text-slate-900">{{ $hotel->name }}@if ($hotel->star_rating) <span class="text-accent-600">{{ str_repeat('★', $hotel->star_rating) }}</span>@endif</p>
+                                        <p class="font-medium text-slate-900">{{ $hotel->name }} <x-demo-badge :hotel="$hotel" />@if ($hotel->star_rating) <span class="text-accent-600">{{ str_repeat('★', $hotel->star_rating) }}</span>@endif</p>
                                         <p class="text-slate-500">{{ $hotel->town }} · {{ number_format($hotel->distance_km, 1) }} km</p>
                                     </li>
                                 @endforeach

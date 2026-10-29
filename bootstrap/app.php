@@ -18,6 +18,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
         ]);
         $middleware->web(append: [SecurityHeaders::class]);
+
+        // Behind a hosting proxy (alwaysdata, Render, a load balancer) set TRUSTED_PROXIES=* (or the
+        // proxy IPs) so Laravel sees HTTPS and the visitor's IP. Off by default.
+        if ($proxies = env('TRUSTED_PROXIES')) {
+            $middleware->trustProxies(at: $proxies === '*' ? '*' : array_map('trim', explode(',', $proxies)));
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

@@ -78,7 +78,12 @@ class PlaceController extends Controller
     public function update(PlaceRequest $request, Place $place): RedirectResponse
     {
         DB::transaction(function () use ($request, $place) {
-            $place->forceFill($request->safe()->except('categories'))->save();
+            $place->forceFill($request->safe()->except('categories'));
+            // An admin who moves the pin has checked the location: importers keep it from now on.
+            if ($place->isDirty(['lat', 'lng']) && $place->lat !== null) {
+                $place->coordinates_checked_at = now();
+            }
+            $place->save();
             $place->categories()->sync($request->validated('categories', []));
         });
 

@@ -15,6 +15,7 @@ use Database\Seeders\LocationSeeder;
 use Database\Seeders\PackageSeeder;
 use Database\Seeders\PlaceSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Vite;
 use Tests\TestCase;
 
 class PackagesAndSeoTest extends TestCase
@@ -138,6 +139,37 @@ class PackagesAndSeoTest extends TestCase
         $response->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
         $this->assertStringContainsString("frame-ancestors 'self'", $response->headers->get('Content-Security-Policy'));
         $this->assertStringContainsString('tile.openstreetmap.org', $response->headers->get('Content-Security-Policy'));
+    }
+
+    /**
+     * `npm run dev` on Windows can announce http://[::1]:5173. CSP cannot name IPv6 hosts, so the
+     * browser dropped the source and blocked every script and stylesheet (the page lost its CSS).
+     */
+    public function test_csp_allows_the_vite_dev_server_on_ipv6_and_ipv4(): void
+    {
+        $hot = tempnam(sys_get_temp_dir(), 'hot');
+        Vite::useHotFile($hot);
+        $this->app['env'] = 'local';
+
+        try {
+            file_put_contents($hot, 'http://[::1]:5173');
+            $csp = $this->get('/robots.txt')->headers->get('Content-Security-Policy');
+            $this->assertStringNotContainsString('[::1]', $csp);
+            $this->assertStringContainsString("script-src 'self' 'unsafe-inline' 'unsafe-eval' http:", $csp);
+            $this->assertStringContainsString('style-src', $csp);
+            $this->assertStringContainsString('ws:', $csp);
+
+            file_put_contents($hot, "http://127.0.0.1:5173\n");
+            $csp = $this->get('/robots.txt')->headers->get('Content-Security-Policy');
+            $this->assertStringContainsString("script-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:5173;", $csp);
+            $this->assertStringContainsString('ws://127.0.0.1:5173', $csp);
+
+            // Production never allows the dev server.
+            $this->app['env'] = 'production';
+            $this->assertStringNotContainsString('5173', $this->get('/robots.txt')->headers->get('Content-Security-Policy'));
+        } finally {
+            unlink($hot);
+        }
     }
 
     public function test_image_credits_page(): void

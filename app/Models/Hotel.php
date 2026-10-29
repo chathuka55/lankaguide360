@@ -39,6 +39,7 @@ class Hotel extends Model
             'tier' => Tier::class,
             'star_rating' => 'integer',
             'kid_friendly' => 'boolean',
+            'is_demo' => 'boolean',
             'lat' => 'decimal:6',
             'lng' => 'decimal:6',
             'amenities' => 'array',

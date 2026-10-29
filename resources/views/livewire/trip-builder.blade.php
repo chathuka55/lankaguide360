@@ -91,7 +91,7 @@
                 </span>
                 <span class="flex items-center gap-2 text-sm font-bold">
                     @if ($summary['total'])
-                        {{ $summary['is_estimate_only'] ? 'from ' : '' }}${{ number_format((float) $summary['total']) }}
+                        {{ $summary['is_estimate_only'] ? 'from ' : '' }}@money($summary['total'])
                     @endif
                     <x-icon name="chevron-down" class="size-4 rotate-180 transition" x-bind:class="open && 'rotate-0'" />
                 </span>

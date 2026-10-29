@@ -40,7 +40,7 @@ class ReviewQueueTest extends TestCase
 
         $this->actingAs($this->admin)->get(route('admin.review.index', ['district' => $place->district_id, 'ready' => '1']))
             ->assertSee('Sigiriya Rock Fortress')
-            ->assertDontSee('Pidurangala Rock');
+            ->assertDontSee('Nalanda Gedige');
     }
 
     public function test_places_needing_a_wikipedia_title_are_highlighted(): void

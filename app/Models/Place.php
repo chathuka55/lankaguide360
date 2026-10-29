@@ -45,6 +45,7 @@ class Place extends Model
         return [
             'lat' => 'decimal:6',
             'lng' => 'decimal:6',
+            'coordinates_checked_at' => 'datetime',
             'visit_minutes' => 'integer',
             'best_time_slot' => BestTimeSlot::class,
             'fee_foreign_adult' => 'decimal:2',

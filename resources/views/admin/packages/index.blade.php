@@ -14,7 +14,7 @@
                         <td class="font-semibold text-slate-900">{{ $package->name }}</td>
                         <td>{{ $package->tier?->label() ?? '—' }}</td>
                         <td>{{ $package->days ?? '—' }}</td>
-                        <td class="text-end">{{ $package->from_price ? '$'.$package->from_price : '—' }}</td>
+                        <td class="text-end">{{ $package->from_price ? \App\Support\Money::both($package->from_price) : '—' }}</td>
                         <td class="font-mono text-xs">{{ $package->templateTrip?->reference }}</td>
                         <td>{{ $package->is_featured ? 'Yes' : 'No' }}</td>
                         <td class="space-x-3 text-end">

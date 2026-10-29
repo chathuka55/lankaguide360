@@ -39,7 +39,10 @@
                                 From {{ $trip->start_date?->format('j M Y') }} · {{ $trip->travellerCount() }} {{ Str::plural('traveller', $trip->travellerCount()) }}
                             </p>
                             <div class="mt-3 flex items-center justify-between text-sm">
-                                <span class="font-semibold">${{ number_format((float) $trip->displayTotal(), 2) }} <span class="font-normal text-slate-500">{{ $trip->final_total !== null ? 'final' : 'estimate' }}</span></span>
+                                <span class="font-semibold">@money($trip->displayTotal()) <span class="font-normal text-slate-500">{{ $trip->final_total !== null ? 'final' : 'estimate' }}</span></span>
+                                @if ($trip->receipt)
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2 py-0.5 text-xs font-semibold text-primary-800">E-receipt ready</span>
+                                @endif
                                 @if ($trip->unread_count)
                                     <span class="inline-flex items-center gap-1 rounded-full bg-accent-100 px-2 py-0.5 text-xs font-semibold text-accent-700">
                                         <x-icon name="chat" class="size-3.5" /> {{ $trip->unread_count }} new {{ Str::plural('message', $trip->unread_count) }}
