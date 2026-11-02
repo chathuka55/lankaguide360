@@ -16,8 +16,10 @@ class AccessControlTest extends TestCase
     {
         $this->get('/')
             ->assertOk()
-            ->assertSee('Plan your perfect Sri Lanka journey')
-            ->assertSee('Start Planning')
+            ->assertSee('Plan less.')
+            ->assertSee('Start planning')
+            ->assertSee('Plan your trip')
+            ->assertSee('By province')
             ->assertSee('Quick links')
             ->assertSee('Privacy Policy');
     }

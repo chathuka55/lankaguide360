@@ -47,6 +47,20 @@
                 <x-admin.input name="provider_website" label="Provider website / booking link" type="url" :value="$vehicle->provider_website" maxlength="255" />
             </div>
         </fieldset>
+
+        <fieldset @disabled(! $can) class="space-y-4 border-t border-slate-200 pt-5">
+            <legend class="text-sm font-semibold text-slate-900">Self-drive</legend>
+            <label class="flex items-center gap-2 text-sm">
+                <input type="hidden" name="self_drive" value="0">
+                <input type="checkbox" name="self_drive" value="1" @checked(old('self_drive', $vehicle->self_drive ?? false)) class="form-check">
+                Can be hired without a driver (Sri Lankan residents with a Sri Lankan licence only)
+            </label>
+            <div class="grid gap-4 sm:grid-cols-3">
+                <x-admin.input name="self_drive_day_rate" label="Self-drive day rate (USD)" type="number" step="0.01" min="0" :value="$vehicle->self_drive_day_rate" help="No driver, fuel not included." />
+                <x-admin.input name="self_drive_deposit" label="Refundable deposit (USD)" type="number" step="0.01" min="0" :value="$vehicle->self_drive_deposit" />
+                <x-admin.input name="self_drive_km_per_day" label="Km included per day" type="number" min="0" :value="$vehicle->self_drive_km_per_day" help="Extra km are charged at the rate per km." />
+            </div>
+        </fieldset>
         <x-admin.form-actions :cancel="route('admin.vehicles.index')" :can="$can" />
     </form>
 

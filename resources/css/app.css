@@ -10,27 +10,34 @@
 @source "../views";
 
 /*
- * LankaGuide360 brand (CLAUDE.md → UI rules)
- *   primary: teal  #0F766E  → bg-primary-700 / text-primary-700
- *   accent:  amber #F59E0B  → bg-accent-500 / text-accent-500
- *   text:    slate
- * Flowbite's brand tokens are re-pointed at the teal scale so its components match.
+ * LankaGuide360 brand (CLAUDE.md → UI rules), "tea country" theme (Nov 2026)
+ *   primary: forest green #234F3A → bg-primary-700 / text-primary-700
+ *   accent:  amber #F59E0B        → bg-accent-500 / text-accent-500
+ *   sand:    warm cream surfaces  → bg-sand-50 / bg-sand-100
+ *   text:    slate; headings can use font-display (Instrument Serif, italic accents)
+ * Flowbite's brand tokens are re-pointed at the primary scale so its components match.
  */
 @theme {
     --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --font-body: var(--font-sans);
+    --font-display: "Instrument Serif", ui-serif, Georgia, "Times New Roman", serif;
 
-    --color-primary-50: #f0fdfa;
-    --color-primary-100: #ccfbf1;
-    --color-primary-200: #99f6e4;
-    --color-primary-300: #5eead4;
-    --color-primary-400: #2dd4bf;
-    --color-primary-500: #14b8a6;
-    --color-primary-600: #0d9488;
-    --color-primary-700: #0f766e;
-    --color-primary-800: #115e59;
-    --color-primary-900: #134e4a;
-    --color-primary-950: #042f2e;
+    --color-primary-50: #f1f6f2;
+    --color-primary-100: #ddebe1;
+    --color-primary-200: #bcd7c5;
+    --color-primary-300: #8fbba0;
+    --color-primary-400: #5e9877;
+    --color-primary-500: #3d7a59;
+    --color-primary-600: #2d6247;
+    --color-primary-700: #234f3a;
+    --color-primary-800: #1d3f2f;
+    --color-primary-900: #183427;
+    --color-primary-950: #0c1e16;
+
+    --color-sand-50: #faf8f4;
+    --color-sand-100: #f3efe7;
+    --color-sand-200: #e8e1d3;
+    --color-sand-300: #d6cbb5;
 
     --color-accent-50: #fffbeb;
     --color-accent-100: #fef3c7;
@@ -117,4 +124,92 @@
    builder's mobile summary sheet and dialogs stay on top. */
 .leaflet-container {
     isolation: isolate;
+}
+
+/*
+ * Home page motion (resources/js/home.js: GSAP + ScrollTrigger, Lenis, Swiper).
+ * Elements start hidden only after the script adds .motion-ready to <html>, so the page reads
+ * fine without JavaScript and with "reduce motion" switched on.
+ */
+html.lenis,
+html.lenis body {
+    height: auto;
+}
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+    overflow: clip;
+}
+.motion-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(2rem);
+}
+.motion-ready [data-hero-line],
+.motion-ready [data-hero-card],
+.motion-ready [data-hero-cards] > * {
+    opacity: 0;
+}
+/* Slow zoom on the hero photo that is on screen. */
+[data-hero-image] {
+    transition: scale 8s ease-out;
+}
+.swiper-slide-active [data-hero-image] {
+    scale: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+    [data-hero-image] {
+        scale: 1;
+        transition: none;
+    }
+}
+
+/* 3D tilt card: the card follows the pointer; children marked .tilt-pop float above it. */
+.tilt-card {
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transform-style: preserve-3d;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tilt-card .tilt-pop {
+    transform: translateZ(36px);
+}
+
+/* Spotlight: a soft glow that follows the pointer (--mx / --my set by home.js). */
+.spotlight {
+    position: relative;
+    isolation: isolate;
+}
+.spotlight::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(245 158 11 / 0.18), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.spotlight:hover::before {
+    opacity: 1;
+}
+
+/* Endless row of place names. */
+@keyframes marquee {
+    to {
+        transform: translateX(-50%);
+    }
+}
+.marquee-track {
+    animation: marquee 40s linear infinite;
+}
+.marquee:hover .marquee-track {
+    animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+        animation: none;
+    }
+    .tilt-card {
+        transform: none;
+    }
 }

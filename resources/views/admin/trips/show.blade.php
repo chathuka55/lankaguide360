@@ -339,6 +339,16 @@
                     <div class="flex justify-between gap-2"><dt class="text-slate-500">Traveller type</dt><dd>{{ $trip->traveller_type === 'local' ? 'Sri Lankan resident (local prices)' : 'Foreign visitor' }}@if ($trip->traveller_type === 'local' && $trip->user?->nic) · NIC {{ $trip->user->nic }}@endif</dd></div>
                     <div class="flex justify-between gap-2"><dt class="text-slate-500">Luggage</dt><dd>{{ $trip->luggage ?? '—' }} bags</dd></div>
                     @if ($trip->refreshments)<div class="flex justify-between gap-2"><dt class="text-slate-500">Extras</dt><dd>Refreshment pack</dd></div>@endif
+                    @if ($trip->self_drive)
+                        <div class="my-2 rounded-lg bg-amber-50 p-3 ring-1 ring-amber-200">
+                            <p class="font-semibold text-amber-900">Self-drive: check the licence at handover</p>
+                            <dl class="mt-1 space-y-0.5 text-amber-900">
+                                <div class="flex justify-between gap-2"><dt>Driver</dt><dd class="text-end">{{ $trip->driver_name }}</dd></div>
+                                <div class="flex justify-between gap-2"><dt>Licence no.</dt><dd class="font-mono">{{ $trip->driver_licence_no }}</dd></div>
+                                <div class="flex justify-between gap-2"><dt>Valid until</dt><dd>{{ $trip->driver_licence_expiry?->format('j M Y') }}</dd></div>
+                            </dl>
+                        </div>
+                    @endif
                     <div class="flex justify-between gap-2"><dt class="text-slate-500">Arrival</dt><dd class="text-end">{{ $trip->arrival_point }}</dd></div>
                     <div class="flex justify-between gap-2"><dt class="text-slate-500">Departure</dt><dd class="text-end">{{ $trip->departure_point }}</dd></div>
                     <div class="flex justify-between gap-2"><dt class="text-slate-500">Interests</dt><dd class="text-end">{{ $trip->categories->pluck('name')->join(', ') ?: '—' }}</dd></div>

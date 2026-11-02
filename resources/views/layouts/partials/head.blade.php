@@ -10,7 +10,7 @@
 
 <title>{{ $pageTitle }}</title>
 <meta name="description" content="{{ Str::limit($pageDescription, 160) }}">
-<meta name="theme-color" content="#0F766E">
+<meta name="theme-color" content="#234F3A">
 <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 <link rel="canonical" href="{{ url()->current() }}">
 
@@ -29,7 +29,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 
 @livewireStyles
 @vite(['resources/css/app.css', 'resources/js/app.js'])

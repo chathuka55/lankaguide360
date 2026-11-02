@@ -110,10 +110,14 @@ class PricingService
             return;
         }
 
-        $price->add(PriceCategory::Transport, "{$vehicle->type} with driver, {$days} days", $days, Money::cents($vehicle->day_rate));
+        if ($draft->isSelfDrive() && $vehicle->offersSelfDrive()) {
+            $this->selfDrive($price, $vehicle, $days, $km);
+        } else {
+            $price->add(PriceCategory::Transport, "{$vehicle->type} with driver, {$days} days", $days, Money::cents($vehicle->day_rate));
 
-        if ($km > 0 && Money::cents($vehicle->km_rate) > 0) {
-            $price->add(PriceCategory::Transport, 'Mileage, about '.number_format($km).' km', round($km, 1), Money::cents($vehicle->km_rate));
+            if ($km > 0 && Money::cents($vehicle->km_rate) > 0) {
+                $price->add(PriceCategory::Transport, 'Mileage, about '.number_format($km).' km', round($km, 1), Money::cents($vehicle->km_rate));
+            }
         }
 
         if ($draft->childSeats() > 0) {
@@ -126,6 +130,24 @@ class PricingService
         if ($draft->refreshments && $rate > 0 && $people > 0) {
             $price->add(PriceCategory::Transport, "Refreshment pack (water, soft drinks, snacks), {$people} × {$days} days", $people * $days, $rate);
         }
+    }
+
+    /**
+     * Self-drive: the self-drive day rate includes a daily km allowance; kilometres over it are
+     * charged at the vehicle's km rate. The deposit is refundable, so it is a note, not a line.
+     */
+    private function selfDrive(PriceBreakdown $price, Vehicle $vehicle, int $days, float $km): void
+    {
+        $price->add(PriceCategory::Transport, "{$vehicle->type}, self-drive, {$days} days", $days, Money::cents($vehicle->self_drive_day_rate));
+
+        $included = (int) $vehicle->self_drive_km_per_day * $days;
+        $extra = $included > 0 ? max(0, $km - $included) : 0;
+        if ($extra > 0 && Money::cents($vehicle->km_rate) > 0) {
+            $price->add(PriceCategory::Transport, 'Extra mileage over '.number_format($included).' km included, about '.number_format($extra).' km', round($extra, 1), Money::cents($vehicle->km_rate));
+        }
+
+        $price->notes[] = 'Self-drive: fuel is not included. Bring your Sri Lankan driving licence and NIC to the pick-up'
+            .(Money::cents($vehicle->self_drive_deposit) > 0 ? ' and pay a refundable deposit of '.Money::show((string) $vehicle->self_drive_deposit).'.' : '.');
     }
 
     /**

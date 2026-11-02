@@ -142,7 +142,7 @@ class TripReceiptService
             'travellers' => $trip->travellers->sortByDesc('is_lead')->map(fn ($t) => ['name' => $t->full_name, 'lead' => (bool) $t->is_lead, 'country' => $t->country])->values()->all(),
             'contact' => ['email' => $trip->contactEmail(), 'phone' => $trip->leadTraveller?->phone],
             'meal_plan' => $trip->meal_plan->label(),
-            'vehicle' => $trip->vehicle?->type,
+            'vehicle' => $trip->vehicle ? $trip->vehicleLabel() : null,
             'guide' => $trip->guide_type->label().($trip->guide?->name ? ' — '.$trip->guide->name : '').' ('.$trip->guide_language.')',
             'agent' => $trip->agent?->name,
             'itinerary' => $trip->tripDays->map(fn (TripDay $day) => [

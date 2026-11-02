@@ -11,19 +11,19 @@
     <style>
         @page { margin: 26px 32px; }
         body { font-family: DejaVu Sans, sans-serif; font-size: 10px; color: #1e293b; line-height: 1.4; }
-        h1 { font-size: 18px; margin: 0; color: #0F766E; }
-        h2 { font-size: 12px; margin: 16px 0 6px; color: #0F766E; border-bottom: 1px solid #ccfbf1; padding-bottom: 3px; }
+        h1 { font-size: 18px; margin: 0; color: #234F3A; }
+        h2 { font-size: 12px; margin: 16px 0 6px; color: #234F3A; border-bottom: 1px solid #ddebe1; padding-bottom: 3px; }
         .muted { color: #64748b; }
-        .header { border-bottom: 3px solid #0F766E; padding-bottom: 8px; margin-bottom: 10px; }
+        .header { border-bottom: 3px solid #234F3A; padding-bottom: 8px; margin-bottom: 10px; }
         .brand { font-size: 11px; font-weight: bold; color: #F59E0B; }
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 3px 5px; vertical-align: top; }
-        th { background: #f0fdfa; font-size: 9px; text-transform: uppercase; color: #0f766e; }
+        th { background: #f1f6f2; font-size: 9px; text-transform: uppercase; color: #234F3A; }
         tbody tr td { border-bottom: 1px solid #f1f5f9; }
         .num { text-align: right; white-space: nowrap; }
         .tiles td { width: 25%; border: 1px solid #e2e8f0; padding: 6px 8px; }
         .tile-value { font-size: 15px; font-weight: bold; }
-        .bar { background: #0F766E; height: 8px; }
+        .bar { background: #234F3A; height: 8px; }
         .page-break { page-break-before: always; }
     </style>
 </head>

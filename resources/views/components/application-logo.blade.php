@@ -4,8 +4,8 @@
 <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" {{ $attributes }}>
     <defs>
         <linearGradient id="{{ $gid }}" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#14B8A6" />
-            <stop offset="1" stop-color="#0F766E" />
+            <stop offset="0" stop-color="#4D8A68" />
+            <stop offset="1" stop-color="#1D3F2F" />
         </linearGradient>
     </defs>
     <rect width="40" height="40" rx="11" fill="url(#{{ $gid }})" />

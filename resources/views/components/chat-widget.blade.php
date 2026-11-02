@@ -15,7 +15,7 @@
             </div>
         </div>
 
-        <div x-ref="log" class="flex-1 space-y-3 overflow-y-auto p-4 text-sm" aria-live="polite">
+        <div x-ref="log" data-lenis-prevent class="flex-1 space-y-3 overflow-y-auto p-4 text-sm" aria-live="polite">
             <p class="max-w-[85%] rounded-2xl rounded-tl-sm bg-slate-100 px-3 py-2 text-slate-700">
                 Ayubowan! I can suggest places, seasons and routes in Sri Lanka, and help you use the Trip Builder.
             </p>

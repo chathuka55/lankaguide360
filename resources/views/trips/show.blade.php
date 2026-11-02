@@ -255,7 +255,7 @@
                         <div class="flex justify-between gap-3"><dt class="text-slate-500">Arrival</dt><dd class="text-end">{{ $trip->arrival_point }}</dd></div>
                         <div class="flex justify-between gap-3"><dt class="text-slate-500">Departure</dt><dd class="text-end">{{ $trip->departure_point }}</dd></div>
                         <div class="flex justify-between gap-3"><dt class="text-slate-500">Meals</dt><dd class="text-end">{{ $trip->meal_plan->label() }}</dd></div>
-                        <div class="flex justify-between gap-3"><dt class="text-slate-500">Vehicle</dt><dd class="text-end">{{ $trip->vehicle?->type ?? 'To be confirmed' }}</dd></div>
+                        <div class="flex justify-between gap-3"><dt class="text-slate-500">Vehicle</dt><dd class="text-end">{{ $trip->vehicleLabel() }}</dd></div>
                         <div class="flex justify-between gap-3"><dt class="text-slate-500">Guide</dt><dd class="text-end">{{ $trip->guide_type->label() }}@if ($trip->guide_type !== App\Enums\GuideType::None) ({{ $trip->guide_language }})@endif</dd></div>
                         @if ($trip->special_requests)
                             <div><dt class="text-slate-500">Special requests</dt><dd class="mt-1 whitespace-pre-line">{{ $trip->special_requests }}</dd></div>

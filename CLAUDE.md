@@ -16,6 +16,8 @@ Phase-by-phase build prompts and the data-sourcing plan: docs/BUILD-PROMPTS.md.
   there is no tailwind.config.js), Flowbite 4 components, @tailwindcss/forms
 - Leaflet.js + Leaflet.markercluster + OpenStreetMap tiles for maps (resources/js/map.js,
   loaded only on map pages); SortableJS for drag-and-drop
+- Home page only (resources/js/home.js): GSAP + ScrollTrigger, Lenis smooth scroll, Swiper.
+  React UI kits (Aceternity etc.) don't fit Blade/Alpine; their effects are rebuilt there.
 - MySQL database name: `lankaguide360_app` (utf8mb4_unicode_ci). The old plain-PHP project
   still owns the `lankaguide360` database — never touch it.
 - Tests run against the MySQL database `lankaguide360_app_test` (phpunit.xml), PHPUnit 12
@@ -191,11 +193,31 @@ Phase-by-phase build prompts and the data-sourcing plan: docs/BUILD-PROMPTS.md.
   after a database rebuild); the import cache in storage/app/import-cache lets `lg:import-all`
   rebuild places and hotels offline.
 
+## Self-drive, vehicle photos, new look (Nov 2026)
+- Self-drive hire is for Sri Lankan residents only (`travellerType === 'local'`). Vehicles:
+  `self_drive`, `self_drive_day_rate`, `self_drive_deposit`, `self_drive_km_per_day`
+  (`Vehicle::offersSelfDrive()`, scope `selfDrive()`; defaults in data/self_drive.php, cars/SUVs/vans
+  only). Trips: `self_drive`, `driver_name`, `driver_licence_no` (hidden attribute),
+  `driver_licence_expiry` (must cover the last trip day). Builder step 7 "With a driver / Self-drive";
+  no chauffeur-guide without a driver. Pricing: self-drive day rate + km over the allowance at
+  km_rate; the refundable deposit is a note. Vehicle hire form has the same choice (`mode=self`).
+  `Trip::vehicleLabel()` = "Car, self-drive" / "Car with driver".
+- `php artisan lg:vehicle-photos` imports one Commons photo per vehicle type
+  (database/seeders/data/vehicle_photos.php) for vehicles without photos.
+- Home: hero slideshow (`heroSlider`), interest dropdown (`interestPicker` → /plan?category=),
+  expanding interest panels, tilt/spotlight cards, sticky "How it works" steps, parallax band.
+  `.motion-ready` hides `[data-reveal]` until GSAP shows it; Swiper's own CSS is unlayered, so
+  override its position/z-index/overflow with Tailwind `!` utilities. Scrollable panels inside the
+  page need `data-lenis-prevent`. Section headings: `<x-home.heading title accent eyebrow>`.
+- Navbar: Destinations mega menu (categories, provinces, hidden gems) + "Plan your trip" dropdown;
+  `siteProvinces` comes from the view composer.
+
 ## UI rules
-- Mobile-first, responsive at sm/md/lg/xl. Brand colours: teal #0F766E primary
-  (`primary-*` scale, 700 = #0F766E), amber #F59E0B accent (`accent-*`, 500 = #F59E0B),
-  slate text. Flowbite's `brand` tokens point at the teal scale. Font: Inter (Google Fonts)
-  with system fallback.
+- Mobile-first, responsive at sm/md/lg/xl. Brand colours ("tea country" theme, Nov 2026): forest
+  green primary (`primary-*` scale, 700 = #234F3A), amber #F59E0B accent (`accent-*`,
+  500 = #F59E0B), warm cream surfaces (`sand-50…300`), slate text. Flowbite's `brand` tokens point
+  at the primary scale. Fonts: Inter (body) and Instrument Serif (`font-display`, italic accents in
+  headings), Google Fonts with system fallback. PDFs/receipts use the same greens as hex values.
 - Reusable Blade components in resources/views/components (navbar, footer, chat-widget,
   logo, icon, page-header, …). Layouts: `<x-app-layout title="…">` (public),
   `<x-admin-layout title="…">` (back office), `<x-guest-layout>` (auth screens).
@@ -217,6 +239,7 @@ Phase-by-phase build prompts and the data-sourcing plan: docs/BUILD-PROMPTS.md.
   `lg:import-hotels`, `lg:import-images`, `lg:import-all`
 - Seeded logins: admin@lankaguide360.test / agent@lankaguide360.test, password `password`
 - Demo hotels: `php artisan lg:demo-hotels` (remove with `--remove`)
+- Vehicle photos: `php artisan lg:vehicle-photos`
 - If XAMPP is reinstalled, PHP goes back to 8.2 and the MySQL databases are lost: install PHP 8.4
   (windows.php.net, VS17 x64 Thread Safe) into C:\xampp\php (keep 8.2 in C:\xampp\php82-backup),
   recreate both databases, run `migrate:fresh --seed`, then `lg:import-all` (uses the local caches).

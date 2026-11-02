@@ -252,6 +252,53 @@ class TripBuilderTest extends TestCase
         $this->assertGreaterThanOrEqual(5, Vehicle::find($component->get('vehicleId'))->max_pax);
     }
 
+    public function test_residents_can_choose_self_drive_with_a_valid_licence(): void
+    {
+        Mail::fake();
+        $component = $this->throughStepFive()->set('travellerType', 'local')->call('next')->call('next')->assertSet('step', 7)
+            ->assertSee('Self-drive')
+            ->set('selfDrive', true);
+
+        $vehicle = Vehicle::find($component->get('vehicleId'));
+        $this->assertTrue($vehicle->offersSelfDrive(), 'A self-drive vehicle is picked.');
+        $this->assertNotSame('chauffeur', $component->get('guideType'), 'No chauffeur-guide without a driver.');
+
+        // Vehicles that need a driver can't be picked; the licence is checked.
+        $coach = Vehicle::where('self_drive', false)->where('max_pax', '>=', 2)->first();
+        $component->call('selectVehicle', $coach->id)->assertSet('vehicleId', $vehicle->id)
+            ->call('next')->assertHasErrors(['driverName', 'driverLicenceNo', 'driverLicenceExpiry', 'licenceConfirmed'])->assertSet('step', 7)
+            ->set('driverName', 'Nimal Perera')->set('driverLicenceNo', 'b 1234567')
+            ->set('driverLicenceExpiry', now()->addMonth()->addDay()->toDateString())->set('licenceConfirmed', true)
+            ->call('next')->assertHasErrors(['driverLicenceExpiry'])
+            ->set('driverLicenceExpiry', now()->addYears(3)->toDateString())
+            ->call('next')->assertHasNoErrors()->assertSet('step', 8)
+            ->assertSee('self-drive');
+
+        $this->post(route('trips.store'), [
+            'full_name' => 'Nimal Perera', 'email' => 'nimal@example.test', 'phone' => '+94 77 123 4567',
+            'country' => 'Sri Lanka', 'age' => 40, 'consent' => '1',
+        ])->assertRedirect();
+
+        $trip = Trip::sole();
+        $this->assertTrue($trip->self_drive);
+        $this->assertSame('B1234567', $trip->driver_licence_no);
+        $this->assertSame("{$vehicle->type}, self-drive", $trip->vehicleLabel());
+        $this->assertTrue($trip->priceItems()->where('description', 'like', '%self-drive%')->exists());
+        $this->assertArrayNotHasKey('driver_licence_no', $trip->toArray());
+    }
+
+    public function test_foreign_visitors_cannot_choose_self_drive(): void
+    {
+        $component = $this->throughStepFive()->call('next')->call('next')->assertSet('step', 7)
+            ->assertSee('Self-drive hire is open to Sri Lankan residents')
+            ->set('selfDrive', true)->assertSet('selfDrive', false);
+
+        // A resident who switches back to foreign loses self-drive.
+        $component->set('travellerType', 'local')->set('selfDrive', true)->assertSet('selfDrive', true)
+            ->set('travellerType', 'foreign')->assertSet('selfDrive', false);
+        $this->assertFalse($this->draft()->isSelfDrive());
+    }
+
     public function test_changing_the_tier_after_the_plan_resets_hotels_and_price(): void
     {
         $component = $this->throughStepFive()->call('next')->call('next')->call('next')->assertSet('step', 8);

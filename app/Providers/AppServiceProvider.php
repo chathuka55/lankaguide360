@@ -71,8 +71,12 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('chat', fn (Request $request) => Limit::perMinutes(10, 20)->by($request->ip()));
 
         // Categories for the footer and chips on every public page (cached).
-        View::composer(['components.footer', 'home', 'builder.*'], function ($view) {
+        View::composer(['components.footer', 'components.navbar', 'home', 'builder.*'], function ($view) {
             $view->with('siteCategories', app(SiteCatalog::class)->categories());
+        });
+        // Provinces for the navbar's Destinations menu.
+        View::composer('components.navbar', function ($view) {
+            $view->with('siteProvinces', app(SiteCatalog::class)->provinces());
         });
 
         foreach ([Category::class, District::class, Province::class] as $model) {

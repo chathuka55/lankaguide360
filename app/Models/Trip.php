@@ -24,8 +24,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
     'currency', 'access_token', 'tracking_consent', 'submitted_at', 'approved_at',
     'internal_notes', 'price_note', 'dietary_notes', 'luggage', 'data_consent_at', 'completed_at',
     'accepted_at', 'itinerary_finalized_at', 'traveller_type', 'refreshments',
+    'self_drive', 'driver_name', 'driver_licence_no', 'driver_licence_expiry',
 ])]
-#[Hidden(['access_token', 'internal_notes'])]
+#[Hidden(['access_token', 'internal_notes', 'driver_licence_no'])]
 class Trip extends Model
 {
     use HasFactory;
@@ -70,6 +71,8 @@ class Trip extends Model
             'data_consent_at' => 'datetime',
             'luggage' => 'integer',
             'refreshments' => 'boolean',
+            'self_drive' => 'boolean',
+            'driver_licence_expiry' => 'date',
         ];
     }
 
@@ -108,6 +111,16 @@ class Trip extends Model
     public function guide(): BelongsTo
     {
         return $this->belongsTo(Guide::class);
+    }
+
+    /** "Standard van with driver" or "Car, self-drive". */
+    public function vehicleLabel(): string
+    {
+        if (! $this->vehicle) {
+            return 'To be confirmed';
+        }
+
+        return $this->vehicle->type.($this->self_drive ? ', self-drive' : ' with driver');
     }
 
     /**

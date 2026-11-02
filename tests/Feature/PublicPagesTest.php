@@ -51,13 +51,15 @@ class PublicPagesTest extends TestCase
 
         $this->get('/')
             ->assertOk()
-            ->assertSee('Plan your perfect Sri Lanka journey')
+            ->assertSee('Plan less.')
+            ->assertSee('Featured place')
             ->assertSee('Sigiriya Rock Fortress')
             ->assertSee('Hero Photographer')
             ->assertSee('Loved every day!')
             ->assertDontSee('Not approved yet')
             ->assertDontSee('Hikkaduwa Beach')
-            ->assertSee('Explore by category')
+            ->assertSee('Explore Sri Lanka by')
+            ->assertSee('data-hero', false)
             ->assertSee('og:image', false);
     }
 

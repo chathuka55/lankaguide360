@@ -78,7 +78,7 @@ class ReportExporter
     {
         $writer = new Writer;
         $writer->openToFile($path);
-        $bold = (new Style)->withFontBold(true)->withBackgroundColor('CCFBF1');
+        $bold = (new Style)->withFontBold(true)->withBackgroundColor('DDEBE1');
 
         foreach (array_values($reports) as $i => $report) {
             $sheet = $i === 0 ? $writer->getCurrentSheet() : $writer->addNewSheetAndMakeItCurrent();

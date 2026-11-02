@@ -35,11 +35,19 @@ class VehicleRequest extends FormRequest
             'provider_phone' => ['nullable', 'string', 'max:30'],
             'provider_email' => ['nullable', 'email', 'max:190'],
             'provider_website' => ['nullable', 'url:https,http', 'max:255'],
+            'self_drive' => ['boolean'],
+            'self_drive_day_rate' => ['nullable', 'required_if_accepted:self_drive', 'numeric', 'min:0', 'max:10000', 'decimal:0,2'],
+            'self_drive_deposit' => ['nullable', 'numeric', 'min:0', 'max:100000', 'decimal:0,2'],
+            'self_drive_km_per_day' => ['nullable', 'integer', 'between:0,2000'],
         ];
     }
 
     protected function prepareForValidation(): void
     {
-        $this->merge(['is_rentable' => $this->boolean('is_rentable'), 'amenities' => $this->input('amenities', [])]);
+        $this->merge([
+            'is_rentable' => $this->boolean('is_rentable'),
+            'self_drive' => $this->boolean('self_drive'),
+            'amenities' => $this->input('amenities', []),
+        ]);
     }
 }

@@ -6,19 +6,19 @@
     <style>
         @page { margin: 28px 34px; }
         body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #1e293b; line-height: 1.45; }
-        h1 { font-size: 20px; margin: 0; color: #0F766E; }
-        h2 { font-size: 14px; margin: 18px 0 6px; color: #0F766E; border-bottom: 1px solid #ccfbf1; padding-bottom: 3px; }
+        h1 { font-size: 20px; margin: 0; color: #234F3A; }
+        h2 { font-size: 14px; margin: 18px 0 6px; color: #234F3A; border-bottom: 1px solid #ddebe1; padding-bottom: 3px; }
         h3 { font-size: 12px; margin: 0 0 4px; }
         .muted { color: #64748b; }
-        .header { border-bottom: 3px solid #0F766E; padding-bottom: 8px; margin-bottom: 12px; }
+        .header { border-bottom: 3px solid #234F3A; padding-bottom: 8px; margin-bottom: 12px; }
         .brand { font-size: 12px; font-weight: bold; color: #F59E0B; }
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 4px 6px; vertical-align: top; }
-        th { background: #f0fdfa; font-size: 10px; text-transform: uppercase; color: #0f766e; }
+        th { background: #f1f6f2; font-size: 10px; text-transform: uppercase; color: #234F3A; }
         tr.line td { border-bottom: 1px solid #f1f5f9; }
         .num { text-align: right; white-space: nowrap; }
         .day { page-break-inside: avoid; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
-        .total td { font-weight: bold; font-size: 13px; border-top: 2px solid #0F766E; }
+        .total td { font-weight: bold; font-size: 13px; border-top: 2px solid #234F3A; }
         .facts td { padding: 2px 6px 2px 0; }
         .footer { margin-top: 20px; font-size: 9px; color: #64748b; }
     </style>
@@ -36,7 +36,7 @@
     <table class="facts">
         <tr><td class="muted">Lead traveller</td><td>{{ $trip->contactName() }}</td><td class="muted">Travellers</td><td>{{ $trip->adults }} adults, {{ $trip->children }} children, {{ $trip->infants }} infants</td></tr>
         <tr><td class="muted">Arrival</td><td>{{ $trip->arrival_point }}</td><td class="muted">Departure</td><td>{{ $trip->departure_point }}</td></tr>
-        <tr><td class="muted">Vehicle</td><td>{{ $trip->vehicle?->type ?? 'To be confirmed' }}</td><td class="muted">Guide</td><td>{{ $trip->guide_type->label() }} ({{ $trip->guide_language }})</td></tr>
+        <tr><td class="muted">Vehicle</td><td>{{ $trip->vehicleLabel() }}</td><td class="muted">Guide</td><td>{{ $trip->guide_type->label() }} ({{ $trip->guide_language }})</td></tr>
         <tr><td class="muted">Meals</td><td>{{ $trip->meal_plan->label() }}</td><td class="muted">Agent</td><td>{{ $trip->agent?->name ?? 'LankaGuide360 team' }}</td></tr>
     </table>
 

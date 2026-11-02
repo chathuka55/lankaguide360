@@ -18,8 +18,10 @@ class TravelOptionSeeder extends Seeder
 
     public function run(): void
     {
+        $selfDrive = require __DIR__.'/data/self_drive.php';
         foreach (require __DIR__.'/data/vehicles.php' as $tier => $vehicles) {
             foreach ($vehicles as [$type, $model, $minPax, $maxPax, $luggage, $dayRate, $kmRate]) {
+                [$selfRate, $deposit, $kmPerDay] = $selfDrive[$type] ?? [null, null, null];
                 Vehicle::firstOrCreate(
                     ['tier' => $tier, 'type' => $type],
                     [
@@ -29,6 +31,11 @@ class TravelOptionSeeder extends Seeder
                         'luggage_capacity' => $luggage,
                         'day_rate' => $dayRate,
                         'km_rate' => $kmRate,
+                        'amenities' => Vehicle::DEFAULT_AMENITIES[$tier] ?? [],
+                        'self_drive' => $selfRate !== null,
+                        'self_drive_day_rate' => $selfRate,
+                        'self_drive_deposit' => $deposit,
+                        'self_drive_km_per_day' => $kmPerDay,
                     ],
                 );
             }

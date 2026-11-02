@@ -21,23 +21,23 @@
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: {{ $forPdf ? '2px 5px' : '4px 6px' }}; vertical-align: top; }
         .muted { color: #64748b; }
-        .brand { font-size: 1.4em; font-weight: 700; color: #0F766E; }
+        .brand { font-size: 1.4em; font-weight: 700; color: #234F3A; }
         .brand span { color: #F59E0B; }
         .title { font-size: 1.05em; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: #0f172a; }
-        .ticket { border: 2px dashed #0F766E; border-radius: 12px; padding: {{ $forPdf ? '8px 12px' : '14px 16px' }}; margin-top: {{ $forPdf ? '8px' : '14px' }}; }
+        .ticket { border: 2px dashed #234F3A; border-radius: 12px; padding: {{ $forPdf ? '8px 12px' : '14px 16px' }}; margin-top: {{ $forPdf ? '8px' : '14px' }}; }
         .big { font-size: 1.5em; font-weight: 700; }
         .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-weight: 700; font-size: .85em; }
-        .ok { background: #ccfbf1; color: #115e59; }
+        .ok { background: #ddebe1; color: #1d3f2f; }
         .void { background: #fee2e2; color: #991b1b; }
-        h2 { font-size: 1em; margin: {{ $forPdf ? '10px 0 4px' : '18px 0 6px' }}; color: #0F766E; border-bottom: 1px solid #ccfbf1; padding-bottom: 3px; text-transform: uppercase; letter-spacing: .05em; }
+        h2 { font-size: 1em; margin: {{ $forPdf ? '10px 0 4px' : '18px 0 6px' }}; color: #234F3A; border-bottom: 1px solid #ddebe1; padding-bottom: 3px; text-transform: uppercase; letter-spacing: .05em; }
         .day td { border-bottom: 1px solid #f1f5f9; }
-        .dayhead td { background: #f0fdfa; font-weight: 700; }
+        .dayhead td { background: #f1f6f2; font-weight: 700; }
         .num { text-align: right; white-space: nowrap; }
-        .total td { font-weight: 700; border-top: 2px solid #0F766E; font-size: 1.1em; }
+        .total td { font-weight: 700; border-top: 2px solid #234F3A; font-size: 1.1em; }
         .watermark { position: absolute; top: 38%; left: 8%; right: 8%; text-align: center; font-size: 72px; font-weight: 700; color: rgba(220, 38, 38, .14); transform: rotate(-18deg); }
         .toolbar { max-width: 820px; margin: 24px auto 0; display: flex; gap: 8px; flex-wrap: wrap; }
         .btn { display: inline-block; padding: 9px 16px; border-radius: 10px; font-weight: 600; text-decoration: none; border: 1px solid #cbd5e1; color: #0f172a; background: #fff; cursor: pointer; font-size: 14px; }
-        .btn-primary { background: #0F766E; color: #fff; border-color: #0F766E; }
+        .btn-primary { background: #234F3A; color: #fff; border-color: #234F3A; }
         @media print { body { background: #fff; } .page { margin: 0; box-shadow: none; padding: 0; } .toolbar { display: none; } }
     </style>
 </head>

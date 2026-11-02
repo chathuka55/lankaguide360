@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable([
     'type', 'example_model', 'description', 'tier', 'min_pax', 'max_pax', 'luggage_capacity', 'amenities', 'is_rentable',
     'provider_name', 'provider_phone', 'provider_email', 'provider_website', 'day_rate', 'km_rate', 'image',
+    'self_drive', 'self_drive_day_rate', 'self_drive_deposit', 'self_drive_km_per_day',
 ])]
 #[WithoutTimestamps]
 class Vehicle extends Model
@@ -34,6 +35,13 @@ class Vehicle extends Model
         'reclining_seats' => 'Reclining seats',
     ];
 
+    /** Services a new vehicle gets per tier (admins can change them). */
+    public const DEFAULT_AMENITIES = [
+        'budget' => ['air_conditioning', 'water', 'charging'],
+        'premium' => ['air_conditioning', 'water', 'charging', 'wifi', 'soft_drinks'],
+        'luxury' => ['air_conditioning', 'water', 'charging', 'wifi', 'soft_drinks', 'snacks', 'child_seat'],
+    ];
+
     protected function casts(): array
     {
         return [
@@ -45,6 +53,10 @@ class Vehicle extends Model
             'km_rate' => 'decimal:2',
             'amenities' => 'array',
             'is_rentable' => 'boolean',
+            'self_drive' => 'boolean',
+            'self_drive_day_rate' => 'decimal:2',
+            'self_drive_deposit' => 'decimal:2',
+            'self_drive_km_per_day' => 'integer',
         ];
     }
 
@@ -54,6 +66,18 @@ class Vehicle extends Model
     public function trips(): HasMany
     {
         return $this->hasMany(Trip::class);
+    }
+
+    /** Can be hired without a driver (Sri Lankan residents with a valid licence only). */
+    public function offersSelfDrive(): bool
+    {
+        return $this->self_drive && (float) $this->self_drive_day_rate > 0;
+    }
+
+    #[Scope]
+    protected function selfDrive(Builder $query): void
+    {
+        $query->where($this->qualifyColumn('self_drive'), true)->where($this->qualifyColumn('self_drive_day_rate'), '>', 0);
     }
 
     #[Scope]

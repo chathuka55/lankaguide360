@@ -30,6 +30,10 @@ class VehicleHireController extends Controller
     public function request(VehicleHireRequest $request, Vehicle $vehicle): RedirectResponse
     {
         abort_unless($vehicle->is_rentable, 404);
+        $selfDrive = $request->isSelfDrive();
+        if ($selfDrive && ! $vehicle->offersSelfDrive()) {
+            return back()->withInput()->withErrors(['mode' => "The {$vehicle->type} is only hired with a driver."]);
+        }
 
         if (! $request->isSpam()) {
             $data = $request->validated();
@@ -37,14 +41,17 @@ class VehicleHireController extends Controller
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'phone' => $data['phone'],
-                'subject' => "Vehicle hire request: {$vehicle->type}",
+                'subject' => "Vehicle hire request: {$vehicle->type}".($selfDrive ? ' (self-drive)' : ''),
                 'body' => implode("\n", array_filter([
                     "Vehicle: {$vehicle->type} ({$vehicle->tier->label()}, up to {$vehicle->max_pax} travellers)",
+                    $selfDrive
+                        ? 'SELF-DRIVE. Driver: '.$data['driver_name'].', Sri Lankan licence '.strtoupper($data['licence_no']).', valid until '.$data['licence_expiry'].'. Check the licence and NIC at handover.'
+                        : 'With driver',
                     $vehicle->provider_name ? "Provider: {$vehicle->provider_name}" : null,
                     "From {$data['start_date']} to {$data['end_date']}",
                     "Pick-up: {$data['pickup']}",
                     "Travellers: {$data['travellers']}",
-                    $data['message'] ? "\n".$data['message'] : null,
+                    filled($data['message'] ?? null) ? "\n".$data['message'] : null,
                 ])),
             ]);
             Mail::to(config('lankaguide.contact.admin_email'))->queue(new ContactMessageReceived($message));

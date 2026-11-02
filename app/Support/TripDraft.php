@@ -71,6 +71,17 @@ final class TripDraft
     /** Optional refreshment pack in the vehicle. */
     public bool $refreshments = false;
 
+    /** Hire the vehicle without a driver (Sri Lankan residents with a valid licence only). */
+    public bool $selfDrive = false;
+
+    public ?string $driverName = null;
+
+    public ?string $driverLicenceNo = null;
+
+    public ?string $driverLicenceExpiry = null;
+
+    public bool $licenceConfirmed = false;
+
     /** Highest step the traveller has completed (1–8). */
     public int $completedStep = 0;
 
@@ -133,6 +144,12 @@ final class TripDraft
         return $this->travellerType === 'local';
     }
 
+    /** Self-drive only counts for residents (the option is hidden for foreign visitors). */
+    public function isSelfDrive(): bool
+    {
+        return $this->selfDrive && $this->isLocal();
+    }
+
     public function tierEnum(): Tier
     {
         return Tier::tryFrom((string) $this->tier) ?? Tier::Premium;
@@ -158,6 +175,11 @@ final class TripDraft
     public function start(): ?Carbon
     {
         return $this->startDate ? Carbon::parse($this->startDate)->startOfDay() : null;
+    }
+
+    public function end(): ?Carbon
+    {
+        return $this->start()?->addDays(max(1, (int) $this->days) - 1);
     }
 
     public function nights(): int

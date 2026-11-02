@@ -90,8 +90,14 @@ class SuggestionService
      * Vehicle for the group (SRS 5.5): seats for everyone including children and infants;
      * more than 2 bags per person moves the group up one vehicle size.
      */
-    public function vehicleFor(int $travellers, ?int $bags, Tier $tier): ?Vehicle
+    public function vehicleFor(int $travellers, ?int $bags, Tier $tier, bool $selfDrive = false): ?Vehicle
     {
+        if ($selfDrive) {
+            // Prefer the trip's tier, then the smallest self-drive vehicle that fits.
+            return Vehicle::selfDrive()->where('max_pax', '>=', $travellers)
+                ->orderByRaw('tier = ? desc', [$tier->value])->orderBy('max_pax')->orderBy('self_drive_day_rate')->first();
+        }
+
         $fleet = Vehicle::tier($tier)->orderBy('max_pax')->get();
         $index = $fleet->search(fn (Vehicle $v) => $v->min_pax <= $travellers && $v->max_pax >= $travellers);
 
@@ -118,9 +124,11 @@ class SuggestionService
      *
      * @return Collection<int, Vehicle>
      */
-    public function vehicleOptions(int $travellers): Collection
+    public function vehicleOptions(int $travellers, bool $selfDrive = false): Collection
     {
         return Vehicle::where('max_pax', '>=', $travellers)
+            ->when($selfDrive, fn ($q) => $q->selfDrive())
+            ->with('cover')
             ->orderByRaw("FIELD(tier, 'budget', 'premium', 'luxury')")
             ->orderBy('max_pax')
             ->get();
@@ -131,8 +139,14 @@ class SuggestionService
      *
      * @return array{type: GuideType, required: bool, options: array<int, GuideType>, note: string}
      */
-    public function guideRule(int $travellers, Tier $tier): array
+    public function guideRule(int $travellers, Tier $tier, bool $selfDrive = false): array
     {
+        // Without a driver there is no chauffeur-guide: a national guide can ride along.
+        if ($selfDrive) {
+            return ['type' => GuideType::None, 'required' => false, 'options' => [GuideType::None, GuideType::Site, GuideType::National],
+                'note' => 'You drive yourself. Add site guides at the major sites, or a national guide who travels with you.'];
+        }
+
         return match (true) {
             $travellers >= 21 => ['type' => GuideType::National, 'required' => true, 'options' => [GuideType::National],
                 'note' => 'Large groups travel with a driver, an SLTDA national guide and an assistant.'],
@@ -183,10 +197,10 @@ class SuggestionService
     {
         $tier = $draft->tierEnum();
         $draft->mealPlan ??= $this->defaultMealPlan($tier)->value;
-        $draft->vehicleId ??= $this->vehicleFor($draft->travellers(), $draft->luggage, $tier)?->id;
+        $draft->vehicleId ??= $this->vehicleFor($draft->travellers(), $draft->luggage, $tier, $draft->isSelfDrive())?->id;
 
         if ($draft->completedStep < 7) {
-            $draft->guideType = $this->guideRule($draft->travellers(), $tier)['type']->value;
+            $draft->guideType = $this->guideRule($draft->travellers(), $tier, $draft->isSelfDrive())['type']->value;
         }
     }
 }

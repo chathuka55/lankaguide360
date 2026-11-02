@@ -108,6 +108,17 @@ class TripBuilder extends Component
 
     public bool $refreshments = false;
 
+    /** Self-drive hire: Sri Lankan residents with a valid Sri Lankan licence only. */
+    public bool $selfDrive = false;
+
+    public ?string $driverName = null;
+
+    public ?string $driverLicenceNo = null;
+
+    public ?string $driverLicenceExpiry = null;
+
+    public bool $licenceConfirmed = false;
+
     public function mount(): void
     {
         $draft = TripDraft::fromSession(session()->driver());
@@ -180,8 +191,8 @@ class TripBuilder extends Component
         $suggestions = app(SuggestionService::class);
         $this->tier = $tier->value;
         $this->mealPlan = $suggestions->defaultMealPlan($tier)->value;
-        $this->vehicleId = $suggestions->vehicleFor($this->travellerCount(), $this->luggage, $tier)?->id;
-        $this->guideType = $suggestions->guideRule($this->travellerCount(), $tier)['type']->value;
+        $this->vehicleId = $suggestions->vehicleFor($this->travellerCount(), $this->luggage, $tier, $this->isSelfDrive())?->id;
+        $this->guideType = $suggestions->guideRule($this->travellerCount(), $tier, $this->isSelfDrive())['type']->value;
         $this->persist(invalidate: true);
     }
 
@@ -321,7 +332,7 @@ class TripBuilder extends Component
     {
         $vehicle = Vehicle::find($id);
 
-        if ($vehicle && $vehicle->max_pax >= $this->travellerCount()) {
+        if ($vehicle && $vehicle->max_pax >= $this->travellerCount() && (! $this->isSelfDrive() || $vehicle->offersSelfDrive())) {
             $this->vehicleId = $vehicle->id;
             $this->persist();
         }
@@ -368,6 +379,7 @@ class TripBuilder extends Component
         match (true) {
             in_array($name, ['adults', 'infants', 'childrenAges', 'luggage'], true) => $this->travellersChanged(),
             $name === 'mealPlan' => $this->mealPlanChanged(),
+            in_array($name, ['selfDrive', 'travellerType'], true) => $this->selfDriveChanged(),
             default => $this->persist(invalidate: in_array($name, self::ITINERARY_FIELDS, true)),
         };
     }
@@ -383,15 +395,46 @@ class TripBuilder extends Component
         $tier = Tier::tryFrom($this->tier) ?? Tier::Premium;
         $current = $this->vehicleId ? Vehicle::find($this->vehicleId) : null;
         if (! $current || $current->max_pax < $this->travellerCount() || $this->completedStep < 7) {
-            $this->vehicleId = $suggestions->vehicleFor($this->travellerCount(), $this->luggage, $tier)?->id;
+            $this->vehicleId = $suggestions->vehicleFor($this->travellerCount(), $this->luggage, $tier, $this->isSelfDrive())?->id;
         }
 
-        $rule = $suggestions->guideRule($this->travellerCount(), $tier);
+        $rule = $suggestions->guideRule($this->travellerCount(), $tier, $this->isSelfDrive());
         if ($this->completedStep < 7 || ! in_array(GuideType::tryFrom($this->guideType), $rule['options'], true)) {
             $this->guideType = $rule['type']->value;
         }
 
         $this->persist();
+    }
+
+    /**
+     * Self-drive switched on or off (or the traveller is no longer a resident): pick a vehicle
+     * that can be hired that way and a guide option that works without a driver.
+     */
+    private function selfDriveChanged(): void
+    {
+        if ($this->travellerType !== 'local') {
+            $this->selfDrive = false;
+        }
+
+        $suggestions = app(SuggestionService::class);
+        $tier = Tier::tryFrom($this->tier) ?? Tier::Premium;
+        $current = $this->vehicleId ? Vehicle::find($this->vehicleId) : null;
+        $fits = $current && $current->max_pax >= $this->travellerCount() && (! $this->isSelfDrive() || $current->offersSelfDrive());
+        if (! $fits) {
+            $this->vehicleId = $suggestions->vehicleFor($this->travellerCount(), $this->luggage, $tier, $this->isSelfDrive())?->id;
+        }
+
+        $rule = $suggestions->guideRule($this->travellerCount(), $tier, $this->isSelfDrive());
+        if (! in_array(GuideType::tryFrom($this->guideType), $rule['options'], true)) {
+            $this->guideType = $rule['type']->value;
+        }
+
+        $this->persist();
+    }
+
+    private function isSelfDrive(): bool
+    {
+        return $this->selfDrive && $this->travellerType === 'local';
     }
 
     private function mealPlanChanged(): void
@@ -485,15 +528,50 @@ class TripBuilder extends Component
             ], ['startDate.after_or_equal' => 'The start date cannot be in the past.', 'childrenAges.*.between' => 'Children are 2–17 years old; add younger ones as infants.'], ['startDate' => 'start date', 'days' => 'number of days']],
             6 => [['mealPlan' => ['required', Rule::enum(MealPlan::class)], 'cuisineIds.*' => ['integer', 'exists:cuisines,id'], 'dietaryNotes' => ['nullable', 'string', 'max:500']]],
             7 => [[
-                'vehicleId' => ['required', 'integer', Rule::exists('vehicles', 'id')->where(fn ($q) => $q->where('max_pax', '>=', $this->travellerCount()))],
-                'guideType' => ['required', Rule::enum(GuideType::class)],
+                'vehicleId' => ['required', 'integer', Rule::exists('vehicles', 'id')->where(fn ($q) => $q->where('max_pax', '>=', $this->travellerCount())
+                    ->when($this->isSelfDrive(), fn ($q) => $q->where('self_drive', true)->where('self_drive_day_rate', '>', 0)))],
+                'guideType' => ['required', Rule::enum(GuideType::class), ...($this->isSelfDrive() ? [Rule::notIn([GuideType::Chauffeur->value])] : [])],
                 'guideLanguage' => ['required', 'string', 'max:30'],
-            ], ['vehicleId.required' => 'Choose a vehicle.', 'vehicleId.exists' => 'That vehicle has too few seats for your group.']],
+                ...($this->isSelfDrive() ? self::licenceRules($this->draft()->end()?->toDateString()) : []),
+            ], [
+                'vehicleId.required' => 'Choose a vehicle.',
+                'vehicleId.exists' => $this->isSelfDrive() ? 'Choose a vehicle that can be hired as self-drive.' : 'That vehicle has too few seats for your group.',
+                'guideType.not_in' => 'A chauffeur-guide needs a driver. Choose another guide option for self-drive.',
+                ...self::licenceMessages(),
+            ], ['driverName' => 'driver name', 'driverLicenceNo' => 'licence number', 'driverLicenceExpiry' => 'licence expiry date']],
         });
 
         if ($step === 4) {
             $this->validatePlacesAreRoutable();
         }
+    }
+
+    /**
+     * Self-drive licence checks (also used by the vehicle hire form). The website can only check
+     * the details given; the agent checks the licence itself at pick-up.
+     *
+     * @return array<string, array<int, mixed>>
+     */
+    public static function licenceRules(?string $lastDay): array
+    {
+        return [
+            'driverName' => ['required', 'string', 'max:120'],
+            'driverLicenceNo' => ['required', 'string', 'max:20', 'regex:/^[A-Za-z]{0,2}\s?\d{5,10}$/'],
+            'driverLicenceExpiry' => ['required', 'date', 'after_or_equal:'.($lastDay ?? 'today')],
+            'licenceConfirmed' => ['accepted'],
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function licenceMessages(): array
+    {
+        return [
+            'driverLicenceNo.regex' => 'Enter the number as printed on your Sri Lankan driving licence, e.g. B1234567.',
+            'driverLicenceExpiry.after_or_equal' => 'Your licence must be valid until the last day of the trip.',
+            'licenceConfirmed.accepted' => 'Please confirm you hold a valid Sri Lankan driving licence for this vehicle.',
+        ];
     }
 
     private function validatePlacesAreRoutable(): void
@@ -552,6 +630,11 @@ class TripBuilder extends Component
         $draft->guideLanguage = $this->guideLanguage;
         $draft->travellerType = in_array($this->travellerType, ['local', 'foreign'], true) ? $this->travellerType : 'foreign';
         $draft->refreshments = (bool) $this->refreshments;
+        $draft->selfDrive = $this->isSelfDrive();
+        $draft->driverName = $this->driverName ? Str::limit(trim($this->driverName), 120, '') : null;
+        $draft->driverLicenceNo = $this->driverLicenceNo ? strtoupper((string) preg_replace('/\s+/', '', $this->driverLicenceNo)) : null;
+        $draft->driverLicenceExpiry = $this->driverLicenceExpiry ?: null;
+        $draft->licenceConfirmed = (bool) $this->licenceConfirmed;
         $draft->completedStep = $this->completedStep;
 
         if ($invalidate) {
@@ -587,6 +670,11 @@ class TripBuilder extends Component
         // Registered travellers start with the type from their profile.
         $this->travellerType = $draft->travellerType ?? (auth()->user()?->traveller_type === 'local' ? 'local' : 'foreign');
         $this->refreshments = $draft->refreshments;
+        $this->selfDrive = $draft->selfDrive;
+        $this->driverName = $draft->driverName ?? auth()->user()?->name;
+        $this->driverLicenceNo = $draft->driverLicenceNo;
+        $this->driverLicenceExpiry = $draft->driverLicenceExpiry;
+        $this->licenceConfirmed = $draft->licenceConfirmed;
         $this->completedStep = $draft->completedStep;
     }
 
@@ -838,10 +926,15 @@ class TripBuilder extends Component
         $tier = Tier::tryFrom($this->tier) ?? Tier::Premium;
         $travellers = $this->travellerCount();
 
+        $selfDrive = $this->isSelfDrive();
+
         return [
-            'vehicles' => $suggestions->vehicleOptions($travellers),
-            'suggestedVehicle' => $suggestions->vehicleFor($travellers, $this->luggage, $tier),
-            'guideRule' => $suggestions->guideRule($travellers, $tier),
+            'vehicles' => $suggestions->vehicleOptions($travellers, $selfDrive),
+            'suggestedVehicle' => $suggestions->vehicleFor($travellers, $this->luggage, $tier, $selfDrive),
+            'guideRule' => $suggestions->guideRule($travellers, $tier, $selfDrive),
+            'canSelfDrive' => $this->travellerType === 'local',
+            'selfDriveFits' => Vehicle::selfDrive()->where('max_pax', '>=', $travellers)->exists(),
+            'lastDay' => $this->draft()->end(),
             'languages' => $suggestions->guideLanguages(),
             'childSeats' => $this->draft()->childSeats(),
             'refreshmentRate' => (string) Setting::get('refreshments_per_person_day', '0'),
