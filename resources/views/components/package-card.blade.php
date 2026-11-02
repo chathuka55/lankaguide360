@@ -1,7 +1,7 @@
 {{-- Home page package card (SRS 3.3): image, name, days, tier badge, from-price, Book Now + Customize. --}}
 @props(['package'])
 
-@php($cover = $package->cover)
+@php($cover = $package->coverPhoto())
 
 <article class="flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
     <div class="relative aspect-[16/10] bg-primary-100">
@@ -9,6 +9,8 @@
             <x-media-img :media="$cover" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" :alt="$package->name" class="size-full object-cover" />
         @elseif ($package->cover_image)
             <img src="{{ Str::startsWith($package->cover_image, ['http://', 'https://', '/']) ? $package->cover_image : Storage::disk('public')->url($package->cover_image) }}" alt="{{ $package->name }}" loading="lazy" width="800" height="500" class="size-full object-cover">
+        @else
+            <div class="grid size-full place-items-center bg-gradient-to-br from-primary-600 to-primary-800 text-white/80"><x-icon name="map" class="size-12" /></div>
         @endif
         @if ($package->tier)
             <span class="absolute start-3 top-3 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-primary-800 shadow">{{ $package->tier->label() }}</span>

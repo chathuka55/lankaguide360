@@ -208,6 +208,8 @@
                     </div>
 
                     <div class="grid gap-4 sm:grid-cols-2">
+                        <x-admin.input name="start_date" type="date" label="Start date" :value="$trip->start_date?->toDateString()"
+                                       help="Moving it shifts every day of the plan. Tell the traveller why in the status note." />
                         <x-admin.select name="vehicle_id" label="Vehicle" placeholder="To be confirmed" :value="$trip->vehicle_id"
                                         :options="$vehicles->mapWithKeys(fn ($v) => [$v->id => $v->type.' ('.$v->tier->label().', '.$v->min_pax.'–'.$v->max_pax.' pax)'])" />
                         <x-admin.select name="meal_plan" label="Meal plan" :value="$trip->meal_plan" required
@@ -334,7 +336,9 @@
                 <h3 id="facts-heading" class="font-semibold">Request</h3>
                 <dl class="mt-2 space-y-1">
                     <div class="flex justify-between gap-2"><dt class="text-slate-500">Travellers</dt><dd>{{ $trip->adults }}A · {{ $trip->children }}C @if ($trip->children_ages)({{ $trip->children_ages }})@endif · {{ $trip->infants }}I</dd></div>
+                    <div class="flex justify-between gap-2"><dt class="text-slate-500">Traveller type</dt><dd>{{ $trip->traveller_type === 'local' ? 'Sri Lankan resident (local prices)' : 'Foreign visitor' }}@if ($trip->traveller_type === 'local' && $trip->user?->nic) · NIC {{ $trip->user->nic }}@endif</dd></div>
                     <div class="flex justify-between gap-2"><dt class="text-slate-500">Luggage</dt><dd>{{ $trip->luggage ?? '—' }} bags</dd></div>
+                    @if ($trip->refreshments)<div class="flex justify-between gap-2"><dt class="text-slate-500">Extras</dt><dd>Refreshment pack</dd></div>@endif
                     <div class="flex justify-between gap-2"><dt class="text-slate-500">Arrival</dt><dd class="text-end">{{ $trip->arrival_point }}</dd></div>
                     <div class="flex justify-between gap-2"><dt class="text-slate-500">Departure</dt><dd class="text-end">{{ $trip->departure_point }}</dd></div>
                     <div class="flex justify-between gap-2"><dt class="text-slate-500">Interests</dt><dd class="text-end">{{ $trip->categories->pluck('name')->join(', ') ?: '—' }}</dd></div>

@@ -23,7 +23,7 @@ class TripWorkflow
     /**
      * @param  array<string, mixed>  $attributes  extra trip columns to save with the change (e.g. final_total)
      */
-    public function transition(Trip $trip, TripStatus $to, ?User $actor, ?string $note = null, array $attributes = []): Trip
+    public function transition(Trip $trip, TripStatus $to, ?User $actor, ?string $note = null, array $attributes = [], bool $notifyTraveller = true): Trip
     {
         $from = $trip->status;
 
@@ -53,7 +53,7 @@ class TripWorkflow
         });
 
         // Editing during review (under_review → under_review) is not news for the traveller.
-        if ($from !== $to && $trip->contactEmail()) {
+        if ($notifyTraveller && $from !== $to && $trip->contactEmail()) {
             Mail::to($trip->contactEmail())->queue(new TripStatusChanged($trip->fresh(['leadTraveller', 'user']), $to, $note));
         }
 

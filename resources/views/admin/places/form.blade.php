@@ -68,6 +68,8 @@
                         <x-admin.input name="close_time" label="Closes" type="time" :value="$place->close_time ? substr($place->close_time, 0, 5) : null" />
                         <x-admin.input name="fee_foreign_adult" label="Entry fee, foreign adult (USD)" type="number" step="0.01" min="0" :value="$place->fee_foreign_adult ?? '0.00'" :required="true" />
                         <x-admin.input name="fee_foreign_child" label="Entry fee, foreign child (USD)" type="number" step="0.01" min="0" :value="$place->fee_foreign_child ?? '0.00'" :required="true" />
+                        <x-admin.input name="fee_local_adult" label="Entry fee, Sri Lankan adult (USD)" type="number" step="0.01" min="0" :value="$place->fee_local_adult ?? '0.00'" help="Resident price, e.g. LKR 50 = 0.17" />
+                        <x-admin.input name="fee_local_child" label="Entry fee, Sri Lankan child (USD)" type="number" step="0.01" min="0" :value="$place->fee_local_child ?? '0.00'" />
                         <x-admin.input name="best_months" label="Best months" :value="$place->best_months" maxlength="40" placeholder="e.g. Dec–Apr" />
                         <x-admin.select name="best_time_slot" label="Best time of day" :options="collect(App\Enums\BestTimeSlot::cases())->mapWithKeys(fn ($c) => [$c->value => ucfirst($c->value)])" :value="$place->best_time_slot ?? 'any'" :required="true" />
                         <x-admin.select name="crowd_level" label="Crowd level" :options="['low' => 'Low', 'medium' => 'Medium', 'high' => 'High']" :value="$place->crowd_level ?? 'medium'" :required="true" />

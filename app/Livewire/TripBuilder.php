@@ -20,6 +20,7 @@ use App\Services\SuggestionService;
 use App\Support\Money;
 use App\Support\TripDraft;
 use App\Support\TripMapData;
+use App\Support\TripPoints;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -101,6 +102,11 @@ class TripBuilder extends Component
     public string $guideType = 'chauffeur';
 
     public string $guideLanguage = 'English';
+
+    /** "local" (Sri Lankan resident prices) or "foreign". */
+    public string $travellerType = 'foreign';
+
+    public bool $refreshments = false;
 
     public function mount(): void
     {
@@ -210,6 +216,29 @@ class TripBuilder extends Component
             $this->districtIds[] = (int) $place->district_id;
         }
         $this->persist(invalidate: true);
+    }
+
+    /**
+     * Places step: move on to the next chosen district (feedback: don't forget a district).
+     */
+    public function nextDistrict(): void
+    {
+        $ids = District::whereKey($this->districtIds)->orderBy('name')->pluck('id')->all();
+        $current = array_search($this->activeDistrictId ?? ($ids[0] ?? null), $ids, true);
+        $this->activeDistrictId = $ids[$current === false ? 0 : min($current + 1, count($ids) - 1)] ?? null;
+        $this->placeCategoryFilter = null;
+    }
+
+    /**
+     * Places step: drop a chosen district (and its places) instead of going back to step 3.
+     */
+    public function removeDistrict(int $id): void
+    {
+        $this->districtIds = array_values(array_diff(array_map('intval', $this->districtIds), [$id]));
+        $this->prunePlaces();
+        $this->persist(invalidate: true);
+        $this->activeDistrictId = null;
+        $this->resetErrorBag('placeIds');
     }
 
     public function showDistrict(int $id): void
@@ -449,9 +478,10 @@ class TripBuilder extends Component
                 'childrenAges' => ['array', 'max:10'],
                 'childrenAges.*' => ['integer', 'between:2,17'],
                 'infants' => ['integer', 'between:0,10'],
-                'arrivalPoint' => ['required', Rule::in(array_keys(config('lankaguide.arrival_points')))],
-                'departurePoint' => ['required', Rule::in(array_keys(config('lankaguide.arrival_points')))],
+                'arrivalPoint' => ['required', Rule::in(TripPoints::names())],
+                'departurePoint' => ['required', Rule::in(TripPoints::names())],
                 'luggage' => ['nullable', 'integer', 'between:0,80'],
+                'travellerType' => ['required', Rule::in(['local', 'foreign'])],
             ], ['startDate.after_or_equal' => 'The start date cannot be in the past.', 'childrenAges.*.between' => 'Children are 2–17 years old; add younger ones as infants.'], ['startDate' => 'start date', 'days' => 'number of days']],
             6 => [['mealPlan' => ['required', Rule::enum(MealPlan::class)], 'cuisineIds.*' => ['integer', 'exists:cuisines,id'], 'dietaryNotes' => ['nullable', 'string', 'max:500']]],
             7 => [[
@@ -472,6 +502,15 @@ class TripBuilder extends Component
 
         if ($routable === 0) {
             throw ValidationException::withMessages(['placeIds' => 'None of these places has a map position yet. Please choose others.']);
+        }
+
+        // Every chosen district needs at least one place (or the traveller removes it).
+        $picked = Place::whereKey($this->placeIds)->pluck('district_id')->map(fn ($id) => (int) $id)->unique();
+        $empty = District::whereKey($this->districtIds)->whereNotIn('id', $picked)->orderBy('name')->get(['id', 'name']);
+        if ($empty->isNotEmpty()) {
+            $this->activeDistrictId = $empty->first()->id;
+            $names = $empty->pluck('name')->join(', ', ' and ');
+            throw ValidationException::withMessages(['placeIds' => "You chose {$names} but haven't added a place there yet. Add at least one place, or remove the district."]);
         }
     }
 
@@ -511,6 +550,8 @@ class TripBuilder extends Component
         $draft->vehicleId = $this->vehicleId;
         $draft->guideType = $this->guideType;
         $draft->guideLanguage = $this->guideLanguage;
+        $draft->travellerType = in_array($this->travellerType, ['local', 'foreign'], true) ? $this->travellerType : 'foreign';
+        $draft->refreshments = (bool) $this->refreshments;
         $draft->completedStep = $this->completedStep;
 
         if ($invalidate) {
@@ -543,6 +584,9 @@ class TripBuilder extends Component
         $this->vehicleId = $draft->vehicleId;
         $this->guideType = $draft->guideType;
         $this->guideLanguage = $draft->guideLanguage;
+        // Registered travellers start with the type from their profile.
+        $this->travellerType = $draft->travellerType ?? (auth()->user()?->traveller_type === 'local' ? 'local' : 'foreign');
+        $this->refreshments = $draft->refreshments;
         $this->completedStep = $draft->completedStep;
     }
 
@@ -636,7 +680,7 @@ class TripBuilder extends Component
                 2 => ['categories' => Category::withCount(['places' => fn ($q) => $q->published()])->orderBy('id')->get()],
                 3 => $this->stepDistrictData(),
                 4 => $this->stepPlaceData(),
-                5 => ['arrivalPoints' => config('lankaguide.arrival_points'), 'recommended' => $this->recommendedDays()],
+                5 => ['pointGroups' => TripPoints::grouped(), 'recommended' => $this->recommendedDays()],
                 6 => $this->stepStayData($draft, $itinerary),
                 7 => $this->stepTransportData(),
                 8 => $this->stepReviewData($draft, $itinerary),
@@ -739,6 +783,8 @@ class TripBuilder extends Component
             'activeDistrict' => $active,
             'places' => $places,
             'pickedPerDistrict' => $pickedPerDistrict,
+            'pickedPlaces' => Place::whereKey($this->placeIds)->with('district:id,name')->orderBy('name')->get(['id', 'name', 'district_id']),
+            'nextDistrict' => $active ? $districts->skipUntil(fn ($d) => $d->is($active))->skip(1)->first() : null,
             'filterCategories' => Category::orderBy('id')->get(['id', 'name']),
             'recommended' => $this->recommendedDays(),
         ];
@@ -798,6 +844,7 @@ class TripBuilder extends Component
             'guideRule' => $suggestions->guideRule($travellers, $tier),
             'languages' => $suggestions->guideLanguages(),
             'childSeats' => $this->draft()->childSeats(),
+            'refreshmentRate' => (string) Setting::get('refreshments_per_person_day', '0'),
         ];
     }
 
@@ -810,7 +857,7 @@ class TripBuilder extends Component
 
         return [
             'mapDays' => TripMapData::fromItinerary($draft->itinerary ?? []),
-            'start' => config('lankaguide.arrival_points.'.$draft->arrivalPoint),
+            'start' => TripPoints::find($draft->arrivalPoint),
             'hotels' => Hotel::whereKey($hotelIds)->get()->keyBy('id'),
             'vehicle' => $draft->vehicleId ? Vehicle::find($draft->vehicleId) : null,
             'categoryLabels' => collect(PriceCategory::cases())->mapWithKeys(fn ($c) => [$c->value => $c->label()]),

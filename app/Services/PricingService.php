@@ -52,10 +52,15 @@ class PricingService
         $this->guide($price, $draft, $days);
         $this->meals($price, $draft, $itinerary, $days);
         $this->tickets($price, $draft, $itinerary);
+        $this->localDiscount($price, $draft);
 
+        $local = $draft->isLocal();
         $price->subtotal = array_sum(array_column($price->lines, 'amount_cents'));
         $price->serviceFee = Money::percent($price->subtotal, Setting::get("service_fee_{$tier->value}", '0'));
-        $price->tax = Money::percent($price->subtotal + $price->serviceFee, Setting::get('tax_percent', '0'));
+        $price->tax = Money::percent($price->subtotal + $price->serviceFee, Setting::get($local ? 'tax_percent_local' : 'tax_percent', '0'));
+        $price->notes[] = $local
+            ? 'Sri Lankan resident prices: local entry tickets'.((float) Setting::get('local_discount_percent', '0') > 0 ? ' and a resident discount' : '').' are applied. Bring your NIC.'
+            : 'Foreign traveller prices include applicable Sri Lanka Tourism Development Authority taxes and service charges.';
         $price->total = $price->subtotal + $price->serviceFee + $price->tax;
         $price->perPerson = (int) round($price->total / $paying);
         $price->totalLkr = (int) round($price->total * (float) Setting::get('usd_lkr', '0'));
@@ -113,6 +118,30 @@ class PricingService
 
         if ($draft->childSeats() > 0) {
             $price->notes[] = $draft->childSeats().' child seat(s) included for children under 4.';
+        }
+
+        // Optional refreshment pack in the vehicle (water, soft drinks, snacks), per person per day.
+        $rate = Money::cents(Setting::get('refreshments_per_person_day', '0'));
+        $people = $draft->adults + $draft->children();
+        if ($draft->refreshments && $rate > 0 && $people > 0) {
+            $price->add(PriceCategory::Transport, "Refreshment pack (water, soft drinks, snacks), {$people} × {$days} days", $people * $days, $rate);
+        }
+    }
+
+    /**
+     * Sri Lankan residents get a discount on hotels, transport and guide (Settings → Pricing).
+     */
+    private function localDiscount(PriceBreakdown $price, TripDraft $draft): void
+    {
+        $percent = (string) Setting::get('local_discount_percent', '0');
+        if (! $draft->isLocal() || (float) $percent <= 0) {
+            return;
+        }
+
+        $base = $price->categoryTotal(PriceCategory::Accommodation) + $price->categoryTotal(PriceCategory::Transport) + $price->categoryTotal(PriceCategory::Guide);
+        $discount = Money::percent($base, $percent);
+        if ($discount > 0) {
+            $price->add(PriceCategory::Discount, 'Sri Lankan resident discount ('.rtrim(rtrim($percent, '0'), '.').'% on hotels, transport and guide)', 1, -$discount);
         }
     }
 
@@ -182,14 +211,17 @@ class PricingService
                 continue;
             }
 
-            $adult = Money::cents($place->fee_foreign_adult);
-            $child = Money::cents($place->fee_foreign_child);
+            // Sri Lankan residents pay the local entry fee (often much lower, sometimes free).
+            $local = $draft->isLocal();
+            $adult = Money::cents($local ? $place->fee_local_adult : $place->fee_foreign_adult);
+            $child = Money::cents($local ? $place->fee_local_child : $place->fee_foreign_child);
+            $who = $local ? 'resident' : 'foreign';
 
             if ($adult > 0 && $draft->adults > 0) {
-                $price->add(PriceCategory::Tickets, "{$place->name}: adult ticket", $draft->adults, $adult);
+                $price->add(PriceCategory::Tickets, "{$place->name}: {$who} adult ticket", $draft->adults, $adult);
             }
             if ($child > 0 && $payingChildren > 0) {
-                $price->add(PriceCategory::Tickets, "{$place->name}: child ticket", $payingChildren, $child);
+                $price->add(PriceCategory::Tickets, "{$place->name}: {$who} child ticket", $payingChildren, $child);
             }
         }
     }

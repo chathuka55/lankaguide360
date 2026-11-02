@@ -66,6 +66,12 @@
         @if ($canAccept)
             <section class="mt-8 rounded-2xl border-2 border-primary-600 bg-primary-50 p-6" aria-labelledby="accept-heading">
                 <h2 id="accept-heading" class="text-xl font-bold text-primary-900">Your trip is approved: accept to confirm the booking</h2>
+                @if ($agentNote)
+                    <div class="mt-3 rounded-xl bg-white p-4 text-sm text-slate-800 ring-1 ring-primary-200">
+                        <p class="font-semibold text-primary-900">Note from your agent</p>
+                        <p class="mt-1 whitespace-pre-line">{{ $agentNote }}</p>
+                    </div>
+                @endif
                 <p class="mt-1 text-primary-900">
                     Final price <strong>@money($trip->displayTotal())</strong>@if ($trip->price_note) ({{ $trip->price_note }})@endif.
                     Check the plan below; once you accept, your agent books the hotels, finalizes the time at every place and sends your e-receipt.
@@ -79,7 +85,16 @@
                     <button type="submit" class="btn btn-primary sm:ms-auto">Accept and confirm booking</button>
                 </form>
                 @error('accept')<p class="mt-2 text-sm text-red-700">{{ $message }}</p>@enderror
-                <p class="mt-3 text-xs text-primary-800">Want changes instead? Send your agent a message below.</p>
+                <details class="mt-4" @if ($errors->has('reason')) open @endif>
+                    <summary class="cursor-pointer text-sm font-semibold text-primary-800">Not quite right? Ask for changes</summary>
+                    <form method="POST" action="{{ route('trips.request-changes', $trip) }}" class="mt-3 space-y-2">
+                        @csrf
+                        <label for="change-reason" class="form-label">What would you like to change?</label>
+                        <textarea id="change-reason" name="reason" rows="3" required minlength="5" maxlength="2000" class="form-control" placeholder="e.g. Different dates, another hotel in Kandy, one more day in Ella">{{ old('reason') }}</textarea>
+                        @error('reason')<p class="text-xs text-red-700">{{ $message }}</p>@enderror
+                        <button type="submit" class="btn btn-secondary">Send change request</button>
+                    </form>
+                </details>
             </section>
         @endif
 
@@ -142,7 +157,7 @@
                                 @if ($day->overnight_town || $day->hotel)
                                     <p class="mt-3 flex items-center gap-2 text-sm text-slate-600">
                                         <x-icon name="building" class="size-4 text-slate-400" />
-                                        Overnight: {{ $day->hotel?->name ?? 'hotel to be confirmed' }}@if ($day->overnight_town), {{ $day->overnight_town }}@endif
+                                        Overnight: @if ($day->hotel)<a href="{{ $day->hotel->url() }}" class="text-slate-800 hover:text-primary-700 hover:underline">{{ $day->hotel->name }}</a>@else hotel to be confirmed @endif @if ($day->overnight_town), {{ $day->overnight_town }}@endif
                                         @if ($day->roomRate) <span class="text-slate-400">({{ $day->roomRate->room_type }})</span>@endif
                                     </p>
                                 @endif

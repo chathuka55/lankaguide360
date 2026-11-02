@@ -6,6 +6,7 @@ $quickLinks = [
     'Destinations' => route('destinations.index'),
     'Packages' => route('packages.index'),
     'Plan a Trip' => route('plan'),
+    'Vehicle hire' => route('vehicles.index'),
     'About' => route('about'),
     'Contact' => route('contact'),
 ];

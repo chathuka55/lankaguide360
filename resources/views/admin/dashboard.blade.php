@@ -8,6 +8,30 @@
             </p>
         </section>
 
+        @if ($checklist && collect($checklist)->contains('done', false))
+            <section class="admin-card p-5" aria-labelledby="checklist-heading">
+                <div class="flex flex-wrap items-baseline justify-between gap-2">
+                    <h3 id="checklist-heading" class="font-semibold">Getting started</h3>
+                    <a href="{{ route('admin.help') }}" class="text-sm font-medium text-primary-700 hover:underline">Read the user guide</a>
+                </div>
+                <p class="text-sm text-slate-500">{{ collect($checklist)->where('done', true)->count() }} of {{ count($checklist) }} done before taking real bookings.</p>
+                <ul class="mt-3 divide-y divide-slate-100" role="list">
+                    @foreach ($checklist as $item)
+                        <li class="flex items-start gap-3 py-2">
+                            <span @class(['mt-0.5 grid size-5 shrink-0 place-items-center rounded-full', 'bg-primary-700 text-white' => $item['done'], 'border-2 border-accent-500' => ! $item['done']])>
+                                @if ($item['done'])<x-icon name="check" class="size-3.5" /><span class="sr-only">Done:</span>@else<span class="sr-only">To do:</span>@endif
+                            </span>
+                            <div class="min-w-0 flex-1 text-sm">
+                                <p @class(['font-medium', 'text-slate-500 line-through' => $item['done'], 'text-slate-900' => ! $item['done']])>{{ $item['label'] }}</p>
+                                <p class="text-slate-500">{{ $item['help'] }}</p>
+                            </div>
+                            @if (! $item['done'] && $item['url'])<a href="{{ $item['url'] }}" class="btn btn-secondary btn-sm shrink-0">Open</a>@endif
+                        </li>
+                    @endforeach
+                </ul>
+            </section>
+        @endif
+
         @can('admin')
             <section aria-labelledby="awaiting-heading">
                 <h3 id="awaiting-heading" class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Waiting for review</h3>

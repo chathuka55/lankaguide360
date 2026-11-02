@@ -14,6 +14,13 @@ return [
     'service_fee_premium' => '10',
     'service_fee_luxury' => '12',
     'tax_percent' => '0',
+    'tax_percent_local' => '0',
+
+    // Sri Lankan residents: discount on hotels, transport and guide; entry tickets use local fees.
+    'local_discount_percent' => '10',
+
+    // Optional refreshment pack in the vehicle, per person per day (USD).
+    'refreshments_per_person_day' => '3',
 
     // Display exchange rates from USD (NFR-16).
     'usd_lkr' => '300',

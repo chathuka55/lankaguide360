@@ -22,7 +22,7 @@ use Throwable;
 class MediaController extends Controller
 {
     /** Morph types that have a photo gallery in the admin. */
-    public const OWNER_TYPES = ['place', 'hotel', 'package'];
+    public const OWNER_TYPES = ['place', 'hotel', 'package', 'vehicle'];
 
     public function __construct(private MediaLibrary $library) {}
 

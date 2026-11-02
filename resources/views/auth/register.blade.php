@@ -2,9 +2,12 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
+        <h1 class="mb-1 text-xl font-bold text-slate-900">Create your account</h1>
+        <p class="mb-5 text-sm text-slate-600">Save your trips, follow your bookings and download your e-receipts.</p>
+
         <!-- Name -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
+            <x-input-label for="name" :value="__('Full name *')" />
             <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
@@ -14,6 +17,10 @@
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        </div>
+
+        <div class="mt-4">
+            @include('auth.partials.traveller-fields')
         </div>
 
         <!-- Password -->

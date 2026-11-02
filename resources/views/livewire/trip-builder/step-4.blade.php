@@ -8,6 +8,24 @@
     <p class="text-xs text-primary-800">Based on visit times plus driving, at your travel style's pace.</p>
 </div>
 
+{{-- Everything picked so far, across districts: one tap removes a place --}}
+@if ($pickedPlaces->isNotEmpty())
+    <div class="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
+        <p class="text-sm font-semibold">Your places</p>
+        <ul class="mt-2 flex flex-wrap gap-2" role="list">
+            @foreach ($pickedPlaces as $picked)
+                <li wire:key="picked-{{ $picked->id }}">
+                    <button type="button" wire:click="togglePlace({{ $picked->id }})" class="group inline-flex items-center gap-1.5 rounded-full bg-primary-50 py-1 ps-3 pe-2 text-sm text-primary-900 ring-1 ring-primary-200 hover:bg-red-50 hover:text-red-800 hover:ring-red-200"
+                            aria-label="Remove {{ $picked->name }} from your trip">
+                        {{ $picked->name }} <span class="text-xs text-primary-700 group-hover:text-red-700">· {{ $picked->district?->name }}</span>
+                        <x-icon name="x" class="size-3.5" />
+                    </button>
+                </li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 {{-- District tabs --}}
 <div class="mt-5 flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Districts">
     @foreach ($placeDistricts as $district)
@@ -17,6 +35,8 @@
             {{ $district->name }}
             @if ($pickedPerDistrict[$district->id] ?? 0)
                 <span @class(['ms-1 rounded-full px-1.5 text-xs', 'bg-white/20' => $active, 'bg-primary-100 text-primary-800' => ! $active])>{{ $pickedPerDistrict[$district->id] }}</span>
+            @else
+                <span class="ms-1 inline-block size-2 rounded-full bg-accent-500 align-middle" title="No places added here yet"><span class="sr-only">(no places yet)</span></span>
             @endif
         </button>
     @endforeach
@@ -59,14 +79,38 @@
                 @unless ($place->hasCoordinates())
                     <p class="text-xs text-accent-700">Map position not known yet: this place can't be routed.</p>
                 @endunless
-                <button type="button" wire:click="togglePlace({{ $place->id }})" aria-pressed="{{ $on ? 'true' : 'false' }}"
-                        class="btn mt-auto {{ $on ? 'btn-secondary' : 'btn-primary' }}">
-                    @if ($on)<x-icon name="check" class="size-4" /> Added @else Add to trip @endif
-                </button>
+                @if ($on)
+                    <div class="mt-auto flex items-center gap-2">
+                        <span class="inline-flex flex-1 items-center gap-1 text-sm font-semibold text-primary-800"><x-icon name="check" class="size-4" /> In your trip</span>
+                        <button type="button" wire:click="togglePlace({{ $place->id }})" aria-pressed="true" class="btn btn-secondary text-red-700 hover:bg-red-50" aria-label="Remove {{ $place->name }} from your trip">
+                            <x-icon name="x" class="size-4" /> Remove
+                        </button>
+                    </div>
+                @else
+                    <button type="button" wire:click="togglePlace({{ $place->id }})" aria-pressed="false" class="btn btn-primary mt-auto">Add to trip</button>
+                @endif
             </div>
         </article>
     @empty
         <p class="rounded-xl bg-slate-50 p-4 text-sm text-slate-600 sm:col-span-2">No published places here{{ $placeCategoryFilter ? ' for this interest' : '' }} yet.</p>
     @endforelse
 </div>
-@error('placeIds')<p class="mt-3 text-sm text-red-600" role="alert">{{ $message }}</p>@enderror
+@error('placeIds')
+    <div class="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800" role="alert">
+        <p>{{ $message }}</p>
+        @if ($activeDistrict && ! ($pickedPerDistrict[$activeDistrict->id] ?? 0))
+            <button type="button" wire:click="removeDistrict({{ $activeDistrict->id }})" class="mt-2 font-semibold underline">Remove {{ $activeDistrict->name }} from the trip</button>
+        @endif
+    </div>
+@enderror
+
+{{-- Guide the traveller through every chosen district --}}
+@if ($nextDistrict)
+    <div class="mt-6 flex flex-col items-start gap-2 rounded-2xl bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-sm text-slate-600">
+            @if ($pickedPerDistrict[$activeDistrict->id] ?? 0) Done with {{ $activeDistrict->name }}? @else Nothing you like in {{ $activeDistrict->name }}? @endif
+            You also chose {{ $nextDistrict->name }}.
+        </p>
+        <button type="button" wire:click="nextDistrict" class="btn btn-primary">Next district: {{ $nextDistrict->name }} <x-icon name="arrow-right" class="size-4" /></button>
+    </div>
+@endif

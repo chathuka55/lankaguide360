@@ -12,6 +12,7 @@ use App\Models\Setting;
 use App\Services\Itinerary\Itinerary;
 use App\Support\Geo;
 use App\Support\TripDraft;
+use App\Support\TripPoints;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -104,7 +105,7 @@ class ItineraryService
 
         $located = $places->filter(fn (Place $p) => $p->hasCoordinates())->values();
         $driveMinutes = 0;
-        $prev = config('lankaguide.arrival_points.BIA Katunayake');
+        $prev = TripPoints::find(TripPoints::DEFAULT);
         foreach ($this->nearestNeighbour($located, (float) $prev['lat'], (float) $prev['lng']) as $place) {
             $driveMinutes += Geo::distanceKm($prev['lat'], $prev['lng'], (float) $place->lat, (float) $place->lng) * 1.35 / 40 * 60;
             $prev = ['lat' => (float) $place->lat, 'lng' => (float) $place->lng];
@@ -529,9 +530,9 @@ class ItineraryService
      */
     private function point(string $name): array
     {
-        $point = config("lankaguide.arrival_points.{$name}") ?? config('lankaguide.arrival_points.BIA Katunayake');
+        $point = TripPoints::find($name) ?? TripPoints::find(TripPoints::DEFAULT);
 
-        return ['label' => $name, 'lat' => (float) $point['lat'], 'lng' => (float) $point['lng']];
+        return ['label' => TripPoints::find($name) ? $name : TripPoints::DEFAULT, 'lat' => $point['lat'], 'lng' => $point['lng']];
     }
 
     private function minutes(string $time): int

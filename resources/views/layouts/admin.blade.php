@@ -4,32 +4,33 @@
  * `can` hides the item from users who fail the gate; the routes themselves are also protected.
  */
 $menu = [
-    'Overview' => [
-        ['label' => 'Dashboard', 'icon' => 'squares', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard', 'can' => 'staff'],
-        ['label' => 'Trip requests', 'icon' => 'inbox', 'route' => 'admin.trips.index', 'active' => 'admin.trips.*', 'can' => 'staff'],
-        ['label' => 'Review queue', 'icon' => 'photo', 'route' => 'admin.review.index', 'active' => 'admin.review.*', 'can' => 'admin'],
-        ['label' => 'Reports', 'icon' => 'chart', 'route' => 'admin.reports.index', 'active' => 'admin.reports.*', 'can' => 'admin'],
+    'Daily work' => [
+        ['label' => 'Dashboard', 'hint' => 'Overview and your getting-started checklist', 'icon' => 'squares', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard', 'can' => 'staff'],
+        ['label' => 'Trip requests', 'hint' => 'Submitted trips from travellers: review, price, approve, issue e-receipts', 'icon' => 'inbox', 'route' => 'admin.trips.index', 'active' => 'admin.trips.*', 'can' => 'staff'],
+        ['label' => 'Review queue', 'hint' => 'Imported places, hotels and photos waiting to be checked and published', 'icon' => 'photo', 'route' => 'admin.review.index', 'active' => 'admin.review.*', 'can' => 'admin'],
+        ['label' => 'Help & user guide', 'hint' => 'How to use the admin panel, step by step', 'icon' => 'sparkles', 'route' => 'admin.help', 'active' => 'admin.help', 'can' => 'staff'],
+        ['label' => 'Reports', 'hint' => 'Requests, bookings and revenue, with Excel/CSV/PDF downloads', 'icon' => 'chart', 'route' => 'admin.reports.index', 'active' => 'admin.reports.*', 'can' => 'admin'],
     ],
-    'Master data' => [
-        ['label' => 'Places', 'icon' => 'map-pin', 'route' => 'admin.places.index', 'active' => 'admin.places.*', 'can' => 'staff'],
-        ['label' => 'Districts', 'icon' => 'map', 'route' => 'admin.districts.index', 'active' => 'admin.districts.*', 'can' => 'staff'],
-        ['label' => 'Categories', 'icon' => 'sparkles', 'route' => 'admin.categories.index', 'active' => 'admin.categories.*', 'can' => 'staff'],
-        ['label' => 'Hotels', 'icon' => 'building', 'route' => 'admin.hotels.index', 'active' => 'admin.hotels.*', 'can' => 'staff'],
-        ['label' => 'Vehicles', 'icon' => 'truck', 'route' => 'admin.vehicles.index', 'active' => 'admin.vehicles.*', 'can' => 'staff'],
-        ['label' => 'Guides', 'icon' => 'user-group', 'route' => 'admin.guides.index', 'active' => 'admin.guides.*', 'can' => 'staff'],
-        ['label' => 'Cuisines', 'icon' => 'check', 'route' => 'admin.cuisines.index', 'active' => 'admin.cuisines.*', 'can' => 'staff'],
-        ['label' => 'Packages', 'icon' => 'gift', 'route' => 'admin.packages.index', 'active' => 'admin.packages.*', 'can' => 'staff'],
+    'Travel data' => [
+        ['label' => 'Places', 'hint' => 'Attractions travellers can add to a trip', 'icon' => 'map-pin', 'route' => 'admin.places.index', 'active' => 'admin.places.*', 'can' => 'staff'],
+        ['label' => 'Districts', 'hint' => 'The 25 districts: descriptions and map positions', 'icon' => 'map', 'route' => 'admin.districts.index', 'active' => 'admin.districts.*', 'can' => 'staff'],
+        ['label' => 'Categories', 'hint' => 'Interests such as Beach or Hill Country, and which districts match', 'icon' => 'sparkles', 'route' => 'admin.categories.index', 'active' => 'admin.categories.*', 'can' => 'staff'],
+        ['label' => 'Hotels', 'hint' => 'Hotels, their tier and room rates (prices in USD)', 'icon' => 'building', 'route' => 'admin.hotels.index', 'active' => 'admin.hotels.*', 'can' => 'staff'],
+        ['label' => 'Vehicles', 'hint' => 'Fleet, day and km rates, services on board, vehicle hire listing', 'icon' => 'truck', 'route' => 'admin.vehicles.index', 'active' => 'admin.vehicles.*', 'can' => 'staff'],
+        ['label' => 'Guides', 'hint' => 'Guides, languages and day rates', 'icon' => 'user-group', 'route' => 'admin.guides.index', 'active' => 'admin.guides.*', 'can' => 'staff'],
+        ['label' => 'Cuisines', 'hint' => 'Food choices travellers can pick', 'icon' => 'check', 'route' => 'admin.cuisines.index', 'active' => 'admin.cuisines.*', 'can' => 'staff'],
+        ['label' => 'Packages', 'hint' => 'Ready-made trips shown on the home page', 'icon' => 'gift', 'route' => 'admin.packages.index', 'active' => 'admin.packages.*', 'can' => 'staff'],
     ],
     'Customers' => [
-        ['label' => 'Reviews', 'icon' => 'star', 'route' => 'admin.reviews.index', 'active' => 'admin.reviews.*', 'can' => 'admin'],
-        ['label' => 'Contact messages', 'icon' => 'envelope', 'route' => 'admin.messages.index', 'active' => 'admin.messages.*', 'can' => 'admin'],
-        ['label' => 'Chatbot conversations', 'icon' => 'chat', 'route' => 'admin.chat-logs.index', 'active' => 'admin.chat-logs.*', 'can' => 'admin'],
-        ['label' => 'FAQs', 'icon' => 'sparkles', 'route' => 'admin.faqs.index', 'active' => 'admin.faqs.*', 'can' => 'admin'],
+        ['label' => 'Reviews', 'hint' => 'Traveller reviews to approve before they appear', 'icon' => 'star', 'route' => 'admin.reviews.index', 'active' => 'admin.reviews.*', 'can' => 'admin'],
+        ['label' => 'Contact messages', 'hint' => 'Contact form and vehicle hire requests', 'icon' => 'envelope', 'route' => 'admin.messages.index', 'active' => 'admin.messages.*', 'can' => 'admin'],
+        ['label' => 'Chatbot conversations', 'hint' => 'What visitors asked the chatbot', 'icon' => 'chat', 'route' => 'admin.chat-logs.index', 'active' => 'admin.chat-logs.*', 'can' => 'admin'],
+        ['label' => 'FAQs', 'hint' => 'Answers the chatbot uses', 'icon' => 'sparkles', 'route' => 'admin.faqs.index', 'active' => 'admin.faqs.*', 'can' => 'admin'],
     ],
-    'System' => [
-        ['label' => 'Users', 'icon' => 'users', 'route' => 'admin.users.index', 'active' => 'admin.users.*', 'can' => 'admin'],
-        ['label' => 'Import tools', 'icon' => 'download', 'route' => 'admin.imports.index', 'active' => 'admin.imports.*', 'can' => 'admin'],
-        ['label' => 'Settings', 'icon' => 'cog', 'route' => 'admin.settings.edit', 'active' => 'admin.settings.*', 'can' => 'admin'],
+    'Settings & tools' => [
+        ['label' => 'Users', 'hint' => 'Staff and traveller accounts, roles and passwords', 'icon' => 'users', 'route' => 'admin.users.index', 'active' => 'admin.users.*', 'can' => 'admin'],
+        ['label' => 'Import tools', 'hint' => 'Fetch places, photos and hotels from Wikipedia, Commons and OpenStreetMap', 'icon' => 'download', 'route' => 'admin.imports.index', 'active' => 'admin.imports.*', 'can' => 'admin'],
+        ['label' => 'Settings', 'hint' => 'Prices, taxes, exchange rate, email test', 'icon' => 'cog', 'route' => 'admin.settings.edit', 'active' => 'admin.settings.*', 'can' => 'admin'],
     ],
 ];
 @endphp
@@ -83,7 +84,7 @@ $menu = [
                                 <li>
                                     @if ($item['route'])
                                         @php($active = request()->routeIs($item['active'] ?? $item['route']))
-                                        <a href="{{ route($item['route']) }}" title="{{ $item['label'] }}" @if ($active) aria-current="page" @endif
+                                        <a href="{{ route($item['route']) }}" title="{{ $item['label'] }}{{ isset($item['hint']) ? ' — '.$item['hint'] : '' }}" @if ($active) aria-current="page" @endif
                                            class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition {{ $active ? 'bg-primary-700 text-white' : 'hover:bg-slate-800 hover:text-white' }}">
                                             <x-icon :name="$item['icon']" class="size-5" />
                                             <span class="whitespace-nowrap" :class="{ 'lg:hidden': collapsed }">{{ $item['label'] }}</span>

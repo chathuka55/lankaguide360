@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
     'guide_id', 'guide_language', 'special_requests', 'status', 'estimated_total', 'final_total',
     'currency', 'access_token', 'tracking_consent', 'submitted_at', 'approved_at',
     'internal_notes', 'price_note', 'dietary_notes', 'luggage', 'data_consent_at', 'completed_at',
-    'accepted_at', 'itinerary_finalized_at',
+    'accepted_at', 'itinerary_finalized_at', 'traveller_type', 'refreshments',
 ])]
 #[Hidden(['access_token', 'internal_notes'])]
 class Trip extends Model
@@ -69,6 +69,7 @@ class Trip extends Model
             'completed_at' => 'datetime',
             'data_consent_at' => 'datetime',
             'luggage' => 'integer',
+            'refreshments' => 'boolean',
         ];
     }
 

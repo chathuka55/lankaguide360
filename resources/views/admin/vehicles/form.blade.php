@@ -20,6 +20,40 @@
             <x-admin.input name="day_rate" label="Day rate (USD)" type="number" step="0.01" min="0" :value="$vehicle->day_rate" :required="true" />
             <x-admin.input name="km_rate" label="Rate per km (USD)" type="number" step="0.01" min="0" :value="$vehicle->km_rate ?? '0.00'" :required="true" />
         </fieldset>
+
+        <fieldset @disabled(! $can) class="space-y-4 border-t border-slate-200 pt-5">
+            <legend class="sr-only">Services and hire</legend>
+            <x-admin.textarea name="description" label="Description" :value="$vehicle->description" rows="2" help="Shown on the public Vehicle hire page." />
+            <div>
+                <span class="form-label">Services on board</span>
+                <div class="grid gap-2 sm:grid-cols-3">
+                    @foreach (App\Models\Vehicle::AMENITIES as $key => $label)
+                        <label class="flex items-center gap-2 text-sm">
+                            <input type="checkbox" name="amenities[]" value="{{ $key }}" @checked(in_array($key, old('amenities', $vehicle->amenities ?? []), true)) class="form-check">
+                            {{ $label }}
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+            <label class="flex items-center gap-2 text-sm">
+                <input type="hidden" name="is_rentable" value="0">
+                <input type="checkbox" name="is_rentable" value="1" @checked(old('is_rentable', $vehicle->is_rentable ?? true)) class="form-check">
+                Show on the public Vehicle hire page
+            </label>
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <x-admin.input name="provider_name" label="Provider / company" :value="$vehicle->provider_name" maxlength="120" help="Empty = LankaGuide360" />
+                <x-admin.input name="provider_phone" label="Provider phone" :value="$vehicle->provider_phone" maxlength="30" />
+                <x-admin.input name="provider_email" label="Provider email" type="email" :value="$vehicle->provider_email" maxlength="190" />
+                <x-admin.input name="provider_website" label="Provider website / booking link" type="url" :value="$vehicle->provider_website" maxlength="255" />
+            </div>
+        </fieldset>
         <x-admin.form-actions :cancel="route('admin.vehicles.index')" :can="$can" />
     </form>
+
+    @if ($editing)
+        <section class="mt-6">
+            <h3 class="mb-3 text-lg font-semibold">Photos</h3>
+            <x-admin.media-manager :owner="$vehicle" />
+        </section>
+    @endif
 </x-admin-layout>

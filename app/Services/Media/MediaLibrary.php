@@ -245,7 +245,7 @@ class MediaLibrary
 
     private function ownerName(Model $owner): string
     {
-        return (string) ($owner->name ?? 'Photo');
+        return (string) ($owner->name ?? $owner->type ?? 'Photo');
     }
 
     private function directoryFor(Model $owner): string

@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'district_id', 'town', 'name', 'slug', 'type', 'tier', 'star_rating', 'kid_friendly',
+    'district_id', 'town', 'name', 'description', 'slug', 'type', 'tier', 'star_rating', 'kid_friendly',
     'lat', 'lng', 'amenities', 'cover_image', 'is_active', 'status', 'wikipedia_title',
     'osm_id', 'website', 'phone', 'address',
 ])]
@@ -51,6 +51,37 @@ class Hotel extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    /** Labels for the amenity keys stored in `amenities`. */
+    public const AMENITY_LABELS = [
+        'wifi' => 'Free Wi-Fi', 'pool' => 'Swimming pool', 'beach_front' => 'Beach front', 'air_conditioning' => 'Air conditioning',
+        'restaurant' => 'Restaurant', 'bar' => 'Bar', 'spa' => 'Spa', 'gym' => 'Gym', 'parking' => 'Parking',
+        'kids_club' => 'Kids club', 'room_service' => 'Room service', 'wheelchair' => 'Wheelchair access',
+    ];
+
+    public function url(): string
+    {
+        return route('hotels.show', $this);
+    }
+
+    /**
+     * The admin's description, or a short factual summary for imported hotels that have none.
+     */
+    public function summary(): string
+    {
+        if (filled($this->description)) {
+            return $this->description;
+        }
+
+        $kind = str_replace('_', ' ', (string) ($this->type ?: 'hotel'));
+        $stars = $this->star_rating ? "{$this->star_rating}-star " : '';
+        $where = trim(($this->town ? "in {$this->town}" : '').($this->district?->name ? ", {$this->district->name} District" : ''), ', ');
+        $features = collect($this->amenities ?? [])->map(fn ($a) => strtolower(self::AMENITY_LABELS[$a] ?? str_replace('_', ' ', $a)))->take(4)->join(', ', ' and ');
+
+        return ucfirst(trim("A {$stars}{$this->tier->label()} {$kind} {$where}")).'.'
+            .($features !== '' ? " Facilities include {$features}." : '')
+            .($this->kid_friendly ? ' Families with children are welcome.' : '');
     }
 
     /**

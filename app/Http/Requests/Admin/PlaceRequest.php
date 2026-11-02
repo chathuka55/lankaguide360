@@ -44,6 +44,8 @@ class PlaceRequest extends FormRequest
             'best_time_slot' => ['required', Rule::enum(BestTimeSlot::class)],
             'fee_foreign_adult' => ['required', 'numeric', 'min:0', 'max:10000', 'decimal:0,2'],
             'fee_foreign_child' => ['required', 'numeric', 'min:0', 'max:10000', 'decimal:0,2'],
+            'fee_local_adult' => ['nullable', 'numeric', 'min:0', 'max:10000', 'decimal:0,2'],
+            'fee_local_child' => ['nullable', 'numeric', 'min:0', 'max:10000', 'decimal:0,2'],
             'crowd_level' => ['required', Rule::enum(CrowdLevel::class)],
             'is_hidden_gem' => ['boolean'],
             'is_active' => ['boolean'],

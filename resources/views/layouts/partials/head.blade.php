@@ -11,6 +11,7 @@
 <title>{{ $pageTitle }}</title>
 <meta name="description" content="{{ Str::limit($pageDescription, 160) }}">
 <meta name="theme-color" content="#0F766E">
+<link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 <link rel="canonical" href="{{ url()->current() }}">
 
 {{-- Open Graph / social previews (SRS NFR-13) --}}

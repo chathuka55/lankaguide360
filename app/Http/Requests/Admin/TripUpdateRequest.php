@@ -20,6 +20,7 @@ class TripUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'start_date' => ['nullable', 'date'],
             'vehicle_id' => ['nullable', 'integer', 'exists:vehicles,id'],
             'guide_type' => ['required', Rule::enum(GuideType::class)],
             'guide_id' => ['nullable', 'integer', 'exists:guides,id'],

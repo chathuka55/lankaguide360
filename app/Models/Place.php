@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable([
     'district_id', 'name', 'slug', 'short_description', 'description', 'lat', 'lng',
     'visit_minutes', 'open_time', 'close_time', 'best_time_slot',
-    'fee_foreign_adult', 'fee_foreign_child', 'crowd_level', 'is_hidden_gem', 'best_months',
+    'fee_foreign_adult', 'fee_foreign_child', 'fee_local_adult', 'fee_local_child', 'crowd_level', 'is_hidden_gem', 'best_months',
     'cover_image', 'is_active', 'status', 'source', 'wikipedia_title', 'wikipedia_url', 'osm_id',
 ])]
 class Place extends Model
@@ -50,6 +50,8 @@ class Place extends Model
             'best_time_slot' => BestTimeSlot::class,
             'fee_foreign_adult' => 'decimal:2',
             'fee_foreign_child' => 'decimal:2',
+            'fee_local_adult' => 'decimal:2',
+            'fee_local_child' => 'decimal:2',
             'crowd_level' => CrowdLevel::class,
             'is_hidden_gem' => 'boolean',
             'is_active' => 'boolean',

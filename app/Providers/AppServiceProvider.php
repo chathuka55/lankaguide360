@@ -10,6 +10,7 @@ use App\Models\Place;
 use App\Models\Province;
 use App\Models\Trip;
 use App\Models\User;
+use App\Models\Vehicle;
 use App\Services\Import\ImportClient;
 use App\Services\Site\SiteCatalog;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -62,6 +63,7 @@ class AppServiceProvider extends ServiceProvider
             'place' => Place::class,
             'hotel' => Hotel::class,
             'package' => Package::class,
+            'vehicle' => Vehicle::class,
             'trip' => Trip::class,
         ]);
 

@@ -4,6 +4,7 @@ $links = [
     ['label' => 'Destinations', 'route' => 'destinations.index', 'active' => ['destinations.*', 'districts.*']],
     ['label' => 'Packages', 'route' => 'packages.index', 'active' => ['packages.*']],
     ['label' => 'Plan a Trip', 'route' => 'plan'],
+    ['label' => 'Vehicle hire', 'route' => 'vehicles.index', 'active' => ['vehicles.*']],
     ['label' => 'About', 'route' => 'about'],
     ['label' => 'Contact', 'route' => 'contact'],
 ];

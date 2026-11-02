@@ -28,6 +28,7 @@ use App\Services\TripWorkflow;
 use App\Support\Money;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -107,7 +108,19 @@ class TripRequestController extends Controller
     public function update(TripUpdateRequest $request, Trip $trip): RedirectResponse
     {
         DB::transaction(function () use ($request, $trip) {
-            $trip->forceFill($request->safe()->except('days'))->save();
+            $oldStart = $trip->start_date?->copy();
+            $trip->forceFill($request->safe()->except(['days', 'start_date']))->save();
+
+            // New dates (e.g. the hotel is full): every day moves by the same number of days.
+            $newStart = $request->validated('start_date');
+            if ($newStart && $oldStart && ! $oldStart->isSameDay($newStart)) {
+                $shift = (int) $oldStart->diffInDays(Carbon::parse($newStart)->startOfDay(), false);
+                foreach ($trip->tripDays as $day) {
+                    $day->forceFill(['date' => $day->date?->copy()->addDays($shift)])->save();
+                }
+                $trip->forceFill(['start_date' => $newStart])->save();
+                $this->logEdit($trip, $request->user(), 'Dates moved from '.$oldStart->format('j M Y').' to '.$trip->start_date->format('j M Y').'.');
+            }
 
             foreach ($request->validated('days', []) as $dayId => $values) {
                 $trip->tripDays()->whereKey($dayId)->first()?->forceFill([

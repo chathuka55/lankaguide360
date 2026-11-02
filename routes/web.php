@@ -26,6 +26,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CreditsController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\HotelPageController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PackageController as PublicPackageController;
 use App\Http\Controllers\ProfileController;
@@ -33,6 +34,7 @@ use App\Http\Controllers\ReceiptVerificationController;
 use App\Http\Controllers\SeoController;
 use App\Http\Controllers\TripBuilderController;
 use App\Http\Controllers\TripController;
+use App\Http\Controllers\VehicleHireController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +43,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/destinations', [DestinationController::class, 'index'])->name('destinations.index');
 Route::get('/destinations/{district:slug}/{place:slug}', [DestinationController::class, 'show'])->scopeBindings()->name('destinations.show');
 Route::get('/districts/{district:slug}', [DestinationController::class, 'district'])->name('districts.show');
+Route::get('/hotels/{hotel:slug}', [HotelPageController::class, 'show'])->name('hotels.show');
+Route::get('/vehicles', [VehicleHireController::class, 'index'])->name('vehicles.index');
+Route::post('/vehicles/{vehicle}/request', [VehicleHireController::class, 'request'])->middleware('throttle:5,10')->name('vehicles.request');
 Route::get('/plan', [TripBuilderController::class, 'start'])->name('plan');
 Route::post('/plan/places/{place:slug}', [TripBuilderController::class, 'addPlace'])->middleware('throttle:60,1')->name('plan.places.toggle');
 Route::get('/packages', [PublicPackageController::class, 'index'])->name('packages.index');
@@ -63,6 +68,7 @@ Route::get('/trips/{trip}', [TripController::class, 'show'])->name('trips.show')
 Route::get('/trips/{trip}/pdf', [TripController::class, 'pdf'])->middleware('throttle:20,1')->name('trips.pdf');
 Route::post('/trips/{trip}/messages', [TripController::class, 'message'])->middleware('throttle:10,1')->name('trips.message');
 Route::post('/trips/{trip}/accept', [TripController::class, 'accept'])->middleware('throttle:10,1')->name('trips.accept');
+Route::post('/trips/{trip}/request-changes', [TripController::class, 'requestChanges'])->middleware('throttle:10,1')->name('trips.request-changes');
 Route::get('/trips/{trip}/receipt', [TripController::class, 'receipt'])->name('trips.receipt');
 Route::get('/trips/{trip}/receipt/pdf', [TripController::class, 'receiptPdf'])->middleware('throttle:20,1')->name('trips.receipt.pdf');
 Route::get('/receipts/verify/{number}', ReceiptVerificationController::class)->middleware('throttle:30,1')->name('receipts.verify');
@@ -84,6 +90,7 @@ Route::middleware('auth')->group(function () {
 // Back office: agents and admins. Agents get read-only master data; policies enforce the rest.
 Route::middleware(['auth', 'role:admin,agent'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::view('help', 'admin.help')->name('help');
 
     // Review queue for imported drafts (admin)
     Route::get('review', [ReviewQueueController::class, 'index'])->name('review.index');

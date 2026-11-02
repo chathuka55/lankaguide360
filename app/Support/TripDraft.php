@@ -65,6 +65,12 @@ final class TripDraft
 
     public ?string $specialRequests = null;
 
+    /** "local" (Sri Lankan resident prices) or "foreign"; null = not chosen yet (foreign prices). */
+    public ?string $travellerType = null;
+
+    /** Optional refreshment pack in the vehicle. */
+    public bool $refreshments = false;
+
     /** Highest step the traveller has completed (1–8). */
     public int $completedStep = 0;
 
@@ -120,6 +126,11 @@ final class TripDraft
         }
 
         return $data;
+    }
+
+    public function isLocal(): bool
+    {
+        return $this->travellerType === 'local';
     }
 
     public function tierEnum(): Tier

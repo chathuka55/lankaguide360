@@ -39,6 +39,31 @@ class Package extends Model
     /**
      * @return BelongsTo<Trip, $this>
      */
+    /**
+     * The package's own cover photo, or the first published photo of a place on its route
+     * (packages created from trips have no photos of their own).
+     */
+    public function coverPhoto(): ?Media
+    {
+        if ($this->cover) {
+            return $this->cover;
+        }
+
+        $placeIds = TripStop::query()
+            ->join('trip_days', 'trip_days.id', '=', 'trip_stops.trip_day_id')
+            ->where('trip_days.trip_id', $this->template_trip_id)
+            ->orderBy('trip_days.day_number')->orderBy('trip_stops.sequence')
+            ->pluck('trip_stops.place_id');
+
+        return Media::query()
+            ->where('mediable_type', 'place')
+            ->whereIn('mediable_id', $placeIds)
+            ->where('status', 'published')
+            ->orderByRaw('FIELD(mediable_id, '.($placeIds->map(fn ($id) => (int) $id)->join(',') ?: '0').')')
+            ->orderByDesc('is_cover')->orderBy('sort_order')
+            ->first();
+    }
+
     public function templateTrip(): BelongsTo
     {
         return $this->belongsTo(Trip::class, 'template_trip_id');

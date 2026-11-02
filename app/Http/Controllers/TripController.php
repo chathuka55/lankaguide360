@@ -88,6 +88,9 @@ class TripController extends Controller
                 'priceItems', 'statusHistory', 'messages.sender', 'vehicle', 'guide', 'leadTraveller', 'cuisines', 'receipt',
             ]),
             'canAccept' => $trip->status === TripStatus::Approved,
+            'agentNote' => $trip->status === TripStatus::Approved
+                ? $trip->statusHistory->where('to_status', TripStatus::Approved->value)->last()?->note
+                : null,
             'canCancel' => $request->user()?->can('cancel', $trip) ?? false,
             'canReview' => ($request->user()?->can('review', $trip) ?? false) && ! Review::where('trip_id', $trip->id)->exists(),
             'canDownload' => app(TripPdf::class)->available() && in_array($trip->status, [TripStatus::Approved, TripStatus::Confirmed, TripStatus::InProgress, TripStatus::Completed], true),
@@ -125,6 +128,25 @@ class TripController extends Controller
         }
 
         return redirect()->to($trip->privateUrl())->with('status', 'Thank you! Your booking is confirmed. Your agent will finalize the timings and send your e-receipt.');
+    }
+
+    /**
+     * The traveller doesn't accept the approved plan yet and asks the agent for changes
+     * (Approved → Under review). The reason reaches the agent as a message and by email.
+     */
+    public function requestChanges(Request $request, Trip $trip, TripWorkflow $workflow): RedirectResponse
+    {
+        $this->authorizeAccess($request, $trip);
+        $reason = $request->validate(['reason' => ['required', 'string', 'min:5', 'max:2000']], ['reason.required' => 'Tell your agent what you would like to change.'])['reason'];
+
+        if ($trip->status !== TripStatus::Approved) {
+            return redirect()->to($trip->privateUrl())->with('error', 'Changes can be requested while the trip is waiting for your acceptance.');
+        }
+
+        $workflow->message($trip, "Change request: {$reason}", $request->user(), SenderRole::Traveller);
+        $workflow->transition($trip, TripStatus::UnderReview, $request->user(), 'Traveller asked for changes: '.$reason, notifyTraveller: false);
+
+        return redirect()->to($trip->privateUrl().'#messages')->with('status', 'Your agent has your change request and will send you an updated plan.');
     }
 
     /**

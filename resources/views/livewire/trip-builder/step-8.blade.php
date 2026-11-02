@@ -74,7 +74,7 @@
                     @if (! empty($day['lunch_at']))<span>🍽 Lunch around {{ $day['lunch_at'] }}</span>@endif
                     @if (! empty($day['end_transfer']))<span>🚗 {{ $day['end_transfer']['to'] }}: {{ number_format($day['end_transfer']['km']) }} km, arrive {{ $day['end_transfer']['arrive'] }}</span>@endif
                     @if (! empty($day['overnight']))
-                        <span>🛏 {{ $hotel?->name ?? 'Hotel to be confirmed' }}, {{ $day['overnight']['town'] }} · {{ \App\Enums\MealPlan::tryFrom($mealPlan)?->label() }}</span>
+                        <span>🛏 @if ($hotel)<a href="{{ $hotel->url() }}" target="_blank" rel="noopener" class="hover:text-primary-700 hover:underline">{{ $hotel->name }}</a>@else Hotel to be confirmed @endif, {{ $day['overnight']['town'] }} · {{ \App\Enums\MealPlan::tryFrom($mealPlan)?->label() }}</span>
                     @endif
                 </div>
             </li>
@@ -131,10 +131,17 @@
         @if ($user)
             <p class="text-sm">Submitting as <strong>{{ $user->name }}</strong> ({{ $user->email }}).</p>
         @else
-            <p class="text-sm text-slate-600">
-                <a href="{{ route('login') }}" class="font-semibold text-primary-700 underline">Log in</a> or
-                <a href="{{ route('register') }}" class="font-semibold text-primary-700 underline">register</a> to keep your trips in one place, or continue as a guest:
-            </p>
+            <div class="flex flex-col gap-3 rounded-xl bg-white p-4 ring-1 ring-primary-200 sm:flex-row sm:items-center">
+                <div class="flex-1 text-sm">
+                    <p class="font-semibold text-slate-900">Save this trip to your account</p>
+                    <p class="text-slate-600">Follow your booking, chat with your agent and download your e-receipt any time. Your plan stays exactly as it is.</p>
+                </div>
+                <div class="flex shrink-0 gap-2">
+                    <a href="{{ route('register', ['next' => 'plan']) }}" class="btn btn-primary">Create a free account</a>
+                    <a href="{{ route('login', ['next' => 'plan']) }}" class="btn btn-secondary">Log in</a>
+                </div>
+            </div>
+            <p class="text-sm text-slate-600">Or continue as a guest:</p>
             <div class="grid gap-4 sm:grid-cols-2">
                 @foreach ([['full_name', 'Full name', 'text', 'name'], ['email', 'Email', 'email', 'email'], ['phone', 'Phone (with country code)', 'tel', 'tel'], ['whatsapp', 'WhatsApp (optional)', 'tel', 'tel']] as [$name, $label, $type, $autocomplete])
                     <div>

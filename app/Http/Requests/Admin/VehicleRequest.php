@@ -27,6 +27,19 @@ class VehicleRequest extends FormRequest
             'luggage_capacity' => ['nullable', 'integer', 'between:0,100'],
             'day_rate' => ['required', 'numeric', 'min:0', 'max:10000', 'decimal:0,2'],
             'km_rate' => ['required', 'numeric', 'min:0', 'max:100', 'decimal:0,2'],
+            'description' => ['nullable', 'string', 'max:2000'],
+            'amenities' => ['nullable', 'array'],
+            'amenities.*' => [Rule::in(array_keys(Vehicle::AMENITIES))],
+            'is_rentable' => ['boolean'],
+            'provider_name' => ['nullable', 'string', 'max:120'],
+            'provider_phone' => ['nullable', 'string', 'max:30'],
+            'provider_email' => ['nullable', 'email', 'max:190'],
+            'provider_website' => ['nullable', 'url:https,http', 'max:255'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['is_rentable' => $this->boolean('is_rentable'), 'amenities' => $this->input('amenities', [])]);
     }
 }

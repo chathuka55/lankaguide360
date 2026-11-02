@@ -24,7 +24,7 @@
         @if ($canEdit)
             <div class="flex flex-wrap gap-2">
                 {{-- Commons search modal --}}
-                <div x-data="commonsSearch({ url: @js(route('admin.media.commons-search')), query: @js($owner->name.' Sri Lanka') })">
+                <div x-data="commonsSearch({ url: @js(route('admin.media.commons-search')), query: @js(($owner->name ?? $owner->type).' Sri Lanka') })">
                     <button type="button" class="btn btn-secondary btn-sm" @click="open = true; if (! results.length) search()">
                         <x-icon name="photo" class="size-4" /> Search Wikimedia Commons
                     </button>

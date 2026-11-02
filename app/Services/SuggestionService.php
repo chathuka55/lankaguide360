@@ -17,6 +17,9 @@ use Illuminate\Support\Collection;
  */
 class SuggestionService
 {
+    /** Guide languages always on offer. */
+    public const LOCAL_LANGUAGES = ['English', 'Sinhala', 'Tamil'];
+
     /**
      * Default meal plan per tier (SRS 5.2).
      */
@@ -167,7 +170,10 @@ class SuggestionService
      */
     public function guideLanguages(): array
     {
-        return Guide::available()->pluck('languages')->flatten()->unique()->sort()->values()->all() ?: ['English'];
+        // Sri Lanka's own languages are always offered (local travellers), plus any language a guide speaks.
+        $spoken = Guide::available()->pluck('languages')->flatten()->filter()->unique()->sort()->values();
+
+        return collect(self::LOCAL_LANGUAGES)->merge($spoken)->unique()->values()->all();
     }
 
     /**

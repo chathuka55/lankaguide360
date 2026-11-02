@@ -13,7 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 // `role` is deliberately not fillable: only admins change it, explicitly.
-#[Fillable(['name', 'email', 'password', 'phone', 'country', 'age'])]
+#[Fillable(['name', 'email', 'password', 'phone', 'country', 'nationality', 'traveller_type', 'nic', 'age'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {

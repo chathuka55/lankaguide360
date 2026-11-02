@@ -173,7 +173,7 @@
                             <ul class="mt-3 space-y-3 text-sm">
                                 @foreach ($hotels as $hotel)
                                     <li>
-                                        <p class="font-medium text-slate-900">{{ $hotel->name }} <x-demo-badge :hotel="$hotel" />@if ($hotel->star_rating) <span class="text-accent-600">{{ str_repeat('★', $hotel->star_rating) }}</span>@endif</p>
+                                        <p class="font-medium text-slate-900"><a href="{{ $hotel->url() }}" class="hover:text-primary-700 hover:underline">{{ $hotel->name }}</a> <x-demo-badge :hotel="$hotel" />@if ($hotel->star_rating) <span class="text-accent-600">{{ str_repeat('★', $hotel->star_rating) }}</span>@endif</p>
                                         <p class="text-slate-500">{{ $hotel->town }} · {{ number_format($hotel->distance_km, 1) }} km</p>
                                     </li>
                                 @endforeach

@@ -25,8 +25,9 @@
                 <div class="mt-3 grid gap-3 md:grid-cols-3">
                     @foreach ($night['options'] as $option)
                         @php $hotel = $option['hotel']; $on = $night['selected']?->is($hotel); @endphp
-                        <button type="button" wire:click="chooseHotel({{ $night['day'] }}, {{ $hotel->id }})" wire:key="night-{{ $night['day'] }}-hotel-{{ $hotel->id }}" aria-pressed="{{ $on ? 'true' : 'false' }}"
-                                @class(['flex flex-col overflow-hidden rounded-xl border-2 text-start transition', 'border-primary-700 ring-2 ring-primary-100' => $on, 'border-slate-200 hover:border-primary-300' => ! $on])>
+                        <div class="flex flex-col" wire:key="night-{{ $night['day'] }}-hotel-{{ $hotel->id }}">
+                        <button type="button" wire:click="chooseHotel({{ $night['day'] }}, {{ $hotel->id }})" aria-pressed="{{ $on ? 'true' : 'false' }}"
+                                @class(['flex flex-1 flex-col overflow-hidden rounded-xl border-2 text-start transition', 'border-primary-700 ring-2 ring-primary-100' => $on, 'border-slate-200 hover:border-primary-300' => ! $on])>
                             <span class="block aspect-[16/9] w-full bg-primary-50">
                                 @if ($hotel->cover)
                                     <x-media-img :media="$hotel->cover" :width="400" sizes="(min-width: 768px) 20vw, 100vw" :alt="$hotel->name" class="size-full object-cover" />
@@ -45,8 +46,11 @@
                                         <span class="text-slate-500">Price on request</span>
                                     @endif
                                 </span>
+                                @if ($on)<span class="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary-800"><x-icon name="check" class="size-3.5" /> Chosen for this night</span>@endif
                             </span>
                         </button>
+                        <a href="{{ $hotel->url() }}" target="_blank" rel="noopener" class="mt-1 inline-flex items-center gap-1 self-start text-xs font-medium text-primary-700 hover:underline">Hotel details <x-icon name="external" class="size-3.5" /></a>
+                        </div>
                     @endforeach
                 </div>
 

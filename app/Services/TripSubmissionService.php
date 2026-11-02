@@ -94,6 +94,8 @@ class TripSubmissionService
             'guide_type' => $draft->guideType,
             'guide_id' => $draft->guideId,
             'guide_language' => $draft->guideLanguage,
+            'traveller_type' => $draft->isLocal() ? 'local' : 'foreign',
+            'refreshments' => $draft->refreshments,
             'special_requests' => $draft->specialRequests,
             'status' => TripStatus::Submitted,
             'estimated_total' => Money::decimal($price->total),

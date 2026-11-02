@@ -16,6 +16,13 @@
                     <span class="rounded-full bg-slate-100 px-2 text-xs text-slate-600">{{ $vehicle->tier->label() }}</span>
                 </span>
                 @if ($vehicle->example_model)<span class="block text-xs text-slate-500">e.g. {{ $vehicle->example_model }}</span>@endif
+                @if ($vehicle->amenities)
+                    <span class="mt-2 flex flex-wrap gap-1">
+                        @foreach ($vehicle->amenities as $amenity)
+                            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-600">{{ \App\Models\Vehicle::AMENITIES[$amenity] ?? $amenity }}</span>
+                        @endforeach
+                    </span>
+                @endif
                 <span class="mt-2 block text-sm text-slate-600">{{ $vehicle->min_pax }}–{{ $vehicle->max_pax }} seats @if ($vehicle->luggage_capacity) · {{ $vehicle->luggage_capacity }} bags @endif</span>
                 <span class="mt-1 block text-sm"><strong>@money($vehicle->day_rate)</strong> <span class="text-slate-500">/ day @if ((float) $vehicle->km_rate > 0) + @money($vehicle->km_rate)/km @endif</span></span>
                 @if ($suggestedVehicle?->is($vehicle))<span class="mt-2 inline-block rounded-full bg-primary-50 px-2 text-xs font-semibold text-primary-800">suggested</span>@endif
@@ -23,6 +30,16 @@
         @endforeach
     </div>
     @error('vehicleId')<p class="mt-2 text-sm text-red-600" role="alert">{{ $message }}</p>@enderror
+
+    @if ($refreshmentRate > 0)
+        <label class="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-white p-4">
+            <input type="checkbox" wire:model.live="refreshments" class="mt-0.5 rounded text-primary-700 focus:ring-primary-500">
+            <span class="text-sm">
+                <span class="block font-semibold">Add a refreshment pack</span>
+                <span class="text-slate-600">Chilled water, soft drinks and snacks in the vehicle every day · @money($refreshmentRate) per person per day</span>
+            </span>
+        </label>
+    @endif
 </section>
 
 <section aria-labelledby="guide-heading" class="mt-8 rounded-2xl border border-slate-200 bg-white p-5">

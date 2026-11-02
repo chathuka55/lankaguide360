@@ -17,4 +17,8 @@ return [
     ['National guide (Chinese)', 'national', ['Chinese', 'English'], 65.00],
     ['National guide (Russian)', 'national', ['Russian', 'English'], 65.00],
     ['Site guide (English)', 'site', ['English'], 20.00],
+    ['Chauffeur-guide (Sinhala, English)', 'chauffeur', ['Sinhala', 'English'], 12.00],
+    ['Chauffeur-guide (Tamil, English)', 'chauffeur', ['Tamil', 'English'], 12.00],
+    ['National guide (Sinhala)', 'national', ['Sinhala', 'English'], 40.00],
+    ['National guide (Tamil)', 'national', ['Tamil', 'English'], 40.00],
 ];

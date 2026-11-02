@@ -25,22 +25,39 @@
         </div>
 
         <div class="mt-4 grid gap-4 sm:grid-cols-2">
-            @foreach (['arrivalPoint' => 'Arriving at', 'departurePoint' => 'Leaving from'] as $field => $label)
+            @foreach (['arrivalPoint' => 'Start the trip at', 'departurePoint' => 'End the trip at'] as $field => $label)
                 <div>
                     <label for="{{ $field }}" class="form-label">{{ $label }}</label>
                     <select id="{{ $field }}" wire:model.live="{{ $field }}" class="form-control">
-                        @foreach ($arrivalPoints as $key => $point)
-                            <option value="{{ $key }}">{{ $point['label'] }}</option>
+                        @foreach ($pointGroups as $group => $options)
+                            <optgroup label="{{ $group }}">
+                                @foreach ($options as $key => $optionLabel)
+                                    <option value="{{ $key }}">{{ $optionLabel }}</option>
+                                @endforeach
+                            </optgroup>
                         @endforeach
                     </select>
                     @error($field)<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                 </div>
             @endforeach
         </div>
+        <p class="mt-2 text-xs text-slate-500">Already in Sri Lanka? Start and end in any town, for example Kandy → Ella.</p>
     </div>
 
     <div class="rounded-2xl border border-slate-200 bg-white p-5">
         <h2 class="font-semibold">Who is travelling</h2>
+        <fieldset class="mt-3">
+            <legend class="sr-only">Traveller type</legend>
+            <div class="grid gap-2 sm:grid-cols-2">
+                @foreach (['foreign' => ['Foreign visitor', 'Prices include tourism taxes'], 'local' => ['Sri Lankan resident', 'Local entry fees and resident discount (NIC needed)']] as $value => [$title, $hint])
+                    <label @class(['flex cursor-pointer items-start gap-2 rounded-xl border-2 p-3 text-sm', 'border-primary-700 bg-primary-50' => $travellerType === $value, 'border-slate-200 hover:border-primary-300' => $travellerType !== $value])>
+                        <input type="radio" wire:model.live="travellerType" value="{{ $value }}" class="mt-0.5 text-primary-700 focus:ring-primary-500">
+                        <span><span class="block font-semibold">{{ $title }}</span><span class="text-xs text-slate-500">{{ $hint }}</span></span>
+                    </label>
+                @endforeach
+            </div>
+            @error('travellerType')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+        </fieldset>
         <div class="mt-4 grid gap-4 sm:grid-cols-3">
             <div>
                 <label for="adults" class="form-label">Adults</label>

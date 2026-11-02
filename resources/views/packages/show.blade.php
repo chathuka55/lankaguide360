@@ -1,5 +1,5 @@
 @php
-    $cover = $package->cover;
+    $cover = $package->coverPhoto();
     $lines = fn (?string $text) => collect(preg_split('/\r?\n/', (string) $text))->map(fn ($l) => trim($l, " \t-•"))->filter();
     $jsonLd = [
         '@context' => 'https://schema.org',
