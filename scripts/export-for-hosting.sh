@@ -16,7 +16,10 @@ echo "Dumping ${DB_DATABASE}…"
     --single-transaction --default-character-set=utf8mb4 --no-tablespaces \
     --ignore-table="${DB_DATABASE}.sessions" --ignore-table="${DB_DATABASE}.cache" --ignore-table="${DB_DATABASE}.cache_locks" \
     --ignore-table="${DB_DATABASE}.jobs" --ignore-table="${DB_DATABASE}.failed_jobs" \
-    "$DB_DATABASE" | gzip > "$OUT/database.sql.gz"
+    "$DB_DATABASE" > "$OUT/database.sql"
+# The skipped tables still need to exist (empty) on the server.
+"$MYSQLDUMP" -h "${DB_HOST:-127.0.0.1}" -P "${DB_PORT:-3306}" -u "$DB_USERNAME" ${DB_PASSWORD:+-p"$DB_PASSWORD"}     --no-data --default-character-set=utf8mb4 --no-tablespaces     "$DB_DATABASE" sessions cache cache_locks jobs failed_jobs >> "$OUT/database.sql"
+gzip -f "$OUT/database.sql"
 
 echo "Packing photos…"
 tar -czf "$OUT/media.tar.gz" -C storage/app/public media

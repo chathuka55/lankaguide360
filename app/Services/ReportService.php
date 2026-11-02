@@ -223,11 +223,12 @@ class ReportService
         return $this->trips()
             ->join('trip_days', 'trip_days.trip_id', '=', 'trips.id')
             ->join('hotels', 'hotels.id', '=', 'trip_days.hotel_id')
-            ->selectRaw('hotels.name as hotel, hotels.town as town, hotels.tier as tier, count(*) as nights, count(distinct trips.id) as trips')
+            // Not aliased "tier": the Trip model would cast it to its own Tier enum.
+            ->selectRaw('hotels.name as hotel, hotels.town as town, hotels.tier as hotel_tier, count(*) as nights, count(distinct trips.id) as trips')
             ->groupBy('hotels.id', 'hotels.name', 'hotels.town', 'hotels.tier')
             ->orderByDesc('nights')->orderBy('hotels.name')
             ->limit($limit)->get()
-            ->map(fn ($row) => ['hotel' => $row->hotel, 'town' => (string) $row->town, 'tier' => ucfirst((string) $row->tier), 'nights' => (int) $row->nights, 'trips' => (int) $row->trips]);
+            ->map(fn ($row) => ['hotel' => $row->hotel, 'town' => (string) $row->town, 'tier' => ucfirst((string) $row->hotel_tier), 'nights' => (int) $row->nights, 'trips' => (int) $row->trips]);
     }
 
     /**

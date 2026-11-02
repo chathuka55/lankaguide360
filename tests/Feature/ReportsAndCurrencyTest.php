@@ -159,6 +159,21 @@ class ReportsAndCurrencyTest extends TestCase
         $this->assertSame($place->district->name, ReportService::forPeriod(null, null)->districts()->first()['district']);
     }
 
+    public function test_most_chosen_hotels_report_with_hotel_nights(): void
+    {
+        // Regression: the live site crashed here ("Tier could not be converted to string").
+        $trip = $this->trip(TripStatus::Confirmed, ['final_total' => '900']);
+        $hotel = Hotel::factory()->published()->create(['name' => 'Lake View Hotel', 'town' => 'Kandy', 'tier' => 'luxury']);
+        $trip->tripDays()->update(['hotel_id' => $hotel->id]);
+
+        $row = ReportService::forPeriod(null, null)->hotels()->first();
+        $this->assertSame(['hotel' => 'Lake View Hotel', 'town' => 'Kandy', 'tier' => 'Luxury', 'nights' => 1, 'trips' => 1], $row);
+
+        $this->actingAs($this->admin)->get(route('admin.reports.index'))->assertOk()->assertSee('Lake View Hotel');
+        $this->actingAs($this->admin)->get(route('admin.reports.workbook'))->assertOk();
+        $this->actingAs($this->admin)->get(route('admin.reports.pdf'))->assertOk();
+    }
+
     public function test_csv_export_converts_amounts_and_neutralises_formulas(): void
     {
         $trip = $this->trip(TripStatus::Confirmed, ['final_total' => '100.00']);
