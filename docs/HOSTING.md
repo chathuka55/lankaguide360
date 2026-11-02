@@ -52,13 +52,12 @@ QUEUE_CONNECTION=database
 # + the MAIL_* lines from docs/EMAIL.md
 ```
 
-Build the CSS/JS. Either on the server (if `node` is available):
+Build the CSS/JS on your PC and upload it (the free plan runs out of memory in `npm ci`).
+In Git Bash, in the project folder:
 
 ```sh
-npm ci && npm run build && rm -rf node_modules
+bash scripts/upload-build.sh <account>@ssh-<account>.alwaysdata.net
 ```
-
-or on your PC (`npm run build`) and upload the `public/build` folder with `scp -r public/build <account>@ssh-<account>.alwaysdata.net:~/lankaguide360/public/`.
 
 ## 3. Copy your data (database and photos)
 
@@ -108,7 +107,12 @@ php /home/<account>/lankaguide360/artisan schedule:run
 
 ## Updating the live site later
 
+On your PC, after `git push`:
+
 ```sh
-ssh <account>@ssh-<account>.alwaysdata.net
-cd ~/lankaguide360 && bash scripts/deploy.sh
+bash scripts/upload-build.sh <account>@ssh-<account>.alwaysdata.net   # CSS/JS
+ssh <account>@ssh-<account>.alwaysdata.net 'cd ~/lankaguide360 && bash scripts/deploy.sh'
 ```
+
+`deploy.sh` stops with a warning if the uploaded build is missing a page bundle (that page
+would show a server error). New vehicle types get a photo with `php artisan lg:vehicle-photos`.

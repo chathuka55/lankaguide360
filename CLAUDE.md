@@ -188,7 +188,8 @@ Phase-by-phase build prompts and the data-sourcing plan: docs/BUILD-PROMPTS.md.
 - `php artisan lg:publish-ready [--places|--hotels] [--dry-run]` publishes finished drafts
   (places need location + category + description or photo; their photos are published too).
 - Hosting: docs/HOSTING.md (alwaysdata Free recommended; Vercel unsuitable). `TRUSTED_PROXIES=*`
-  behind a proxy. scripts/export-for-hosting.sh packs the DB + photos; scripts/deploy.sh updates.
+  behind a proxy. scripts/export-for-hosting.sh packs the DB + photos; scripts/deploy.sh updates. The free
+  server can't run `npm ci` (killed): run `bash scripts/upload-build.sh lg360` on the PC first.
 - The Commons importer reuses photo files already in storage/app/public/media (no re-download
   after a database rebuild); the import cache in storage/app/import-cache lets `lg:import-all`
   rebuild places and hotels offline.
