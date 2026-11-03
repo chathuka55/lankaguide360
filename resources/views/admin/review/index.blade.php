@@ -30,7 +30,7 @@
             </details>
         @endif
 
-        <form method="GET" class="admin-card mb-4 flex flex-col gap-3 p-4 lg:flex-row lg:items-end">
+        <form method="GET" class="admin-card mb-4 flex flex-wrap items-end gap-3 p-4">
             <input type="hidden" name="tab" value="places">
             <x-admin.filter-select name="district" label="District" :options="$districts" />
             <x-admin.filter-select name="source" label="Source" :options="['seed' => 'Starter list', 'osm' => 'OpenStreetMap suggestion']" />
@@ -62,7 +62,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="text-xs">
+                                <td class="whitespace-nowrap text-xs">
                                     @if ($place->source === 'osm')
                                         <a href="https://www.openstreetmap.org/{{ $place->osm_id }}" target="_blank" rel="noopener" class="text-primary-700 hover:underline">OpenStreetMap</a><br><span class="text-slate-500">ODbL</span>
                                     @else
@@ -72,7 +72,7 @@
                                         <br><a href="{{ $place->wikipedia_url }}" target="_blank" rel="noopener" class="text-primary-700 hover:underline">Wikipedia</a> <span class="text-slate-500">CC BY-SA</span>
                                     @endif
                                 </td>
-                                <td class="text-xs">
+                                <td class="whitespace-nowrap text-xs">
                                     <ul class="space-y-0.5">
                                         <li class="{{ $place->lat !== null ? 'text-primary-700' : 'text-red-600' }}">{{ $place->lat !== null ? '✓' : '✗' }} Coordinates</li>
                                         <li class="{{ $place->categories->isNotEmpty() ? 'text-primary-700' : 'text-red-600' }}">{{ $place->categories->isNotEmpty() ? '✓' : '✗' }} Category</li>
@@ -109,9 +109,9 @@
     @endif
 
     @if ($tab === 'hotels')
-        <form method="GET" class="admin-card mb-4 flex flex-col gap-3 p-4 lg:flex-row lg:items-end">
+        <form method="GET" class="admin-card mb-4 flex flex-wrap items-end gap-3 p-4">
             <input type="hidden" name="tab" value="hotels">
-            <div class="min-w-0 flex-1"><label for="rq-q" class="form-label">Search</label><input id="rq-q" type="search" name="q" value="{{ request('q') }}" placeholder="Hotel or town" class="form-control"></div>
+            <div class="min-w-0 flex-[2_1_16rem]"><label for="rq-q" class="form-label">Search</label><input id="rq-q" type="search" name="q" value="{{ request('q') }}" placeholder="Hotel or town" class="form-control"></div>
             <x-admin.filter-select name="district" label="District" :options="$districts" />
             <x-admin.filter-select name="tier" label="Guessed tier" :options="['budget' => 'Budget', 'premium' => 'Premium', 'luxury' => 'Luxury']" />
             <x-admin.filter-select name="type" label="Type" :options="['hotel' => 'Hotel', 'guest_house' => 'Guest house', 'hostel' => 'Hostel', 'resort' => 'Resort', 'apartment' => 'Apartment']" />

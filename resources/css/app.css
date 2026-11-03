@@ -97,7 +97,8 @@
         @apply rounded-xl bg-white shadow-sm ring-1 ring-slate-200;
     }
     .admin-table {
-        @apply min-w-full divide-y divide-slate-200 text-sm;
+        /* relative: screen-reader-only labels (absolutely positioned) stay inside the table's scroll box. */
+        @apply relative min-w-full divide-y divide-slate-200 text-sm;
     }
     .admin-table th {
         @apply bg-slate-50 px-4 py-3 text-start text-xs font-semibold uppercase tracking-wide text-slate-500;

@@ -10,7 +10,7 @@
         <x-admin.filter-select name="category" label="Category" :options="$categories" />
         <x-admin.filter-select name="status" label="Status" :options="['published' => 'Published', 'draft' => 'Draft', 'rejected' => 'Rejected']" />
         <x-admin.filter-select name="source" label="Source" :options="['seed' => 'Starter list', 'osm' => 'OpenStreetMap', 'manual' => 'Added by admin']" />
-        <div class="flex flex-col gap-1 text-sm lg:pb-2">
+        <div class="flex shrink-0 flex-col gap-1 whitespace-nowrap text-sm">
             <label class="inline-flex items-center gap-2"><input type="checkbox" name="gems" value="1" @checked(request()->boolean('gems')) class="form-check"> Hidden gems</label>
             <label class="inline-flex items-center gap-2"><input type="checkbox" name="no_coords" value="1" @checked(request()->boolean('no_coords')) class="form-check"> No coordinates</label>
         </div>

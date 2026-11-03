@@ -11,7 +11,7 @@
 @endphp
 
 <figure data-media-id="{{ $media->id }}" class="admin-card flex flex-col overflow-hidden">
-    <div class="relative aspect-[4/3] bg-slate-100">
+    <div class="relative aspect-[4/3] shrink-0 overflow-hidden bg-slate-100">
         <img src="{{ $media->url(400) }}" alt="{{ $media->alt }}" loading="lazy" width="400" height="300" class="size-full object-cover">
         <div class="absolute inset-x-2 top-2 flex items-center justify-between gap-2">
             <span class="flex items-center gap-1">

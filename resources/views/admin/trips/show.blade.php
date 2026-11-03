@@ -36,8 +36,8 @@
 
     <x-admin.flash />
 
-    <div class="grid gap-6 xl:grid-cols-3">
-        <div class="space-y-6 xl:col-span-2">
+    <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+        <div class="min-w-0 space-y-6 xl:col-span-2">
             {{-- Status actions --}}
             <section class="admin-card p-5" aria-labelledby="status-heading">
                 <h3 id="status-heading" class="font-semibold">Status</h3>
@@ -241,15 +241,15 @@
                             @foreach ($trip->priceItems as $item)
                                 <tr>
                                     <td>
-                                        <select name="category" form="item-{{ $item->id }}" class="form-control py-1 text-sm" aria-label="Category">
+                                        <select name="category" form="item-{{ $item->id }}" class="form-control min-w-36 py-1 text-sm" aria-label="Category">
                                             @foreach ($categoryOptions as $value => $label)
                                                 <option value="{{ $value }}" @selected($item->category->value === $value)>{{ $label }}</option>
                                             @endforeach
                                         </select>
                                     </td>
-                                    <td><input name="description" form="item-{{ $item->id }}" value="{{ $item->description }}" class="form-control py-1 text-sm" aria-label="Description" required maxlength="200"></td>
-                                    <td><input name="qty" type="number" step="0.01" min="0" form="item-{{ $item->id }}" value="{{ (float) $item->qty }}" class="form-control py-1 text-sm" aria-label="Quantity" required></td>
-                                    <td><input name="unit_price" type="number" step="0.01" form="item-{{ $item->id }}" value="{{ $item->unit_price }}" class="form-control py-1 text-sm" aria-label="Unit price" required></td>
+                                    <td><input name="description" form="item-{{ $item->id }}" value="{{ $item->description }}" class="form-control min-w-56 py-1 text-sm" aria-label="Description" required maxlength="200"></td>
+                                    <td><input name="qty" type="number" step="0.01" min="0" form="item-{{ $item->id }}" value="{{ (float) $item->qty }}" class="form-control min-w-20 py-1 text-sm" aria-label="Quantity" required></td>
+                                    <td><input name="unit_price" type="number" step="0.01" form="item-{{ $item->id }}" value="{{ $item->unit_price }}" class="form-control min-w-24 py-1 text-sm" aria-label="Unit price" required></td>
                                     <td class="text-end whitespace-nowrap">@moneyBoth($item->amount)</td>
                                     <td class="whitespace-nowrap text-end">
                                         <form id="item-{{ $item->id }}" method="POST" action="{{ route('admin.trips.items.update', $item) }}" class="inline">@csrf @method('PUT')<button type="submit" class="btn btn-secondary btn-sm">Save</button></form>
@@ -259,15 +259,15 @@
                             @endforeach
                             <tr class="bg-slate-50">
                                 <td>
-                                    <select name="category" form="item-new" class="form-control py-1 text-sm" aria-label="New line category">
+                                    <select name="category" form="item-new" class="form-control min-w-36 py-1 text-sm" aria-label="New line category">
                                         @foreach ($categoryOptions as $value => $label)
                                             <option value="{{ $value }}">{{ $label }}</option>
                                         @endforeach
                                     </select>
                                 </td>
-                                <td><input name="description" form="item-new" placeholder="New line, e.g. Whale watching" class="form-control py-1 text-sm" aria-label="New line description" required maxlength="200"></td>
-                                <td><input name="qty" type="number" step="0.01" min="0" value="1" form="item-new" class="form-control py-1 text-sm" aria-label="New line quantity" required></td>
-                                <td><input name="unit_price" type="number" step="0.01" form="item-new" class="form-control py-1 text-sm" aria-label="New line unit price" required></td>
+                                <td><input name="description" form="item-new" placeholder="New line, e.g. Whale watching" class="form-control min-w-56 py-1 text-sm" aria-label="New line description" required maxlength="200"></td>
+                                <td><input name="qty" type="number" step="0.01" min="0" value="1" form="item-new" class="form-control min-w-20 py-1 text-sm" aria-label="New line quantity" required></td>
+                                <td><input name="unit_price" type="number" step="0.01" form="item-new" class="form-control min-w-24 py-1 text-sm" aria-label="New line unit price" required></td>
                                 <td></td>
                                 <td class="text-end"><form id="item-new" method="POST" action="{{ route('admin.trips.items.store', $trip) }}">@csrf<button type="submit" class="btn btn-primary btn-sm">Add</button></form></td>
                             </tr>
@@ -305,7 +305,7 @@
         </div>
 
         {{-- Sidebar --}}
-        <aside class="space-y-6">
+        <aside class="min-w-0 space-y-6">
             <section class="admin-card p-5 text-sm" aria-labelledby="contact-heading">
                 <h3 id="contact-heading" class="font-semibold">Traveller</h3>
                 @if ($lead)

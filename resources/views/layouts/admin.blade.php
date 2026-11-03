@@ -44,12 +44,18 @@ $menu = [
     <body class="bg-slate-100 font-sans"
           x-data="{
               mobileOpen: false,
-              collapsed: (() => { try { return localStorage.getItem('lg-admin-collapsed') === '1' } catch (e) { return false } })(),
+              // The visitor's own choice wins; otherwise the sidebar is a slim icon rail below 1280px
+              // (iPad landscape, small laptops) so tables and forms keep their room.
+              stored() { try { return localStorage.getItem('lg-admin-collapsed') } catch (e) { return null } },
+              autoCollapsed() { return window.innerWidth < 1280 },
+              collapsed: false,
+              init() { const v = this.stored(); this.collapsed = v === null ? this.autoCollapsed() : v === '1' },
               toggleCollapsed() {
                   this.collapsed = ! this.collapsed;
                   try { localStorage.setItem('lg-admin-collapsed', this.collapsed ? '1' : '0') } catch (e) {}
               },
           }"
+          @resize.window.debounce.200ms="if (stored() === null) collapsed = autoCollapsed()"
           @keydown.escape.window="mobileOpen = false">
 
         {{-- Mobile backdrop --}}
@@ -73,7 +79,7 @@ $menu = [
                 </button>
             </div>
 
-            <nav class="flex-1 space-y-6 overflow-y-auto px-3 py-5">
+            <nav class="flex-1 space-y-6 overflow-y-auto px-3 py-5 [scrollbar-color:var(--color-slate-700)_transparent] [scrollbar-width:thin]">
                 @foreach ($menu as $group => $items)
                     @php($visible = collect($items)->filter(fn ($item) => Gate::allows($item['can'])))
                     @continue($visible->isEmpty())

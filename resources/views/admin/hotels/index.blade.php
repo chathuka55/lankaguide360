@@ -11,7 +11,7 @@
         <x-admin.filter-select name="type" label="Type" :options="array_combine(App\Http\Requests\Admin\HotelRequest::TYPES, array_map(fn ($t) => str($t)->replace('_', ' ')->ucfirst(), App\Http\Requests\Admin\HotelRequest::TYPES))" />
         <x-admin.filter-select name="status" label="Status" :options="['published' => 'Published', 'draft' => 'Draft', 'rejected' => 'Rejected']" />
         <x-admin.filter-select name="source" label="Source" :options="['real' => 'Real hotels', 'demo' => 'Demo listings']" />
-        <label class="inline-flex items-center gap-2 text-sm lg:pb-2"><input type="checkbox" name="no_rates" value="1" @checked(request()->boolean('no_rates')) class="form-check"> No room rates</label>
+        <label class="inline-flex shrink-0 items-center gap-2 whitespace-nowrap pb-2 text-sm"><input type="checkbox" name="no_rates" value="1" @checked(request()->boolean('no_rates')) class="form-check"> No room rates</label>
     </x-admin.filters>
 
     <div class="admin-card overflow-hidden" x-data="bulkSelect">

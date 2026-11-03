@@ -112,6 +112,12 @@ Phase-by-phase build prompts and the data-sourcing plan: docs/BUILD-PROMPTS.md.
   commonsSearch, bulkSelect. app.js starts Alpine on DOMContentLoaded so page bundles can
   register components first.
 - Blade gotcha: a directive right after a letter (`Latitude@if`) is not compiled — add a space.
+- Responsive admin (iPad 768/1024, laptops): the sidebar starts as an icon rail below 1280px unless
+  the user chose otherwise (localStorage `lg-admin-collapsed`). Filter bars are `flex flex-wrap
+  items-end` (search `flex-[2_1_16rem]`, selects `flex-[1_1_9rem]`); pagination everywhere is
+  resources/views/pagination/compact.blade.php (Paginator::defaultView). `.admin-table` is
+  `relative` so sr-only labels stay in the scroll box; grid columns holding wide tables need
+  `grid-cols-1`/`min-w-0`, and flex-column cards with image boxes need `overflow-hidden`.
 
 ## Public site, trips and packages (phases 5, 7–12)
 - Public controllers: Home, Destination (index/show/district + mapData), Contact, Newsletter,

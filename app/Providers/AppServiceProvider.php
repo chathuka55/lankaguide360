@@ -19,6 +19,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -59,6 +60,9 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('usd', fn (string $expression) => "<?php echo e(\App\Support\Money::usd({$expression})); ?>");
         Blade::directive('moneyBoth', fn (string $expression) => "<?php echo e(\App\Support\Money::both({$expression})); ?>");
         Blade::directive('approxUsd', fn (string $expression) => "<?php echo e(\App\Support\Money::approxUsd({$expression})); ?>");
+
+        // Compact page links that wrap on small screens (resources/views/pagination/compact.blade.php).
+        Paginator::defaultView('pagination.compact');
 
         // Short, stable type names in polymorphic columns (media.mediable_type, import_logs.target_type).
         Relation::enforceMorphMap([

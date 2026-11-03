@@ -64,7 +64,7 @@
     </div>
 
     <h3 class="mb-3 text-lg font-semibold">Import log</h3>
-    <form method="GET" class="admin-card mb-4 flex flex-col gap-3 p-4 sm:flex-row sm:items-end">
+    <form method="GET" class="admin-card mb-4 flex flex-wrap items-end gap-3 p-4">
         <x-admin.filter-select name="importer" label="Importer" :options="$logKeys" />
         <x-admin.filter-select name="status" label="Status" :options="$statuses" />
         <button type="submit" class="btn btn-primary">Filter</button>

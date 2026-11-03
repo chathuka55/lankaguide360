@@ -33,7 +33,7 @@
     </x-admin.header>
 
     {{-- Filters: one row above the charts --}}
-    <form method="GET" action="{{ route('admin.reports.index') }}" class="admin-card mb-6 flex flex-col gap-3 p-4 lg:flex-row lg:items-end">
+    <form method="GET" action="{{ route('admin.reports.index') }}" class="admin-card mb-6 flex flex-wrap items-end gap-3 p-4">
         <div>
             <label for="from" class="form-label">From</label>
             <input type="date" id="from" name="from" value="{{ $filters['from'] }}" class="form-control">
@@ -42,7 +42,7 @@
             <label for="to" class="form-label">To</label>
             <input type="date" id="to" name="to" value="{{ $filters['to'] }}" class="form-control">
         </div>
-        <div class="lg:w-44">
+        <div class="min-w-0 flex-[1_1_9rem] sm:max-w-56">
             <label for="tier" class="form-label">Travel style</label>
             <select id="tier" name="tier" class="form-control">
                 <option value="">All</option>
@@ -52,7 +52,7 @@
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Update</button>
-        <div class="flex flex-wrap gap-1 lg:ms-auto">
+        <div class="flex flex-wrap gap-1 pb-1.5 xl:ms-auto">
             @foreach ($ranges as $label => [$from, $to])
                 <a href="{{ route('admin.reports.index', array_filter(['from' => $from, 'to' => $to, 'tier' => $filters['tier']])) }}"
                    @class(['rounded-full px-3 py-1.5 text-xs font-medium', 'bg-slate-900 text-white' => $filters['from'] === $from && $filters['to'] === $to, 'bg-slate-100 text-slate-700 hover:bg-slate-200' => ! ($filters['from'] === $from && $filters['to'] === $to)])>{{ $label }}</a>
@@ -64,7 +64,7 @@
     @endif
 
     {{-- Headline numbers --}}
-    <dl class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <dl class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         @foreach ($tiles as [$label, $value, $note])
             <div class="admin-card p-5">
                 <dt class="text-sm text-slate-500">{{ $label }}</dt>
