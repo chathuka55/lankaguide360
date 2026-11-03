@@ -21,8 +21,9 @@
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: {{ $forPdf ? '2px 5px' : '4px 6px' }}; vertical-align: top; }
         .muted { color: #64748b; }
-        .brand { font-size: 1.4em; font-weight: 700; color: #234F3A; }
-        .brand span { color: #F59E0B; }
+        .brand { font-size: 1.4em; font-weight: 700; color: #0E8437; }
+        .brand span { color: #0B4F8F; }
+        .brand img { height: 2.1em; width: 2.1em; vertical-align: middle; margin-right: 6px; }
         .title { font-size: 1.05em; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: #0f172a; }
         .ticket { border: 2px dashed #234F3A; border-radius: 12px; padding: {{ $forPdf ? '8px 12px' : '14px 16px' }}; margin-top: {{ $forPdf ? '8px' : '14px' }}; }
         .big { font-size: 1.5em; font-weight: 700; }
@@ -58,7 +59,7 @@
         <table>
             <tr>
                 <td style="padding: 0">
-                    <div class="brand">LankaGuide<span>360</span></div>
+                    <div class="brand"><img src="{{ $forPdf ? public_path('images/brand/mark-128.png') : asset('images/brand/mark-128.png') }}" alt="">Lanka<span>Guide360</span></div>
                     <div class="muted">{{ $contact['address'] }} · {{ $contact['phone'] }} · {{ $contact['email'] }}</div>
                     <div class="title" style="margin-top: 10px">E-receipt · Booking voucher</div>
                 </td>

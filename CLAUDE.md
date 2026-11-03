@@ -200,7 +200,9 @@ Phase-by-phase build prompts and the data-sourcing plan: docs/BUILD-PROMPTS.md.
   (`Vehicle::offersSelfDrive()`, scope `selfDrive()`; defaults in data/self_drive.php, cars/SUVs/vans
   only). Trips: `self_drive`, `driver_name`, `driver_licence_no` (hidden attribute),
   `driver_licence_expiry` (must cover the last trip day). Builder step 7 "With a driver / Self-drive";
-  no chauffeur-guide without a driver. Pricing: self-drive day rate + km over the allowance at
+  no chauffeur-guide without a driver. Step 7 starts with "How do you want to travel?":
+  `chooseDriveMode('driver'|'guide'|'self')` sets selfDrive + guideType (driver only / driver + guide
+  = chauffeur-guide or national guide / self-drive). Pricing: self-drive day rate + km over the allowance at
   km_rate; the refundable deposit is a note. Vehicle hire form has the same choice (`mode=self`).
   `Trip::vehicleLabel()` = "Car, self-drive" / "Car with driver".
 - `php artisan lg:vehicle-photos` imports one Commons photo per vehicle type
@@ -211,7 +213,14 @@ Phase-by-phase build prompts and the data-sourcing plan: docs/BUILD-PROMPTS.md.
   override its position/z-index/overflow with Tailwind `!` utilities. Scrollable panels inside the
   page need `data-lenis-prevent`. Section headings: `<x-home.heading title accent eyebrow>`.
 - Navbar: Destinations mega menu (categories, provinces, hidden gems) + "Plan your trip" dropdown;
-  `siteProvinces` comes from the view composer.
+  `siteProvinces` comes from the view composer. Docked at the top; after 24 px of scrolling it
+  floats as a rounded pill (`scrolled` in the header's x-data; header height stays 4rem).
+- Logo: master artwork resources/brand/lankaguide360-logo-source.png (white background).
+  `php scripts/brand-assets.php` writes public/images/brand (logo-full, logo-stacked, mark,
+  mark-128, mark-badge, icon-512, apple-touch-icon, favicon-32) and public/favicon.ico. The emblem
+  contains white shapes, so full logo/mark go on light backgrounds only; on dark use
+  `<x-application-logo :badge="true">` (white disc) / `<x-logo :inverted="true">`. Name colours:
+  `text-logo-green` #0E8437, `text-logo-blue` #0B4F8F. PDFs/receipt use mark-128 via public_path().
 
 ## UI rules
 - Mobile-first, responsive at sm/md/lg/xl. Brand colours ("tea country" theme, Nov 2026): forest

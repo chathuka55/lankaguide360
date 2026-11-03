@@ -287,11 +287,27 @@ class TripBuilderTest extends TestCase
         $this->assertArrayNotHasKey('driver_licence_no', $trip->toArray());
     }
 
+    public function test_driver_driver_and_guide_or_self_drive(): void
+    {
+        $component = $this->throughStepFive()->set('travellerType', 'local')->call('next')->call('next')->assertSet('step', 7)
+            ->call('chooseDriveMode', 'guide')->assertSet('guideType', 'chauffeur')->assertSet('selfDrive', false)
+            ->call('chooseDriveMode', 'driver')->assertSet('selfDrive', false);
+        $this->assertContains($component->get('guideType'), ['none', 'site']);
+
+        $component->call('chooseDriveMode', 'self')->assertSet('selfDrive', true)->assertSet('guideType', 'none');
+        $this->assertTrue(Vehicle::find($component->get('vehicleId'))->offersSelfDrive());
+
+        $component->call('chooseDriveMode', 'guide')->assertSet('selfDrive', false)->assertSet('guideType', 'chauffeur');
+        $this->assertFalse($this->draft()->isSelfDrive());
+    }
+
     public function test_foreign_visitors_cannot_choose_self_drive(): void
     {
         $component = $this->throughStepFive()->call('next')->call('next')->assertSet('step', 7)
-            ->assertSee('Self-drive hire is open to Sri Lankan residents')
-            ->set('selfDrive', true)->assertSet('selfDrive', false);
+            ->assertSee('How do you want to travel?')
+            ->assertSee('For Sri Lankan residents')
+            ->set('selfDrive', true)->assertSet('selfDrive', false)
+            ->call('chooseDriveMode', 'self')->assertSet('selfDrive', false);
 
         // A resident who switches back to foreign loses self-drive.
         $component->set('travellerType', 'local')->set('selfDrive', true)->assertSet('selfDrive', true)

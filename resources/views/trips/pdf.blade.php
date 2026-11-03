@@ -11,7 +11,7 @@
         h3 { font-size: 12px; margin: 0 0 4px; }
         .muted { color: #64748b; }
         .header { border-bottom: 3px solid #234F3A; padding-bottom: 8px; margin-bottom: 12px; }
-        .brand { font-size: 12px; font-weight: bold; color: #F59E0B; }
+        .brand { font-size: 16px; font-weight: bold; color: #0E8437; }
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 4px 6px; vertical-align: top; }
         th { background: #f1f6f2; font-size: 10px; text-transform: uppercase; color: #234F3A; }
@@ -25,7 +25,7 @@
 </head>
 <body>
     <div class="header">
-        <div class="brand">LankaGuide360</div>
+        <div class="brand"><img src="{{ public_path('images/brand/mark-128.png') }}" alt="" style="height: 30px; width: 30px; vertical-align: middle; margin-right: 6px">Lanka<span style="color: #0B4F8F">Guide360</span></div>
         <h1>{{ $trip->days }}-day Sri Lanka trip · {{ $trip->reference }}</h1>
         <div class="muted">
             {{ $trip->start_date?->format('j F Y') }} – {{ $trip->start_date?->copy()->addDays(max($trip->days - 1, 0))->format('j F Y') }}

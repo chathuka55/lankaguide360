@@ -430,7 +430,9 @@ class FeedbackRoundTest extends TestCase
 
     public function test_site_has_a_favicon(): void
     {
-        $this->assertFileExists(public_path('favicon.svg'));
-        $this->get(route('home'))->assertSee('favicon.svg', false);
+        $this->assertFileExists(public_path('images/brand/apple-touch-icon.png'));
+        $this->get(route('home'))->assertSee('images/brand/favicon-32.png', false)->assertSee('images/brand/mark-128.png', false);
+        $this->assertFileExists(public_path('favicon.ico'));
+        $this->assertFileExists(public_path('images/brand/logo-full.png'));
     }
 }

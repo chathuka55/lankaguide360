@@ -1,24 +1,32 @@
-<section aria-labelledby="vehicle-heading">
-    <h2 id="vehicle-heading" class="font-semibold">{{ $selfDrive && $canSelfDrive ? 'Self-drive vehicle' : 'Vehicle with driver' }}</h2>
+{{-- How do you want to travel: driver only, driver + guide, or self-drive (Sri Lankan residents only) --}}
+<section aria-labelledby="travel-mode-heading" class="mb-8">
+    <h2 id="travel-mode-heading" class="font-semibold">How do you want to travel?</h2>
+    @php
+        $modes = [
+            'driver' => ['With a driver', 'A professional driver takes you everywhere. Add site guides at the big sites if you like.', 'truck', ! $driverOnlyAllowed, 'Groups of 10 or more always travel with a guide.'],
+            'guide' => ['Driver + guide', 'Your driver is also your guide (chauffeur-guide), or a national guide rides along.', 'user-group', false, null],
+            'self' => ['Self-drive', 'Drive yourself with a valid Sri Lankan licence. No driver or chauffeur-guide.', 'key', ! $canSelfDrive || ! $selfDriveFits,
+                ! $canSelfDrive ? 'For Sri Lankan residents (choose “Sri Lankan resident” in step 5).' : 'Self-drive vehicles seat up to '.\App\Models\Vehicle::selfDrive()->max('max_pax').' people.'],
+        ];
+    @endphp
+    <div class="mt-3 grid gap-3 sm:grid-cols-3" role="radiogroup" aria-labelledby="travel-mode-heading">
+        @foreach ($modes as $mode => [$label, $hint, $icon, $disabled, $why])
+            @php $on = $driveMode === $mode; @endphp
+            <button type="button" role="radio" aria-checked="{{ $on ? 'true' : 'false' }}" wire:click="chooseDriveMode('{{ $mode }}')" @disabled($disabled)
+                    @class(['flex flex-col gap-2 rounded-2xl border-2 bg-white p-4 text-start transition disabled:cursor-not-allowed disabled:opacity-55', 'border-primary-700 ring-2 ring-primary-100' => $on, 'border-slate-200 hover:border-primary-300' => ! $on])>
+                <span class="flex items-center justify-between">
+                    <span @class(['grid size-10 place-items-center rounded-xl', 'bg-primary-700 text-white' => $on, 'bg-primary-50 text-primary-700' => ! $on])><x-icon :name="$icon" class="size-5" /></span>
+                    @if ($on)<x-icon name="check" class="size-5 text-primary-700" />@endif
+                </span>
+                <span class="text-sm font-semibold text-slate-900">{{ $label }}</span>
+                <span class="text-xs text-slate-500">{{ $disabled ? $why : $hint }}</span>
+            </button>
+        @endforeach
+    </div>
+</section>
 
-    {{-- Driver or self-drive (Sri Lankan residents only) --}}
-    @if ($canSelfDrive)
-        <div class="mt-3 grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Who drives">
-            @foreach ([false => ['With a driver', 'A professional driver takes you everywhere.'], true => ['Self-drive', 'Drive yourself with your Sri Lankan licence.']] as $value => [$label, $hint])
-                @php $on = (bool) $selfDrive === (bool) $value; $disabled = $value && ! $selfDriveFits; @endphp
-                <button type="button" role="radio" aria-checked="{{ $on ? 'true' : 'false' }}" wire:click="$set('selfDrive', {{ $value ? 'true' : 'false' }})" @disabled($disabled)
-                        @class(['flex items-start gap-3 rounded-xl border-2 bg-white p-3 text-start transition disabled:cursor-not-allowed disabled:opacity-50', 'border-primary-700 ring-2 ring-primary-100' => $on, 'border-slate-200 hover:border-primary-300' => ! $on])>
-                    <x-icon :name="$value ? 'key' : 'user-group'" class="mt-0.5 size-5 text-primary-700" />
-                    <span>
-                        <span class="block text-sm font-semibold">{{ $label }}</span>
-                        <span class="block text-xs text-slate-500">{{ $disabled ? 'Self-drive vehicles seat up to '.\App\Models\Vehicle::selfDrive()->max('max_pax').' people.' : $hint }}</span>
-                    </span>
-                </button>
-            @endforeach
-        </div>
-    @else
-        <p class="mt-1 text-xs text-slate-500">Self-drive hire is open to Sri Lankan residents with a Sri Lankan driving licence (choose “Sri Lankan resident” in step 5).</p>
-    @endif
+<section aria-labelledby="vehicle-heading">
+    <h2 id="vehicle-heading" class="font-semibold">{{ $driveMode === 'self' ? 'Self-drive vehicle' : 'Vehicle with driver' }}</h2>
 
     <p class="mt-3 text-sm text-slate-600">
         Suggested for {{ $summary['travellers'] }} {{ Str::plural('traveller', $summary['travellers']) }}@if ($luggage !== null) and {{ $luggage }} {{ Str::plural('bag', (int) $luggage) }}@endif:

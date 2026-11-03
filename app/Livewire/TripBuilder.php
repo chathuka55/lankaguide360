@@ -432,6 +432,43 @@ class TripBuilder extends Component
         $this->persist();
     }
 
+    /**
+     * Step 7 "How do you want to travel?": "driver" (driver only), "guide" (a driver who is also
+     * the guide, or a national guide riding along) or "self" (self-drive, residents only).
+     */
+    public function chooseDriveMode(string $mode): void
+    {
+        if ($mode === 'self') {
+            if ($this->travellerType !== 'local') {
+                return;
+            }
+            $this->selfDrive = true;
+            $this->guideType = GuideType::None->value;
+            $this->selfDriveChanged();
+
+            return;
+        }
+
+        if (! in_array($mode, ['driver', 'guide'], true)) {
+            return;
+        }
+
+        $rule = app(SuggestionService::class)->guideRule($this->travellerCount(), Tier::tryFrom($this->tier) ?? Tier::Premium);
+        $wanted = $mode === 'guide' ? [GuideType::Chauffeur, GuideType::National] : [GuideType::None, GuideType::Site];
+        $this->selfDrive = false;
+        $this->guideType = (collect($wanted)->first(fn (GuideType $type) => in_array($type, $rule['options'], true)) ?? $rule['type'])->value;
+        $this->selfDriveChanged();
+    }
+
+    private function driveMode(): string
+    {
+        return match (true) {
+            $this->isSelfDrive() => 'self',
+            in_array($this->guideType, [GuideType::Chauffeur->value, GuideType::National->value], true) => 'guide',
+            default => 'driver',
+        };
+    }
+
     private function isSelfDrive(): bool
     {
         return $this->selfDrive && $this->travellerType === 'local';
@@ -933,6 +970,8 @@ class TripBuilder extends Component
             'suggestedVehicle' => $suggestions->vehicleFor($travellers, $this->luggage, $tier, $selfDrive),
             'guideRule' => $suggestions->guideRule($travellers, $tier, $selfDrive),
             'canSelfDrive' => $this->travellerType === 'local',
+            'driveMode' => $this->driveMode(),
+            'driverOnlyAllowed' => collect($suggestions->guideRule($travellers, $tier)['options'])->contains(fn (GuideType $type) => in_array($type, [GuideType::None, GuideType::Site], true)),
             'selfDriveFits' => Vehicle::selfDrive()->where('max_pax', '>=', $travellers)->exists(),
             'lastDay' => $this->draft()->end(),
             'languages' => $suggestions->guideLanguages(),

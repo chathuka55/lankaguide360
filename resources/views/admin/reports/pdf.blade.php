@@ -15,7 +15,7 @@
         h2 { font-size: 12px; margin: 16px 0 6px; color: #234F3A; border-bottom: 1px solid #ddebe1; padding-bottom: 3px; }
         .muted { color: #64748b; }
         .header { border-bottom: 3px solid #234F3A; padding-bottom: 8px; margin-bottom: 10px; }
-        .brand { font-size: 11px; font-weight: bold; color: #F59E0B; }
+        .brand { font-size: 15px; font-weight: bold; color: #0E8437; }
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 3px 5px; vertical-align: top; }
         th { background: #f1f6f2; font-size: 9px; text-transform: uppercase; color: #234F3A; }
@@ -29,7 +29,7 @@
 </head>
 <body>
     <div class="header">
-        <div class="brand">LankaGuide360</div>
+        <div class="brand"><img src="{{ public_path('images/brand/mark-128.png') }}" alt="" style="height: 30px; width: 30px; vertical-align: middle; margin-right: 6px">Lanka<span style="color: #0B4F8F">Guide360</span></div>
         <h1>Business report</h1>
         <div class="muted">
             Trip requests submitted {{ $reports->from->format('j M Y') }} – {{ $reports->to->format('j M Y') }}{{ $reports->tier ? ' · '.$reports->tier->label() : '' }}.

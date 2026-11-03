@@ -24,13 +24,15 @@
                         <div class="swiper-wrapper">
                             @foreach ($heroPlaces as $i => $place)
                                 <div class="swiper-slide overflow-hidden">
-                                    <x-media-img :media="$place->cover" :width="1600" :eager="$i === 0" sizes="100vw" alt="" class="size-full scale-110 object-cover" data-hero-image />
+                                    <x-media-img :media="$place->cover" :width="1600" :eager="$i === 0" sizes="100vw" alt="" class="size-full scale-110 object-cover saturate-[1.2] contrast-[1.05]" data-hero-image />
                                 </div>
                             @endforeach
                         </div>
                     </div>
                 @endif
-                <div class="absolute inset-0 -z-10 bg-gradient-to-b from-sand-50 via-sand-50/80 to-sand-50/5 lg:bg-gradient-to-r lg:from-sand-50 lg:via-sand-50/70 lg:to-transparent"></div>
+                {{-- Cream only behind the text; the photo keeps its colour on the right. --}}
+                <div class="absolute inset-0 -z-10 bg-gradient-to-b from-sand-50/95 via-sand-50/65 via-45% to-transparent to-80% lg:bg-gradient-to-r lg:from-sand-50/95 lg:via-sand-50/50 lg:via-30% lg:to-transparent lg:to-55%"></div>
+                <div class="absolute inset-0 -z-10 bg-gradient-to-br from-transparent via-transparent to-primary-900/25"></div>
                 <div class="absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-gradient-to-t from-primary-950/60 to-transparent"></div>
 
                 <div class="grid gap-10 px-5 pt-10 pb-8 sm:px-10 lg:min-h-[min(78vh,46rem)] lg:grid-cols-12 lg:pt-16" data-hero-content>
@@ -49,7 +51,8 @@
                         </p>
 
                         {{-- Quick planner: interest dropdown → Trip Builder --}}
-                        <form method="GET" action="{{ route('plan') }}" class="relative mt-8 flex max-w-lg flex-col gap-2 rounded-3xl bg-white p-2 shadow-xl shadow-primary-950/10 ring-1 ring-primary-950/5 sm:flex-row sm:items-center sm:rounded-full sm:p-1.5"
+                        {{-- z-20: the entrance animation gives each hero line its own layer; keep the open list above the links below. --}}
+                        <form method="GET" action="{{ route('plan') }}" class="relative z-20 mt-8 flex max-w-lg flex-col gap-2 rounded-3xl bg-white p-2 shadow-xl shadow-primary-950/10 ring-1 ring-primary-950/5 sm:flex-row sm:items-center sm:rounded-full sm:p-1.5"
                               x-data="interestPicker(@js($interestOptions))" @keydown.escape.stop="close()" data-hero-line>
                             <input type="hidden" name="category" :value="selected?.slug" :disabled="! selected">
                             <div class="relative flex-1">
@@ -93,9 +96,9 @@
                                 <span class="grid size-9 place-items-center rounded-full bg-white/80 text-primary-800 ring-1 ring-primary-900/10 transition group-hover:bg-primary-800 group-hover:text-white"><x-icon name="gift" class="size-4" /></span>
                                 Ready-made packages
                             </a>
-                            <a href="{{ route('vehicles.index') }}" class="group inline-flex items-center gap-2 hover:text-primary-800">
-                                <span class="grid size-9 place-items-center rounded-full bg-white/80 text-primary-800 ring-1 ring-primary-900/10 transition group-hover:bg-primary-800 group-hover:text-white"><x-icon name="truck" class="size-4" /></span>
-                                Vehicle hire
+                            <a href="{{ route('destinations.index', ['gems' => 1]) }}" class="group inline-flex items-center gap-2 hover:text-primary-800">
+                                <span class="grid size-9 place-items-center rounded-full bg-white/80 text-primary-800 ring-1 ring-primary-900/10 transition group-hover:bg-primary-800 group-hover:text-white"><x-icon name="gem" class="size-4" /></span>
+                                Hidden gems
                             </a>
                         </div>
                     </div>
@@ -254,12 +257,12 @@
                         </div>
                     </x-home.heading>
 
-                    <div class="swiper overflow-visible!" x-ref="swiper" data-reveal>
+                    <div class="swiper -mx-3! -my-6! px-3! py-6!" x-ref="swiper" data-reveal>
                         <div class="swiper-wrapper">
                             @foreach ($topPlaces as $place)
-                                <div class="swiper-slide w-[17rem]! sm:w-[19rem]!">
+                                <div class="swiper-slide h-auto!">
                                     <a href="{{ $place->url() }}" class="tilt-card spotlight group relative isolate flex aspect-[3/4] flex-col justify-end overflow-hidden rounded-3xl bg-primary-800 p-5 text-white shadow-xl shadow-primary-950/10">
-                                        <x-media-img :media="$place->cover" :width="800" sizes="304px" :alt="$place->name" class="absolute inset-0 -z-20 size-full object-cover transition duration-700 group-hover:scale-110" />
+                                        <x-media-img :media="$place->cover" :width="800" sizes="(min-width: 1280px) 25vw, (min-width: 640px) 45vw, 85vw" :alt="$place->name" class="absolute inset-0 -z-20 size-full object-cover transition duration-700 group-hover:scale-110" />
                                         <span class="absolute inset-0 -z-10 bg-gradient-to-t from-primary-950/90 via-primary-950/20 to-transparent"></span>
                                         <span class="tilt-pop absolute start-4 top-4 flex flex-wrap gap-1.5">
                                             @foreach ($place->categories->take(1) as $category)
@@ -455,10 +458,10 @@
                     <x-home.heading id="gems-heading" eyebrow="Off the beaten track" title="Hidden" accent="gems" subtitle="Quiet places most visitors miss." :link="route('destinations.index', ['gems' => 1])">
                         <span class="hidden" x-ref="prev"></span><span class="hidden" x-ref="next"></span>
                     </x-home.heading>
-                    <div class="swiper overflow-visible!" x-ref="swiper">
+                    <div class="swiper -mx-3! -my-6! px-3! py-6!" x-ref="swiper">
                         <div class="swiper-wrapper">
                             @foreach ($hiddenGems as $place)
-                                <div class="swiper-slide w-72!"><x-place-card :place="$place" class="tilt-card h-full" sizes="288px" /></div>
+                                <div class="swiper-slide h-auto!"><x-place-card :place="$place" class="tilt-card h-full" sizes="(min-width: 1280px) 25vw, (min-width: 640px) 45vw, 85vw" /></div>
                             @endforeach
                         </div>
                     </div>

@@ -34,6 +34,10 @@
     --color-primary-900: #183427;
     --color-primary-950: #0c1e16;
 
+    /* The logo's own colours (resources/brand), for the name next to the emblem. */
+    --color-logo-green: #0e8437;
+    --color-logo-blue: #0b4f8f;
+
     --color-sand-50: #faf8f4;
     --color-sand-100: #f3efe7;
     --color-sand-200: #e8e1d3;

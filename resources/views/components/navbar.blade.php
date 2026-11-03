@@ -12,12 +12,19 @@ $trigger = fn (bool $active) => 'inline-flex items-center gap-1 rounded-full px-
     .($active ? 'bg-primary-700/10 text-primary-900' : 'text-slate-700 hover:bg-sand-200/70 hover:text-slate-900');
 @endphp
 
-<header x-data="{ open: false, menu: null, timer: null,
+{{-- Docked to the top of the page; once the visitor scrolls it lifts off into a floating, rounded bar.
+     The header keeps the same height in both states, so the page never jumps. --}}
+<header x-data="{ open: false, menu: null, timer: null, scrolled: window.scrollY > 24,
                   show(name) { clearTimeout(this.timer); this.menu = name },
                   hide() { this.timer = setTimeout(() => this.menu = null, 120) } }"
+        @scroll.window.passive="scrolled = window.scrollY > 24"
         @keydown.escape.window="menu = null; open = false"
-        class="sticky top-0 z-40 border-b border-sand-200/80 bg-sand-50/90 backdrop-blur-md supports-[backdrop-filter]:bg-sand-50/75">
-    <nav class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8" aria-label="Main">
+        :class="scrolled ? 'border-transparent bg-transparent' : 'border-sand-200/80 bg-sand-50/90 backdrop-blur-md supports-[backdrop-filter]:bg-sand-50/75'"
+        class="sticky top-0 z-40 h-16 border-b transition-colors duration-500">
+    <nav :class="scrolled
+            ? 'mx-2 mt-2 h-14 max-w-6xl rounded-full bg-white/85 ps-4 pe-2 shadow-lg shadow-primary-950/10 ring-1 ring-primary-950/5 backdrop-blur-md sm:mx-4 lg:mx-auto lg:ps-5'
+            : 'mx-auto h-16 max-w-7xl px-4 sm:px-6 lg:px-8'"
+         class="flex items-center justify-between gap-4 transition-all duration-500 ease-out" aria-label="Main">
         <x-logo />
 
         {{-- Desktop links --}}
@@ -31,6 +38,7 @@ $trigger = fn (bool $active) => 'inline-flex items-center gap-1 rounded-full px-
                 <div id="menu-destinations" x-show="menu === 'destinations'" x-cloak @click.outside="menu === 'destinations' && (menu = null)"
                      x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
                      x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                     :class="scrolled && 'mx-auto mt-2 max-w-6xl rounded-3xl border before:absolute before:inset-x-0 before:-top-2 before:h-2'"
                      class="absolute inset-x-0 top-full border-b border-sand-200 bg-white shadow-xl shadow-primary-950/5">
                     <div class="mx-auto grid max-w-7xl grid-cols-12 gap-8 px-8 py-8">
                         <div class="col-span-5">
@@ -161,7 +169,8 @@ $trigger = fn (bool $active) => 'inline-flex items-center gap-1 rounded-full px-
 
     {{-- Mobile menu --}}
     <div id="mobile-menu" x-show="open" x-cloak x-transition.origin.top data-lenis-prevent
-         class="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-sand-200 bg-sand-50 lg:hidden">
+         :class="scrolled ? 'mx-2 mt-2 rounded-3xl border shadow-xl sm:mx-4' : 'border-t'"
+         class="max-h-[calc(100dvh-5rem)] overflow-y-auto border-sand-200 bg-sand-50 lg:hidden">
         <ul class="space-y-1 px-4 py-3">
             <li x-data="{ sub: false }">
                 <button type="button" @click="sub = ! sub" :aria-expanded="sub.toString()" class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-base font-medium text-slate-800 hover:bg-sand-200/70">

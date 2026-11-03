@@ -62,7 +62,7 @@ $menu = [
                aria-label="Admin navigation">
             <div class="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-slate-800 px-4">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 overflow-hidden">
-                    <x-application-logo class="size-9 shrink-0" />
+                    <x-application-logo :badge="true" class="size-10" />
                     <span class="whitespace-nowrap text-base font-extrabold text-white" :class="{ 'lg:hidden': collapsed }">
                         LankaGuide<span class="text-accent-400">360</span>
                     </span>

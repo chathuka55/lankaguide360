@@ -8,7 +8,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import Swiper from 'swiper';
-import { A11y, Autoplay, EffectFade, FreeMode, Keyboard, Navigation } from 'swiper/modules';
+import { A11y, Autoplay, EffectFade, Keyboard, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 
@@ -85,15 +85,22 @@ document.addEventListener('alpine:init', () => {
         },
     }));
 
-    /** Draggable card row with arrow buttons (free mode, keyboard). */
+    /**
+     * Draggable card row with arrow buttons. It fills the same centred container as the other
+     * sections: 4 cards on wide screens, with the next card peeking in on phones.
+     */
     Alpine.data('cardCarousel', () => ({
         init() {
             new Swiper(this.$refs.swiper, {
-                modules: [Navigation, FreeMode, Keyboard, A11y],
-                slidesPerView: 'auto',
-                spaceBetween: 20,
+                modules: [Navigation, Keyboard, A11y],
+                slidesPerView: 1.15,
+                spaceBetween: 16,
                 grabCursor: true,
-                freeMode: { enabled: true, momentumRatio: 0.6 },
+                breakpoints: {
+                    640: { slidesPerView: 2.2, spaceBetween: 20 },
+                    1024: { slidesPerView: 3, spaceBetween: 20 },
+                    1280: { slidesPerView: 4, spaceBetween: 24 },
+                },
                 keyboard: { enabled: true, onlyInViewport: true },
                 navigation: { prevEl: this.$refs.prev, nextEl: this.$refs.next },
             });

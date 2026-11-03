@@ -11,7 +11,9 @@
 <title>{{ $pageTitle }}</title>
 <meta name="description" content="{{ Str::limit($pageDescription, 160) }}">
 <meta name="theme-color" content="#234F3A">
-<link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+<link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/brand/favicon-32.png') }}">
+<link rel="apple-touch-icon" href="{{ asset('images/brand/apple-touch-icon.png') }}">
 <link rel="canonical" href="{{ url()->current() }}">
 
 {{-- Open Graph / social previews (SRS NFR-13) --}}
@@ -24,6 +26,8 @@
     <meta property="og:image" content="{{ $pageImage }}">
     <meta name="twitter:card" content="summary_large_image">
 @else
+    {{-- No page photo: share the logo. --}}
+    <meta property="og:image" content="{{ asset('images/brand/icon-512.png') }}">
     <meta name="twitter:card" content="summary">
 @endif
 
