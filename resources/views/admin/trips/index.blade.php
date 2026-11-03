@@ -1,13 +1,14 @@
 <x-admin-layout title="Trip requests">
     <x-admin.header title="Trip requests" subtitle="Submitted trip plans. Oldest new requests first; open one to review, edit and approve it." />
 
-    <nav class="mb-4 flex gap-1 overflow-x-auto border-b border-slate-200" aria-label="Status">
+    {{-- Pill tabs wrap onto a second line on narrow screens instead of scrolling sideways. --}}
+    <nav class="mb-4 flex flex-wrap gap-1.5" aria-label="Status">
         @foreach (App\Http\Controllers\Admin\TripRequestController::TABS as $key => $label)
             <a href="{{ route('admin.trips.index', ['tab' => $key]) }}"
-               @class(['-mb-px whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium', 'border-primary-700 text-primary-800' => $tab === $key, 'border-transparent text-slate-600 hover:text-slate-900' => $tab !== $key])
+               @class(['inline-flex items-center whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium transition', 'bg-primary-800 text-white' => $tab === $key, 'bg-white text-slate-600 ring-1 ring-slate-200 hover:text-slate-900' => $tab !== $key])
                @if ($tab === $key) aria-current="page" @endif>
                 {{ $label }}
-                <span class="ms-1 rounded-full bg-slate-100 px-1.5 text-xs text-slate-600">{{ $counts[$key] ?? 0 }}</span>
+                <span @class(['ms-1.5 rounded-full px-1.5 text-xs', 'bg-white/20 text-white' => $tab === $key, 'bg-slate-100 text-slate-600' => $tab !== $key])>{{ $counts[$key] ?? 0 }}</span>
             </a>
         @endforeach
     </nav>
