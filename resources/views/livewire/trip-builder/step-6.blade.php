@@ -28,9 +28,13 @@
                         <div class="flex flex-col" wire:key="night-{{ $night['day'] }}-hotel-{{ $hotel->id }}">
                         <button type="button" wire:click="chooseHotel({{ $night['day'] }}, {{ $hotel->id }})" aria-pressed="{{ $on ? 'true' : 'false' }}"
                                 @class(['flex flex-1 flex-col overflow-hidden rounded-xl border-2 text-start transition', 'border-primary-700 ring-2 ring-primary-100' => $on, 'border-slate-200 hover:border-primary-300' => ! $on])>
-                            <span class="block aspect-[16/9] w-full bg-primary-50">
+                            <span class="relative block aspect-video w-full overflow-hidden bg-primary-50">
                                 @if ($hotel->cover)
                                     <x-media-img :media="$hotel->cover" :width="400" sizes="(min-width: 768px) 20vw, 100vw" :alt="$hotel->name" class="size-full object-cover" />
+                                @elseif ($sample = $hotel->sampleCover())
+                                    {{-- No photos of this hotel yet: a labelled sample of the same kind of room. --}}
+                                    <x-media-img :media="$sample" :width="400" sizes="(min-width: 768px) 20vw, 100vw" :alt="'Sample photo: '.$sample->alt" class="size-full object-cover" />
+                                    <span class="absolute start-2 top-2 rounded-full bg-slate-900/75 px-2 py-0.5 text-[10px] font-semibold text-white" title="{{ $sample->credit() }}">Sample photo</span>
                                 @endif
                             </span>
                             <span class="block p-3">

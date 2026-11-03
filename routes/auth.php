@@ -56,4 +56,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+    // From the 403 page: a traveller account opened the admin panel.
+    Route::post('switch-account', [AuthenticatedSessionController::class, 'switchAccount'])
+        ->name('switch-account');
 });

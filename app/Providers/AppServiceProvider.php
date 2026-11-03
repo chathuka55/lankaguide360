@@ -8,10 +8,12 @@ use App\Models\Hotel;
 use App\Models\Package;
 use App\Models\Place;
 use App\Models\Province;
+use App\Models\SamplePhoto;
 use App\Models\Trip;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Services\Import\ImportClient;
+use App\Services\Media\HotelSamplePhotos;
 use App\Services\Site\SiteCatalog;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -33,6 +35,8 @@ class AppServiceProvider extends ServiceProvider
     {
         // One client per process: shared rate-limit timers and cache setting for all importers.
         $this->app->singleton(ImportClient::class);
+        // Sample-photo pool loads once per request.
+        $this->app->scoped(HotelSamplePhotos::class);
     }
 
     /**
@@ -64,6 +68,7 @@ class AppServiceProvider extends ServiceProvider
             'hotel' => Hotel::class,
             'package' => Package::class,
             'vehicle' => Vehicle::class,
+            'sample_photo' => SamplePhoto::class,
             'trip' => Trip::class,
         ]);
 

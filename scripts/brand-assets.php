@@ -10,6 +10,7 @@
  *   mark.png (512), mark-128.png  emblem only, transparent (navbar, light backgrounds)
  *   mark-badge.png (512)      emblem on a white circle (dark backgrounds, social avatars)
  *   icon-512.png, apple-touch-icon.png (180), favicon-32.png, favicon.ico  app/browser icons
+ *   (apple-touch-icon.png and favicon.ico are also written to public/, where browsers look first)
  *
  * The white page around the artwork is removed with a flood fill from the edges, so white
  * shapes inside the emblem (the island, the clouds) stay white; edge pixels are un-blended
@@ -201,6 +202,7 @@ $save($onWhite($mark, 'circle', 0.80), 'mark-badge', true);
 $icon = $onWhite($mark, 'square', 0.86);
 $save($icon, 'icon-512');
 $save($fit($icon, [0, 0, 512, 512], 180, 180), 'apple-touch-icon');
+copy("{$out}/apple-touch-icon.png", $root.'/public/apple-touch-icon.png'); // iOS asks for it at the site root
 $favicon = $fit($mark, [0, 0, 512, 512], 32, 32);
 $save($favicon, 'favicon-32');
 

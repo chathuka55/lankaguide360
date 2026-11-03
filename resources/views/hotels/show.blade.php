@@ -1,6 +1,12 @@
 @php
     $cover = $photos->first();
-    $lightboxPhotos = $photos->map(fn ($m) => ['src' => $m->url(1600), 'alt' => $m->alt ?: $hotel->name, 'credit' => $m->credit() ?? ''])->values();
+    $isSample = $photos->isEmpty() && $samplePhotos->isNotEmpty();
+    $gallery = $isSample ? $samplePhotos : $photos;
+    $lightboxPhotos = $gallery->map(fn ($m) => [
+        'src' => $m->url(1600),
+        'alt' => $isSample ? 'Sample photo: '.$m->alt : ($m->alt ?: $hotel->name),
+        'credit' => ($isSample ? 'Sample photo, not this hotel. ' : '').($m->credit() ?? ''),
+    ])->values();
     $amenities = collect($hotel->amenities ?? [])->map(fn ($a) => App\Models\Hotel::AMENITY_LABELS[$a] ?? Str::headline($a));
     $jsonLd = array_filter([
         '@context' => 'https://schema.org',
@@ -64,15 +70,26 @@
 
         {{-- Gallery --}}
         <section class="mt-6" aria-label="Photos" x-data="lightbox(@js($lightboxPhotos))">
-            @if ($photos->isNotEmpty())
-                <div class="grid gap-2 sm:grid-cols-4 sm:grid-rows-2">
-                    @foreach ($photos->take(5) as $i => $photo)
-                        <button type="button" @click="show({{ $i }})" class="group relative overflow-hidden rounded-xl bg-slate-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary-400 {{ $i === 0 ? 'aspect-[4/3] sm:col-span-2 sm:row-span-2 sm:aspect-auto' : 'hidden aspect-[4/3] sm:block' }}">
-                            <span class="sr-only">Open photo {{ $i + 1 }} of {{ $photos->count() }}</span>
-                            <x-media-img :media="$photo" :width="$i === 0 ? 1600 : 800" :eager="$i === 0" :sizes="$i === 0 ? '(min-width: 640px) 50vw, 100vw' : '25vw'" class="size-full object-cover transition duration-500 group-hover:scale-105" />
+            @if ($gallery->isNotEmpty())
+                <div @class(['grid gap-2 sm:h-[28rem] sm:grid-rows-2', 'sm:grid-cols-4' => ! $isSample || $gallery->count() > 3, 'sm:grid-cols-3' => $isSample && $gallery->count() <= 3])>
+                    @foreach ($gallery->take(5) as $i => $photo)
+                        <button type="button" @click="show({{ $i }})" class="group relative overflow-hidden rounded-xl bg-slate-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary-400 {{ $i === 0 ? 'aspect-[4/3] sm:col-span-2 sm:row-span-2 sm:aspect-auto' : 'hidden aspect-[4/3] sm:block sm:aspect-auto' }} {{ $isSample && $i === 3 ? 'sm:col-span-2 sm:aspect-auto' : '' }}">
+                            <span class="sr-only">Open photo {{ $i + 1 }} of {{ $gallery->count() }}</span>
+                            <x-media-img :media="$photo" :width="$i === 0 ? 1600 : 800" :eager="$i === 0" :sizes="$i === 0 ? '(min-width: 640px) 50vw, 100vw' : '25vw'" :alt="$isSample ? 'Sample photo: '.$photo->alt : null" class="absolute inset-0 size-full object-cover transition duration-500 group-hover:scale-105" />
+                            @if ($isSample)
+                                <span class="absolute start-2 top-2 rounded-full bg-slate-900/75 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur">Sample photo</span>
+                                <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/70 to-transparent px-3 pb-2 pt-6 text-start text-xs font-medium text-white">{{ $photo->alt }}</span>
+                            @endif
                         </button>
                     @endforeach
                 </div>
+                @if ($isSample)
+                    <p class="mt-2 text-xs text-slate-500">
+                        <strong class="text-slate-700">Sample photos</strong> show the kind of room, view and food you can expect at a {{ strtolower($hotel->tier?->label() ?? '') }} stay in this area. They are not photos of {{ $hotel->name }}; its own photos are coming soon.
+                        Photos from Wikimedia Commons:
+                        @foreach ($gallery as $photo)<x-photo-credit :media="$photo" class="text-xs" />@if (! $loop->last) · @endif @endforeach
+                    </p>
+                @endif
             @else
                 <div class="grid aspect-[21/9] place-items-center rounded-2xl bg-gradient-to-br from-primary-50 via-white to-accent-50 text-center text-slate-500">
                     <div><x-icon name="building" class="mx-auto size-12 text-primary-300" /><p class="mt-2 text-sm">Photos of this hotel are coming soon.</p></div>

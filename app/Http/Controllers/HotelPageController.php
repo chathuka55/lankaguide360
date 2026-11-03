@@ -23,6 +23,8 @@ class HotelPageController extends Controller
         return view('hotels.show', [
             'hotel' => $hotel,
             'photos' => $hotel->media,
+            // Until the hotel has its own photos: labelled sample photos of the same kind of stay.
+            'samplePhotos' => $hotel->media->isEmpty() ? $hotel->samplePhotos() : collect(),
             'rates' => $hotel->roomRates()
                 ->where(fn ($q) => $q->whereNull('season_to')->orWhereDate('season_to', '>=', $today))
                 ->orderBy('room_type')->orderBy('price_per_night')->get()

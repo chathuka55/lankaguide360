@@ -222,6 +222,18 @@ Phase-by-phase build prompts and the data-sourcing plan: docs/BUILD-PROMPTS.md.
   `<x-application-logo :badge="true">` (white disc) / `<x-logo :inverted="true">`. Name colours:
   `text-logo-green` #0E8437, `text-logo-blue` #0B4F8F. PDFs/receipt use mark-128 via public_path().
 
+## Error pages and hotel sample photos (Nov 2026)
+- resources/views/errors/* (403, 404, 419, 429, 500, 503) extend errors/layout: inline CSS only, no
+  @vite and no queries, so they render when the build or database is the problem. A traveller
+  account on /admin gets a 403 explaining it plus "Switch to a staff account" (`switch-account`
+  route: logs out, keeps the wanted page as url.intended, only same-site paths).
+- Hotels without own photos show labelled "Sample photo"s: `sample_photos` table (morph
+  `sample_photo`, each owns one Commons media row; alt = our neutral name), pool in
+  data/hotel_sample_photos.php, imported/pruned by `php artisan lg:hotel-sample-photos`.
+  `App\Services\Media\HotelSamplePhotos` (scoped) picks room/view/pool/food by district setting
+  (hill-country → hill, beach-coastal → beach, else inland), tier and type; `Hotel::samplePhotos()`,
+  `sampleCover()`. Never use them for og:image/JSON-LD; generic shots only, no named hotels.
+
 ## UI rules
 - Mobile-first, responsive at sm/md/lg/xl. Brand colours ("tea country" theme, Nov 2026): forest
   green primary (`primary-*` scale, 700 = #234F3A), amber #F59E0B accent (`accent-*`,
@@ -249,7 +261,7 @@ Phase-by-phase build prompts and the data-sourcing plan: docs/BUILD-PROMPTS.md.
   `lg:import-hotels`, `lg:import-images`, `lg:import-all`
 - Seeded logins: admin@lankaguide360.test / agent@lankaguide360.test, password `password`
 - Demo hotels: `php artisan lg:demo-hotels` (remove with `--remove`)
-- Vehicle photos: `php artisan lg:vehicle-photos`
+- Vehicle photos: `php artisan lg:vehicle-photos`; hotel sample photos: `php artisan lg:hotel-sample-photos`
 - If XAMPP is reinstalled, PHP goes back to 8.2 and the MySQL databases are lost: install PHP 8.4
   (windows.php.net, VS17 x64 Thread Safe) into C:\xampp\php (keep 8.2 in C:\xampp\php82-backup),
   recreate both databases, run `migrate:fresh --seed`, then `lg:import-all` (uses the local caches).

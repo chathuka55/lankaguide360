@@ -7,6 +7,7 @@ use App\Enums\Tier;
 use App\Models\Concerns\HasCoordinates;
 use App\Models\Concerns\HasMedia;
 use App\Models\Concerns\HasPublishStatus;
+use App\Services\Media\HotelSamplePhotos;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 #[Fillable([
     'district_id', 'town', 'name', 'description', 'slug', 'type', 'tier', 'star_rating', 'kid_friendly',
@@ -59,6 +61,22 @@ class Hotel extends Model
         'restaurant' => 'Restaurant', 'bar' => 'Bar', 'spa' => 'Spa', 'gym' => 'Gym', 'parking' => 'Parking',
         'kids_club' => 'Kids club', 'room_service' => 'Room service', 'wheelchair' => 'Wheelchair access',
     ];
+
+    /**
+     * Sample photos (room, view, pool, food) while the hotel has none of its own. Always label
+     * them "Sample photo" in views.
+     *
+     * @return Collection<int, Media>
+     */
+    public function samplePhotos(): Collection
+    {
+        return app(HotelSamplePhotos::class)->for($this);
+    }
+
+    public function sampleCover(): ?Media
+    {
+        return app(HotelSamplePhotos::class)->cover($this);
+    }
 
     public function url(): string
     {

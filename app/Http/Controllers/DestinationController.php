@@ -91,7 +91,7 @@ class DestinationController extends Controller
                 ->filter(fn ($group) => $group['places']->isNotEmpty()),
             'places' => $places,
             'mapPlaces' => $this->mapData($places->whereNotNull('lat')->each(fn ($p) => $p->setRelation('district', $district))),
-            'hotels' => $district->hotels()->published()->orderByRaw("FIELD(tier, 'luxury', 'premium', 'budget')")->orderBy('name')->limit(12)->get(),
+            'hotels' => $district->hotels()->published()->with('cover')->orderByRaw("FIELD(tier, 'luxury', 'premium', 'budget')")->orderBy('name')->limit(12)->get(),
         ]);
     }
 

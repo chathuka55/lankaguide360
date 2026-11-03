@@ -39,9 +39,20 @@
                 <x-section-heading id="district-hotels" title="Places to stay" />
                 <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($hotels as $hotel)
-                        <li class="rounded-xl bg-white p-4 ring-1 ring-slate-200">
-                            <p class="font-semibold">{{ $hotel->name }}@if ($hotel->star_rating) <span class="text-accent-600">{{ str_repeat('★', $hotel->star_rating) }}</span>@endif</p>
-                            <p class="text-sm text-slate-500">{{ $hotel->town }} · {{ $hotel->tier->label() }}</p>
+                        @php($photo = $hotel->cover ?? $hotel->sampleCover())
+                        <li class="group relative overflow-hidden rounded-xl bg-white ring-1 ring-slate-200 transition hover:shadow-lg">
+                            <div class="relative aspect-video bg-primary-50">
+                                @if ($photo)
+                                    <x-media-img :media="$photo" :width="400" sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw" :alt="$hotel->cover ? $hotel->name : 'Sample photo: '.$photo->alt" class="size-full object-cover transition duration-500 group-hover:scale-105" />
+                                    @unless ($hotel->cover)
+                                        <span class="absolute start-2 top-2 rounded-full bg-slate-900/75 px-2 py-0.5 text-[10px] font-semibold text-white" title="{{ $photo->credit() }}">Sample photo</span>
+                                    @endunless
+                                @endif
+                            </div>
+                            <div class="p-4">
+                                <p class="font-semibold"><a href="{{ $hotel->url() }}" class="after:absolute after:inset-0 hover:text-primary-700">{{ $hotel->name }}</a> <x-demo-badge :hotel="$hotel" />@if ($hotel->star_rating) <span class="text-accent-600">{{ str_repeat('★', $hotel->star_rating) }}</span>@endif</p>
+                                <p class="text-sm text-slate-500">{{ $hotel->town }} · {{ $hotel->tier->label() }}</p>
+                            </div>
                         </li>
                     @endforeach
                 </ul>
